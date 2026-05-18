@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "@u11d/dynamic-pricing-plugin": {
+      "signature": "2cd59d1bea6815585dd4d97dac6a9f60",
+      "file": true
+    }
+  }
+}
