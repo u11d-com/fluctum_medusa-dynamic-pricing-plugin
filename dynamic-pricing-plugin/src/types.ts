@@ -31,7 +31,11 @@ export type DynamicPricingOptions = {
   materials: string[]
 
   /**
-   * How often (in seconds) to fetch new spot prices.
+   * How often (in seconds) the SSE endpoint pushes updated prices to clients.
+   * Also used as the DB write interval reference — note that Medusa's minimum
+   * cron resolution is 1 minute, so the actual DB write rate is once per minute
+   * regardless of this value.
+   * Must be between 1 and 3600.
    * @default 10
    */
   fetchIntervalSeconds?: number

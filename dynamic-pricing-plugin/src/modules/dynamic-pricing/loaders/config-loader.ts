@@ -1,10 +1,12 @@
 import { LoaderOptions } from "@medusajs/framework/types"
 import { resolvePluginOptions } from "../config.js"
+import { setPluginOptions } from "../options-store.js"
 import type { DynamicPricingOptions } from "../../../types.js"
 
 /**
  * Runs at startup. Validates plugin configuration and stores the resolved
- * options on the module container for use by jobs, workflows, and routes.
+ * options in the module singleton so jobs, workflow steps, and API routes
+ * can access them from any container scope.
  */
 export default async function dynamicPricingLoader({
   container,
@@ -14,13 +16,8 @@ export default async function dynamicPricingLoader({
 
   const resolved = resolvePluginOptions(options as DynamicPricingOptions)
 
-  // Store resolved options so other parts of the plugin can access them
-  container.register(
-    "dynamicPricingOptions",
-    {
-      resolve: () => resolved,
-    } as any
-  )
+  // Store in module-level singleton — accessible from any container scope
+  setPluginOptions(resolved)
 
   logger.info(
     `[dynamic-pricing-plugin] Loaded. Materials: ${resolved.materials.join(", ")} | ` +

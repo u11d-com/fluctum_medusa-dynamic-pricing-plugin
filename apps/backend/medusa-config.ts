@@ -1,30 +1,12 @@
-import { loadEnv, defineConfig } from "@medusajs/framework/utils";
-import type { DynamicPricingOptions } from "@u11d/dynamic-pricing-plugin";
+import { loadEnv, defineConfig } from "@medusajs/framework/utils"
+import { randomProvider, createGoldApiProvider } from "@u11d/dynamic-pricing-plugin"
 
-loadEnv(process.env.NODE_ENV || "development", process.cwd());
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
-// Placeholder provider — will be replaced with randomProvider in Step 2
-const placeholderProvider: DynamicPricingOptions["provider"] = async (
-  materials
-) => {
-  return materials.map((material) => ({
-    material,
-    ask: 1000,
-    bid: 990,
-    price: 995,
-  }));
-};
-
-const dynamicPricingOptions: DynamicPricingOptions = {
-  materials: ["XAU", "XAG"],
-  fetchIntervalSeconds: 10,
-  priceLockDurationSeconds: 120,
-  provider: placeholderProvider,
-};
-
-module.exports = defineConfig({
+export default defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -33,10 +15,39 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
   },
-  modules: [
+  plugins: [
     {
-      resolve: "@u11d/dynamic-pricing-plugin/modules/dynamic-pricing",
-      options: dynamicPricingOptions,
+      resolve: "@u11d/dynamic-pricing-plugin",
+      options: {
+        materials: ["XAU", "XAG"],
+        fetchIntervalSeconds: 10,
+        priceLockDurationSeconds: 10 * 60,
+        provider: process.env.GOLD_API_KEY
+          ? createGoldApiProvider({ apiKey: process.env.GOLD_API_KEY })
+          : randomProvider,
+      },
     },
   ],
-});
+  modules: [
+    {
+      resolve: "@medusajs/medusa/event-bus-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+        workerOptions: { concurrency: 1 },
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/locking",
+      options: {
+        providers: [
+          {
+            id: "locking-redis",
+            resolve: "@medusajs/medusa/locking-redis",
+            is_default: true,
+            options: { redisUrl: process.env.REDIS_URL },
+          },
+        ],
+      },
+    },
+  ],
+})

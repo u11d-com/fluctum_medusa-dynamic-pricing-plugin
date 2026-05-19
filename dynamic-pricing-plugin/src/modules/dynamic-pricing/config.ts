@@ -56,10 +56,11 @@ export function resolvePluginOptions(
   if (
     typeof fetchIntervalSeconds !== "number" ||
     !Number.isInteger(fetchIntervalSeconds) ||
-    fetchIntervalSeconds < 1
+    fetchIntervalSeconds < 1 ||
+    fetchIntervalSeconds > 3600
   ) {
     throw new ConfigValidationError(
-      `[dynamic-pricing-plugin] 'fetchIntervalSeconds' must be a positive integer. Got: ${fetchIntervalSeconds}`
+      `[dynamic-pricing-plugin] 'fetchIntervalSeconds' must be an integer between 1 and 3600. Got: ${fetchIntervalSeconds}`
     )
   }
 

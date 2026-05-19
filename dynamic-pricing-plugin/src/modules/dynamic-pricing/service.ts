@@ -1,10 +1,8 @@
 import { MedusaService } from "@medusajs/framework/utils"
+import SpotPrice from "./models/spot-price.js"
 
-/**
- * The dynamicPricing module service.
- * Currently a shell — data models (SpotPrice, PricingRule, CartPriceLock)
- * will be added in later steps.
- */
-class DynamicPricingModuleService extends MedusaService({}) {}
+class DynamicPricingModuleService extends MedusaService({
+  SpotPrice,
+}) {}
 
 export default DynamicPricingModuleService
