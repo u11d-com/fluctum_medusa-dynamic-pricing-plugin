@@ -1,4 +1,4 @@
-import type { ResolvedDynamicPricingOptions } from "../../types.js"
+import type { ResolvedDynamicPricingOptions } from "../../types"
 
 /**
  * Module-level singleton holding the resolved plugin options.

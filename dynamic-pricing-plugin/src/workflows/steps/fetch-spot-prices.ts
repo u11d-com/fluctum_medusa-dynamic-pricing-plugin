@@ -1,6 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { getPluginOptions } from "../../modules/dynamic-pricing/options-store.js"
-import type { SpotPriceResult } from "../../types.js"
+import { getPluginOptions } from "../../modules/dynamic-pricing/options-store"
+import type { SpotPriceResult } from "../../types"
 
 export type FetchSpotPricesStepInput = {
   materials: string[]

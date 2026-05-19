@@ -1,7 +1,7 @@
 import type {
   DynamicPricingOptions,
   ResolvedDynamicPricingOptions,
-} from "../../types.js"
+} from "../../types"
 
 const DEFAULTS = {
   fetchIntervalSeconds: 10,

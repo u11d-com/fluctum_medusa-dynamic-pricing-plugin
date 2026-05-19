@@ -1,7 +1,7 @@
 import { ICacheService, MedusaContainer } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import { getPluginOptions } from "../modules/dynamic-pricing/options-store.js"
-import { fetchAndSaveSpotPricesWorkflow } from "../workflows/index.js"
+import { getPluginOptions } from "../modules/dynamic-pricing/options-store"
+import { fetchAndSaveSpotPricesWorkflow } from "../workflows/index"
 
 const LAST_FETCHED_AT_KEY = "dynamic-pricing:last-fetched-at"
 

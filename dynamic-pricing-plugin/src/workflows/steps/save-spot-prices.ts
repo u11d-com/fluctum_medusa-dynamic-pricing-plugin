@@ -1,7 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { DYNAMIC_PRICING_MODULE } from "../../modules/dynamic-pricing/index.js"
-import type DynamicPricingModuleService from "../../modules/dynamic-pricing/service.js"
-import type { SpotPriceResult } from "../../types.js"
+import { DYNAMIC_PRICING_MODULE } from "../../modules/dynamic-pricing/index"
+import type DynamicPricingModuleService from "../../modules/dynamic-pricing/service"
+import type { SpotPriceResult } from "../../types"
 
 export type SaveSpotPricesStepInput = {
   prices: SpotPriceResult[]

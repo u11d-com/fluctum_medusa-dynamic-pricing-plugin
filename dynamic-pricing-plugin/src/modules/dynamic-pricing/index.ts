@@ -1,6 +1,6 @@
 import { Module } from "@medusajs/framework/utils"
-import DynamicPricingModuleService from "./service.js"
-import dynamicPricingLoader from "./loaders/config-loader.js"
+import DynamicPricingModuleService from "./service"
+import dynamicPricingLoader from "./loaders/config-loader"
 
 export const DYNAMIC_PRICING_MODULE = "dynamicPricing"
 

@@ -1,4 +1,4 @@
-import type { PriceProviderFn, SpotPriceResult } from "../../types.js"
+import type { PriceProviderFn, SpotPriceResult } from "../../types"
 
 export type GoldApiProviderOptions = {
   /**

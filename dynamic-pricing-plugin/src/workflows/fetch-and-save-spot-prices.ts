@@ -2,8 +2,8 @@ import {
   createWorkflow,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { fetchSpotPricesStep } from "./steps/fetch-spot-prices.js"
-import { saveSpotPricesStep } from "./steps/save-spot-prices.js"
+import { fetchSpotPricesStep } from "./steps/fetch-spot-prices"
+import { saveSpotPricesStep } from "./steps/save-spot-prices"
 
 export type FetchAndSaveSpotPricesInput = {
   materials: string[]

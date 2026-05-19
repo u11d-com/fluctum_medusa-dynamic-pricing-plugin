@@ -1,1 +1,1 @@
-export { fetchAndSaveSpotPricesWorkflow } from "./fetch-and-save-spot-prices.js"
+export { fetchAndSaveSpotPricesWorkflow } from "./fetch-and-save-spot-prices"

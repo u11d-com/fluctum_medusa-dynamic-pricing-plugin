@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "@u11d/dynamic-pricing-plugin": {
-      "signature": "fa1543fc4629e417dc114e86d9a1af32",
+      "signature": "f717f3f466b936aff36f71e39457c5e2",
       "pure": true
     }
   }

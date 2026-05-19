@@ -1,4 +1,4 @@
-import type { PriceProviderFn, SpotPriceResult } from "../../types.js"
+import type { PriceProviderFn, SpotPriceResult } from "../../types"
 
 /**
  * Base "realistic" mid-prices per material symbol.
@@ -101,3 +101,6 @@ export const randomProvider: PriceProviderFn = async (
     }
   })
 }
+
+// Name the function for logging and config display clarity
+Object.defineProperty(randomProvider, "name", { value: "randomProvider" })

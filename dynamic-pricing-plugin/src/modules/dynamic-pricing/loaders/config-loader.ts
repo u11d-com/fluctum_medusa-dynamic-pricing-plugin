@@ -1,7 +1,7 @@
 import { LoaderOptions } from "@medusajs/framework/types"
-import { resolvePluginOptions } from "../config.js"
-import { setPluginOptions } from "../options-store.js"
-import type { DynamicPricingOptions } from "../../../types.js"
+import { resolvePluginOptions } from "../config"
+import { setPluginOptions } from "../options-store"
+import type { DynamicPricingOptions } from "../../../types"
 
 /**
  * Runs at startup. Validates plugin configuration and stores the resolved
