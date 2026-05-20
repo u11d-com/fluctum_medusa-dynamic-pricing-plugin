@@ -1,6 +1,7 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { useQuery } from "@tanstack/react-query"
-import { Container, Heading, Text } from "@medusajs/ui"
+import { Container, Heading, Text, Button, Skeleton } from "@medusajs/ui"
+import { Link } from "react-router-dom"
 import { sdk } from "../../../lib/client"
 
 type PluginConfig = {
@@ -10,13 +11,7 @@ type PluginConfig = {
   providerName: string
 }
 
-function ConfigRow({
-  label,
-  value,
-}: {
-  label: string
-  value: string | number
-}) {
+function ConfigRow({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex items-center justify-between px-6 py-3 border-b border-ui-border-base last:border-0">
       <Text size="small" leading="compact" className="text-ui-fg-subtle">
@@ -38,12 +33,19 @@ const DynamicPricingConfigPage = () => {
 
   return (
     <div className="flex flex-col gap-y-4 p-6">
-      <div>
-        <Heading level="h1">Dynamic Pricing</Heading>
-        <Text size="small" leading="compact" className="text-ui-fg-subtle mt-1">
-          Current plugin configuration (read-only). Edit values in{" "}
-          <code>medusa-config.ts</code>.
-        </Text>
+      <div className="flex items-start justify-between">
+        <div>
+          <Heading level="h1">Dynamic Pricing</Heading>
+          <Text size="small" leading="compact" className="text-ui-fg-subtle mt-1">
+            Current plugin configuration (read-only). Edit values in{" "}
+            <code>medusa-config.ts</code>.
+          </Text>
+        </div>
+        <Link to="/dynamic-pricing/spot-prices">
+          <Button size="small" variant="secondary">
+            View Spot Prices
+          </Button>
+        </Link>
       </div>
 
       <Container className="divide-y p-0">
@@ -52,8 +54,12 @@ const DynamicPricingConfigPage = () => {
         </div>
 
         {isLoading && (
-          <div className="flex items-center justify-center p-8">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-ui-border-strong border-t-transparent" />
+          <div className="flex flex-col gap-0">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="px-6 py-3 border-b border-ui-border-base last:border-0">
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
           </div>
         )}
 
@@ -67,22 +73,10 @@ const DynamicPricingConfigPage = () => {
 
         {data?.config && (
           <>
-            <ConfigRow
-              label="Materials"
-              value={data.config.materials.join(", ")}
-            />
-            <ConfigRow
-              label="Fetch Interval"
-              value={`${data.config.fetchIntervalSeconds}s`}
-            />
-            <ConfigRow
-              label="Price Lock Duration"
-              value={`${data.config.priceLockDurationSeconds}s`}
-            />
-            <ConfigRow
-              label="Provider"
-              value={data.config.providerName}
-            />
+            <ConfigRow label="Materials" value={data.config.materials.join(", ")} />
+            <ConfigRow label="Fetch Interval" value={`${data.config.fetchIntervalSeconds}s`} />
+            <ConfigRow label="Price Lock Duration" value={`${data.config.priceLockDurationSeconds}s`} />
+            <ConfigRow label="Provider" value={data.config.providerName} />
           </>
         )}
       </Container>
