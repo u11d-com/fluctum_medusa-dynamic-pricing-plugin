@@ -1,7 +1,6 @@
 import { LoaderOptions } from "@medusajs/framework/types"
 import { resolvePluginOptions } from "../config"
 import { setPluginOptions } from "../options-store"
-import type { DynamicPricingOptions } from "../../../types"
 
 /**
  * Runs at startup. Validates plugin configuration and stores the resolved
@@ -14,7 +13,7 @@ export default async function dynamicPricingLoader({
 }: LoaderOptions) {
   const logger = container.resolve("logger")
 
-  const resolved = resolvePluginOptions(options as DynamicPricingOptions)
+  const resolved = resolvePluginOptions(options)
 
   // Store in module-level singleton — accessible from any container scope
   setPluginOptions(resolved)

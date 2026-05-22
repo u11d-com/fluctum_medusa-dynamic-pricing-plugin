@@ -19,7 +19,7 @@ export const saveSpotPricesStep = createStep(
       DYNAMIC_PRICING_MODULE
     )
 
-    await service.createSpotPrices(
+    const saved = await service.createSpotPrices(
       input.prices.map((p) => ({
         material: p.material,
         ask: p.ask,
@@ -28,14 +28,14 @@ export const saveSpotPricesStep = createStep(
       }))
     )
 
-    // Broadcast to all connected SSE clients (admin + store)
+    // Broadcast using the DB-assigned created_at so the timestamp is accurate
     sseManager.broadcast(
-      input.prices.map((p) => ({
-        material: p.material,
-        price: p.price,
-        ask: p.ask,
-        bid: p.bid,
-        timestamp: new Date().toISOString(),
+      saved.map((sp) => ({
+        material: sp.material,
+        price: Number(sp.price),
+        ask: Number(sp.ask),
+        bid: Number(sp.bid),
+        timestamp: new Date(sp.created_at).toISOString(),
       }))
     )
 

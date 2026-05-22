@@ -13,7 +13,7 @@ export async function GET(
       materials,
       fetchIntervalSeconds,
       priceLockDurationSeconds,
-      providerName: (provider as Function).name || "unknown",
+      providerName: provider.name || "anonymous",
     },
   })
 }

@@ -30,13 +30,17 @@ class SseManager {
 
   broadcast(prices: SpotPricePayload[]) {
     const message = `event: spot-prices\ndata: ${JSON.stringify(prices)}\n\n`
-    for (const res of this.clients.values()) {
+    const dead: string[] = []
+    for (const [id, res] of this.clients.entries()) {
       try {
         res.write(message)
       } catch {
-        // client disconnected before we could write;
-        // cleaned up via the "close" event in the route handler
+        // client disconnected before the "close" event fired
+        dead.push(id)
       }
+    }
+    for (const id of dead) {
+      this.clients.delete(id)
     }
   }
 

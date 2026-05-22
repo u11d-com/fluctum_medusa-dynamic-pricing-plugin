@@ -20,22 +20,23 @@ export class ConfigValidationError extends Error {
  * Throws ConfigValidationError for any invalid configuration.
  */
 export function resolvePluginOptions(
-  options: DynamicPricingOptions
+  options: unknown
 ): ResolvedDynamicPricingOptions {
-  if (!options) {
+  const opts = options as DynamicPricingOptions | null | undefined
+  if (!opts) {
     throw new ConfigValidationError(
       "[dynamic-pricing-plugin] Plugin options are required."
     )
   }
 
   // Validate materials
-  if (!Array.isArray(options.materials) || options.materials.length === 0) {
+  if (!Array.isArray(opts.materials) || opts.materials.length === 0) {
     throw new ConfigValidationError(
       "[dynamic-pricing-plugin] 'materials' must be a non-empty array of material symbols (e.g. [\"XAU\", \"XAG\"])."
     )
   }
 
-  for (const mat of options.materials) {
+  for (const mat of opts.materials) {
     if (typeof mat !== "string" || mat.trim() === "") {
       throw new ConfigValidationError(
         `[dynamic-pricing-plugin] Each material must be a non-empty string. Got: ${JSON.stringify(mat)}`
@@ -44,7 +45,7 @@ export function resolvePluginOptions(
   }
 
   // Validate provider
-  if (typeof options.provider !== "function") {
+  if (typeof opts.provider !== "function") {
     throw new ConfigValidationError(
       "[dynamic-pricing-plugin] 'provider' must be a function (PriceProviderFn)."
     )
@@ -52,7 +53,7 @@ export function resolvePluginOptions(
 
   // Validate fetchIntervalSeconds
   const fetchIntervalSeconds =
-    options.fetchIntervalSeconds ?? DEFAULTS.fetchIntervalSeconds
+    opts.fetchIntervalSeconds ?? DEFAULTS.fetchIntervalSeconds
   if (
     typeof fetchIntervalSeconds !== "number" ||
     !Number.isInteger(fetchIntervalSeconds) ||
@@ -66,7 +67,7 @@ export function resolvePluginOptions(
 
   // Validate priceLockDurationSeconds
   const priceLockDurationSeconds =
-    options.priceLockDurationSeconds ?? DEFAULTS.priceLockDurationSeconds
+    opts.priceLockDurationSeconds ?? DEFAULTS.priceLockDurationSeconds
   if (
     typeof priceLockDurationSeconds !== "number" ||
     !Number.isInteger(priceLockDurationSeconds) ||
@@ -78,9 +79,9 @@ export function resolvePluginOptions(
   }
 
   return {
-    materials: options.materials.map((m) => m.trim().toUpperCase()),
+    materials: opts.materials.map((m: string) => m.trim().toUpperCase()),
     fetchIntervalSeconds,
     priceLockDurationSeconds,
-    provider: options.provider,
+    provider: opts.provider,
   }
 }

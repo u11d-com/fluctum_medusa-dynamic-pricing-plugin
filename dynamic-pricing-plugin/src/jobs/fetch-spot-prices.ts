@@ -3,7 +3,24 @@ import { Modules } from "@medusajs/framework/utils"
 import { getPluginOptions } from "../modules/dynamic-pricing/options-store"
 import { fetchAndSaveSpotPricesWorkflow } from "../workflows/index"
 
-const LAST_FETCHED_AT_KEY = "dynamic-pricing:last-fetched-at"
+export const LAST_FETCHED_AT_KEY = "dynamic-pricing:last-fetched-at"
+
+/**
+ * Returns true when the job should be skipped because the configured fetch
+ * interval has not elapsed since the last successful fetch.
+ *
+ * Only relevant for fetchIntervalSeconds >= 60 where the cron schedule (10s)
+ * fires more often than the desired interval.
+ */
+export function shouldSkipFetch(
+  lastFetchedAt: number | null,
+  fetchIntervalSeconds: number,
+  nowMs: number = Date.now()
+): boolean {
+  if (lastFetchedAt == null) return false
+  const elapsedSeconds = (nowMs - lastFetchedAt) / 1000
+  return elapsedSeconds < fetchIntervalSeconds
+}
 
 export default async function fetchSpotPricesJob(container: MedusaContainer) {
   const logger = container.resolve("logger")
@@ -11,15 +28,16 @@ export default async function fetchSpotPricesJob(container: MedusaContainer) {
 
   // For intervals >= 60s the cron fires more often than needed (every 10s).
   // Use Redis cache to skip executions until the configured interval elapses.
-  if (fetchIntervalSeconds >= 60) {
-    const cache = container.resolve<ICacheService>(Modules.CACHE)
-    const lastFetchedAt = await cache.get<number>(LAST_FETCHED_AT_KEY)
-    const elapsedSeconds =
-      lastFetchedAt != null ? (Date.now() - lastFetchedAt) / 1000 : Infinity
+  const cache = fetchIntervalSeconds >= 60
+    ? container.resolve<ICacheService>(Modules.CACHE)
+    : null
 
-    if (elapsedSeconds < fetchIntervalSeconds) {
+  if (cache) {
+    const lastFetchedAt = await cache.get<number>(LAST_FETCHED_AT_KEY)
+    if (shouldSkipFetch(lastFetchedAt, fetchIntervalSeconds)) {
+      const elapsed = lastFetchedAt != null ? (Date.now() - lastFetchedAt) / 1000 : 0
       logger.debug(
-        `[dynamic-pricing-plugin] Skipping — next fetch in ${Math.ceil(fetchIntervalSeconds - elapsedSeconds)}s`
+        `[dynamic-pricing-plugin] Skipping — next fetch in ${Math.ceil(fetchIntervalSeconds - elapsed)}s`
       )
       return
     }
@@ -31,8 +49,7 @@ export default async function fetchSpotPricesJob(container: MedusaContainer) {
     input: { materials },
   })
 
-  if (fetchIntervalSeconds >= 60) {
-    const cache = container.resolve<ICacheService>(Modules.CACHE)
+  if (cache) {
     await cache.set(LAST_FETCHED_AT_KEY, Date.now())
   }
 

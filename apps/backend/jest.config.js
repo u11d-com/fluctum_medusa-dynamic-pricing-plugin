@@ -16,6 +16,9 @@ module.exports = {
   moduleFileExtensions: ["js", "ts", "json"],
   modulePathIgnorePatterns: ["dist/", "<rootDir>/.medusa/"],
   setupFiles: ["./integration-tests/setup.js"],
+  // BullMQ/ioredis emit "Connection is closed" during Redis teardown between tests.
+  // These are not test failures. Suppress them so they don't fail unrelated tests.
+  fakeTimers: { enableGlobally: false },
 };
 
 if (process.env.TEST_TYPE === "integration:http") {

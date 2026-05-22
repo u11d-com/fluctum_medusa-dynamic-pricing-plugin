@@ -36,6 +36,12 @@ type ListResponse = {
   offset: number;
 };
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function formatPrice(value: number | string): string {
+  return `$${Number(value).toFixed(4)}`
+}
+
 // ── Current prices card (SSE) ─────────────────────────────────────────────────
 
 function LatestPricesCard() {
@@ -116,33 +122,33 @@ function LatestPricesCard() {
                   <Badge size="2xsmall" color="blue">
                     {sp.material}
                   </Badge>
-                  <Text size="small" leading="compact" weight="plus">
-                    ${Number(sp.price).toFixed(4)}
-                  </Text>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <Text
-                      size="small"
-                      leading="compact"
-                      className="text-ui-fg-subtle"
-                    >
-                      Ask
-                    </Text>
-                    <Text size="small" leading="compact" weight="plus">
-                      ${Number(sp.ask).toFixed(4)}
-                    </Text>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Text
-                      size="small"
-                      leading="compact"
-                      className="text-ui-fg-subtle"
-                    >
-                      Bid
-                    </Text>
-                    <Text size="small" leading="compact" weight="plus">
-                      ${Number(sp.bid).toFixed(4)}
+                   <Text size="small" leading="compact" weight="plus">
+                     {formatPrice(sp.price)}
+                   </Text>
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <div className="flex items-center gap-1">
+                     <Text
+                       size="small"
+                       leading="compact"
+                       className="text-ui-fg-subtle"
+                     >
+                       Ask
+                     </Text>
+                     <Text size="small" leading="compact" weight="plus">
+                       {formatPrice(sp.ask)}
+                     </Text>
+                   </div>
+                   <div className="flex items-center gap-1">
+                     <Text
+                       size="small"
+                       leading="compact"
+                       className="text-ui-fg-subtle"
+                     >
+                       Bid
+                     </Text>
+                     <Text size="small" leading="compact" weight="plus">
+                       {formatPrice(sp.bid)}
                     </Text>
                   </div>
                   <Text
@@ -162,6 +168,10 @@ function LatestPricesCard() {
   );
 }
 
+type ConfigResponse = {
+  config: { materials: string[] };
+};
+
 // ── Historical prices table ───────────────────────────────────────────────────
 
 const PAGE_SIZE = 20;
@@ -171,6 +181,15 @@ function HistoricalPricesTable() {
   const [materialFilter, setMaterialFilter] = useState("");
 
   const offset = page * PAGE_SIZE;
+
+  const { data: configData } = useQuery<ConfigResponse>({
+    queryKey: ["dynamic-pricing-config"],
+    queryFn: () =>
+      sdk.client.fetch<ConfigResponse>("/admin/dynamic-pricing/config"),
+    staleTime: Infinity,
+  });
+
+  const materialOptions = configData?.config.materials ?? [];
 
   const { data, isLoading } = useQuery<ListResponse>({
     queryKey: ["dynamic-pricing-history", page, materialFilter],
@@ -193,7 +212,7 @@ function HistoricalPricesTable() {
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">Historical Prices</Heading>
         <div className="flex items-center gap-2">
-          {["", "XAU", "XAG"].map((m) => (
+          {["", ...materialOptions].map((m) => (
             <Button
               key={m}
               size="small"
@@ -250,21 +269,21 @@ function HistoricalPricesTable() {
                     {sp.material}
                   </Badge>
                 </Table.Cell>
-                <Table.Cell>
-                  <Text size="small" leading="compact" weight="plus">
-                    ${Number(sp.price).toFixed(4)}
-                  </Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text size="small" leading="compact">
-                    ${Number(sp.ask).toFixed(4)}
-                  </Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text size="small" leading="compact">
-                    ${Number(sp.bid).toFixed(4)}
-                  </Text>
-                </Table.Cell>
+                 <Table.Cell>
+                   <Text size="small" leading="compact" weight="plus">
+                     {formatPrice(sp.price)}
+                   </Text>
+                 </Table.Cell>
+                 <Table.Cell>
+                   <Text size="small" leading="compact">
+                     {formatPrice(sp.ask)}
+                   </Text>
+                 </Table.Cell>
+                 <Table.Cell>
+                   <Text size="small" leading="compact">
+                     {formatPrice(sp.bid)}
+                   </Text>
+                 </Table.Cell>
                 <Table.Cell>
                   <Text
                     size="small"

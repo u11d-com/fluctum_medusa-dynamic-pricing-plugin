@@ -16,6 +16,15 @@
       "outputs": []
     },
     "test": {
+      "cache": false,
+      "outputs": []
+    },
+    "test:unit": {
+      "cache": false,
+      "outputs": []
+    },
+    "test:integration": {
+      "cache": false,
       "outputs": []
     },
     "seed": {

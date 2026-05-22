@@ -1,15 +1,37 @@
 import { MedusaService, ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { EntityManager } from "@mikro-orm/knex"
+import { SqlEntityManager } from "@mikro-orm/knex"
+import { Knex } from "knex"
 import SpotPrice from "./models/spot-price"
+import PricingRule from "./models/pricing-rule"
+
+type SpotPriceRow = {
+  id: string
+  material: string
+  price: number
+  ask: number
+  bid: number
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date | null
+}
+
+type ServiceContainer = {
+  [ContainerRegistrationKeys.MANAGER]: SqlEntityManager
+}
 
 class DynamicPricingModuleService extends MedusaService({
   SpotPrice,
+  PricingRule,
 }) {
-  private readonly manager_: EntityManager
+  private readonly manager_: SqlEntityManager
 
-  constructor(container: Record<string, unknown>) {
-    super(container)
-    this.manager_ = container[ContainerRegistrationKeys.MANAGER] as EntityManager
+  constructor(container: ServiceContainer) {
+    super(container as Record<string, unknown>)
+    this.manager_ = container[ContainerRegistrationKeys.MANAGER]
+  }
+
+  getKnex(): Knex {
+    return this.manager_.getKnex()
   }
 
   /**
@@ -19,7 +41,7 @@ class DynamicPricingModuleService extends MedusaService({
    * With the composite (material, created_at DESC) index this is an
    * index-only scan — O(distinct materials), not O(total rows).
    */
-  async getLatestSpotPrices(materials?: string[]): Promise<Record<string, unknown>[]> {
+  async getLatestSpotPrices(materials?: string[]): Promise<SpotPriceRow[]> {
     const knex = this.manager_.getKnex()
 
     let query = knex
@@ -37,7 +59,7 @@ class DynamicPricingModuleService extends MedusaService({
       query = query.whereIn("material", materials)
     }
 
-    const rows: Record<string, unknown>[] = await query
+    const rows: SpotPriceRow[] = await query
 
     // Knex returns numeric columns as strings from PostgreSQL
     return rows.map((row) => ({

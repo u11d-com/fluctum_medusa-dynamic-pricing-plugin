@@ -9,7 +9,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const limit = Math.min(Number(req.query.limit) || 50, 200)
   const offset = Number(req.query.offset) || 0
-  const material = req.query.material as string | undefined
+  const rawMaterial = req.query.material
+  const material = typeof rawMaterial === "string" ? rawMaterial : undefined
 
   const filters = material ? { material: material.toUpperCase() } : {}
 

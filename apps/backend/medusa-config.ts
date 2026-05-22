@@ -1,12 +1,18 @@
-import { loadEnv, defineConfig } from "@medusajs/framework/utils"
-import { randomProvider, createGoldApiProvider } from "@u11d/dynamic-pricing-plugin"
+import { loadEnv, defineConfig } from "@medusajs/framework/utils";
+import {
+  randomProvider,
+  createGoldApiProvider,
+} from "@u11d/dynamic-pricing-plugin";
 
-loadEnv(process.env.NODE_ENV || "development", process.cwd())
+loadEnv(process.env.NODE_ENV || "development", process.cwd());
+
+const isTest = process.env.NODE_ENV === "test";
 
 export default defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    redisUrl: process.env.REDIS_URL,
+    // Redis not needed in test — avoids BullMQ teardown noise in integration tests
+    redisUrl: isTest ? undefined : process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -28,26 +34,28 @@ export default defineConfig({
       },
     },
   ],
-  modules: [
-    {
-      resolve: "@medusajs/medusa/event-bus-redis",
-      options: {
-        redisUrl: process.env.REDIS_URL,
-        workerOptions: { concurrency: 1 },
-      },
-    },
-    {
-      resolve: "@medusajs/medusa/locking",
-      options: {
-        providers: [
-          {
-            id: "locking-redis",
-            resolve: "@medusajs/medusa/locking-redis",
-            is_default: true,
-            options: { redisUrl: process.env.REDIS_URL },
+  modules: isTest
+    ? []
+    : [
+        {
+          resolve: "@medusajs/medusa/event-bus-redis",
+          options: {
+            redisUrl: process.env.REDIS_URL,
+            workerOptions: { concurrency: 1 },
           },
-        ],
-      },
-    },
-  ],
-})
+        },
+        {
+          resolve: "@medusajs/medusa/locking",
+          options: {
+            providers: [
+              {
+                id: "locking-redis",
+                resolve: "@medusajs/medusa/locking-redis",
+                is_default: true,
+                options: { redisUrl: process.env.REDIS_URL },
+              },
+            ],
+          },
+        },
+      ],
+});

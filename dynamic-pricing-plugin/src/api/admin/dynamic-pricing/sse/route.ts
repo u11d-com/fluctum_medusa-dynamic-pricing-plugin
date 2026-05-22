@@ -40,7 +40,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         price: Number(sp.price),
         ask: Number(sp.ask),
         bid: Number(sp.bid),
-        timestamp: sp.created_at,
+        timestamp: sp.created_at.toISOString(),
       }))
       res.write(
         `event: spot-prices\ndata: ${JSON.stringify(payload)}\n\n`

@@ -12,6 +12,13 @@ const validOptions: DynamicPricingOptions = {
   provider: mockProvider,
 }
 
+// Helper that accepts deliberately invalid input for negative-path tests.
+// The single cast here is intentional — it lets us test runtime validation
+// without sprinkling `as any` throughout the test cases.
+function resolveInvalid(opts: unknown) {
+  return resolvePluginOptions(opts as DynamicPricingOptions)
+}
+
 describe("resolvePluginOptions", () => {
   describe("valid configuration", () => {
     it("accepts minimal valid options and applies defaults", () => {
@@ -49,7 +56,7 @@ describe("resolvePluginOptions", () => {
   describe("invalid materials", () => {
     it("throws when materials is missing", () => {
       expect(() =>
-        resolvePluginOptions({ provider: mockProvider } as any)
+        resolveInvalid({ provider: mockProvider })
       ).toThrow(ConfigValidationError)
     })
 
@@ -61,7 +68,7 @@ describe("resolvePluginOptions", () => {
 
     it("throws when materials is not an array", () => {
       expect(() =>
-        resolvePluginOptions({ ...validOptions, materials: "XAU" as any })
+        resolveInvalid({ ...validOptions, materials: "XAU" })
       ).toThrow(ConfigValidationError)
     })
 
@@ -73,7 +80,7 @@ describe("resolvePluginOptions", () => {
 
     it("throws when a material entry is not a string", () => {
       expect(() =>
-        resolvePluginOptions({ ...validOptions, materials: [123 as any] })
+        resolveInvalid({ ...validOptions, materials: [123] })
       ).toThrow(ConfigValidationError)
     })
   })
@@ -81,13 +88,13 @@ describe("resolvePluginOptions", () => {
   describe("invalid provider", () => {
     it("throws when provider is missing", () => {
       expect(() =>
-        resolvePluginOptions({ materials: ["XAU"] } as any)
+        resolveInvalid({ materials: ["XAU"] })
       ).toThrow(ConfigValidationError)
     })
 
     it("throws when provider is not a function", () => {
       expect(() =>
-        resolvePluginOptions({ ...validOptions, provider: "goldApi" as any })
+        resolveInvalid({ ...validOptions, provider: "goldApi" })
       ).toThrow(ConfigValidationError)
     })
   })
