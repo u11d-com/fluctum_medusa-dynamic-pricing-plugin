@@ -15,9 +15,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const service = req.scope.resolve<DynamicPricingModuleService>(DYNAMIC_PRICING_MODULE)
   const knex = getLinkKnex(req.scope)
 
-  type LinkRow = { pricing_rule_id: string; material: string }
+  type LinkRow = { pricing_rule_id: string; material: string; weight_oz: number | null }
   const [linkRow] = await knex<LinkRow>(LINK_TABLE)
-    .select("pricing_rule_id", "material")
+    .select("pricing_rule_id", "material", "weight_oz")
     .where({ product_variant_id: variant_id })
     .whereNull("deleted_at")
     .limit(1)
@@ -28,7 +28,11 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   }
 
   const [rule] = await service.listPricingRules({ id: linkRow.pricing_rule_id })
-  res.json({ pricing_rule: rule ? { ...rule, material: linkRow.material } : null })
+  res.json({
+    pricing_rule: rule
+      ? { ...rule, material: linkRow.material, weight_oz: linkRow.weight_oz ?? null }
+      : null,
+  })
 }
 
 export async function POST(
@@ -36,7 +40,7 @@ export async function POST(
   res: MedusaResponse
 ) {
   const { id: variant_id } = req.params
-  const { pricing_rule_id, material } = req.validatedBody
+  const { pricing_rule_id, material, weight_oz } = req.validatedBody
 
   const { materials } = getPluginOptions()
   const upperMaterial = material.toUpperCase()
@@ -48,7 +52,12 @@ export async function POST(
   }
 
   await assignVariantPricingRuleWorkflow(req.scope).run({
-    input: { variant_id, pricing_rule_id, material: upperMaterial } as AssignVariantPricingRuleInput,
+    input: {
+      variant_id,
+      pricing_rule_id,
+      material: upperMaterial,
+      weight_oz: weight_oz ?? null,
+    } as AssignVariantPricingRuleInput,
   })
 
   res.status(201).json({ success: true })

@@ -1,6 +1,6 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { useQuery } from "@tanstack/react-query"
-import { Container, Heading, Text, Button, Skeleton } from "@medusajs/ui"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { Container, Heading, Text, Button, Skeleton, toast } from "@medusajs/ui"
 import { Link } from "react-router-dom"
 import { sdk } from "../../../lib/client"
 
@@ -31,6 +31,20 @@ const DynamicPricingConfigPage = () => {
       sdk.client.fetch<{ config: PluginConfig }>("/admin/dynamic-pricing/config"),
   })
 
+  const seed = useMutation({
+    mutationFn: () =>
+      sdk.client.fetch<{ success: boolean; created_products: string[]; pricing_rules: string[] }>(
+        "/admin/dynamic-pricing/seed",
+        { method: "POST" }
+      ),
+    onSuccess: (result) => {
+      toast.success(
+        `Seeded ${result.created_products.length} products with rules: ${result.pricing_rules.join(", ")}`
+      )
+    },
+    onError: (err: Error) => toast.error(err.message || "Seed failed"),
+  })
+
   return (
     <div className="flex flex-col gap-y-4 p-6">
       <div className="flex items-start justify-between">
@@ -41,11 +55,21 @@ const DynamicPricingConfigPage = () => {
             <code>medusa-config.ts</code>.
           </Text>
         </div>
-        <Link to="/dynamic-pricing/spot-prices">
-          <Button size="small" variant="secondary">
-            View Spot Prices
+        <div className="flex items-center gap-2">
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={() => seed.mutate()}
+            isLoading={seed.isPending}
+          >
+            Seed Products
           </Button>
-        </Link>
+          <Link to="/dynamic-pricing/spot-prices">
+            <Button size="small" variant="secondary">
+              View Spot Prices
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Container className="divide-y p-0">

@@ -7,7 +7,10 @@ export type PricingRule = {
   premium_fixed: number
 }
 
-export type PricingRuleWithMaterial = PricingRule & { material: string }
+export type PricingRuleWithMaterial = PricingRule & {
+  material: string
+  weight_oz: number | null
+}
 
 export type VariantAssignment = {
   pricing_rule: PricingRuleWithMaterial | null
@@ -21,3 +24,14 @@ export type PricingRulesListResponse = {
 export type ConfigResponse = {
   config: { materials: string[] }
 }
+
+export type SpotPricePayload = {
+  material: string
+  price: number
+  ask: number
+  bid: number
+  timestamp: string
+}
+
+/** Map of material symbol → latest live spot price */
+export type SpotPriceMap = Record<string, SpotPricePayload>

@@ -6,6 +6,7 @@ export type UpsertVariantLinkStepInput = {
   variant_id: string
   pricing_rule_id: string
   material: string
+  weight_oz: number | null
 }
 
 /**
@@ -22,7 +23,7 @@ export const upsertVariantLinkStep = createStep(
     const knex = getLinkKnex(container)
 
     const existing = await knex(LINK_TABLE)
-      .select("id", "product_variant_id", "pricing_rule_id", "material", "created_at")
+      .select("id", "product_variant_id", "pricing_rule_id", "material", "weight_oz", "created_at")
       .where({ product_variant_id: input.variant_id })
 
     await knex(LINK_TABLE).where({ product_variant_id: input.variant_id }).delete()
@@ -33,6 +34,7 @@ export const upsertVariantLinkStep = createStep(
       product_variant_id: input.variant_id,
       pricing_rule_id: input.pricing_rule_id,
       material: input.material,
+      weight_oz: input.weight_oz,
       created_at: now,
       updated_at: now,
       deleted_at: null,

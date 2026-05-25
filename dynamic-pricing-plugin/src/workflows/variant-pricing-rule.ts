@@ -6,6 +6,7 @@ export type AssignVariantPricingRuleInput = {
   variant_id: string
   pricing_rule_id: string
   material: string
+  weight_oz: number | null
 }
 
 export const assignVariantPricingRuleWorkflow = createWorkflow(

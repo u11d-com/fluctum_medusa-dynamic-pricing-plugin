@@ -1,66 +1,35 @@
 import { useState } from "react"
-import { Text, Button, Label, Select, InlineTip } from "@medusajs/ui"
+import { Text, Button, Label, Select, Input } from "@medusajs/ui"
 import type { PricingRule } from "./types"
 
+// ── Price formula (mirrored from src/utils/price-formula.ts for admin bundle) ──
+//
+// final = weight × ask × spreadFactor × (1 + premiumPercentage/100)
+//         + spreadFixed + premiumFixed
+//
+// Uses ask price per business requirement: the price a buyer pays.
+
+export function computePrice({
+  weight,
+  ask,
+  spreadFactor,
+  spreadFixed,
+  premiumPercentage,
+  premiumFixed,
+}: {
+  weight: number
+  ask: number
+  spreadFactor: number
+  spreadFixed: number
+  premiumPercentage: number
+  premiumFixed: number
+}): number {
+  const base = weight * ask * spreadFactor
+  const withPremiumPct = base * (1 + premiumPercentage / 100)
+  return withPremiumPct + spreadFixed + premiumFixed
+}
+
 // ── Weight helpers ────────────────────────────────────────────────────────────
-
-export function effectiveWeight(
-  variantWeight: number | null | undefined,
-  productWeight: number | null | undefined
-): number | null {
-  return variantWeight ?? productWeight ?? null
-}
-
-export function WeightDisplay({
-  variantWeight,
-  productWeight,
-}: {
-  variantWeight: number | null | undefined
-  productWeight: number | null | undefined
-}) {
-  const w = effectiveWeight(variantWeight, productWeight)
-  if (w == null) {
-    return (
-      <Text size="small" leading="compact" className="text-ui-fg-error">
-        weight not set
-      </Text>
-    )
-  }
-  return (
-    <Text size="small" leading="compact" className="text-ui-fg-subtle">
-      {w} troy oz{variantWeight == null ? " (product default)" : ""}
-    </Text>
-  )
-}
-
-export function WeightTip({
-  variantWeight,
-  productWeight,
-}: {
-  variantWeight: number | null | undefined
-  productWeight: number | null | undefined
-}) {
-  const effective = effectiveWeight(variantWeight, productWeight)
-  if (effective == null) {
-    return (
-      <InlineTip variant="warning" label="Weight not set">
-        No weight found on this variant or its product. Set it in the Shipping section — it must be in troy ounces.
-      </InlineTip>
-    )
-  }
-  if (variantWeight == null) {
-    return (
-      <InlineTip variant="info" label="Using product weight">
-        This variant has no weight set — falling back to the product weight ({productWeight} troy oz). Set a variant-level weight in the Shipping section to override it.
-      </InlineTip>
-    )
-  }
-  return (
-    <InlineTip variant="info" label="Weight unit">
-      Variant weight is read from the Shipping section and must be in troy ounces.
-    </InlineTip>
-  )
-}
 
 // ── RuleAssignForm ────────────────────────────────────────────────────────────
 
@@ -69,10 +38,12 @@ export type RuleAssignFormProps = {
   materials: string[]
   ruleId: string
   material: string
+  weightOz: string
   errors: Record<string, string>
   isPending: boolean
   onRuleChange: (v: string) => void
   onMaterialChange: (v: string) => void
+  onWeightOzChange: (v: string) => void
   onSave: () => void
   onCancel: () => void
 }
@@ -82,10 +53,12 @@ export function RuleAssignForm({
   materials,
   ruleId,
   material,
+  weightOz,
   errors,
   isPending,
   onRuleChange,
   onMaterialChange,
+  onWeightOzChange,
   onSave,
   onCancel,
 }: RuleAssignFormProps) {
@@ -133,6 +106,22 @@ export function RuleAssignForm({
         )}
       </div>
 
+      <div className="flex flex-col gap-y-2">
+        <Label>Weight (oz)</Label>
+        <Input
+          type="number"
+          min="0"
+          step="any"
+          value={weightOz}
+          onChange={(e) => onWeightOzChange(e.target.value)}
+        />
+        {errors.weightOz && (
+          <Text size="small" leading="compact" className="text-ui-fg-error">
+            {errors.weightOz}
+          </Text>
+        )}
+      </div>
+
       <div className="flex items-center gap-x-2">
         <Button size="small" onClick={onSave} isLoading={isPending}>
           Save
@@ -152,15 +141,19 @@ export function RuleAssignForm({
 
 // ── useRuleAssignState ────────────────────────────────────────────────────────
 
-export function useRuleAssignState(initialRuleId = "", initialMaterial = "") {
+export function useRuleAssignState(initialRuleId = "", initialMaterial = "", initialWeightOz = "") {
   const [ruleId, setRuleId] = useState(initialRuleId)
   const [material, setMaterial] = useState(initialMaterial)
+  const [weightOz, setWeightOz] = useState(initialWeightOz)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   function validate() {
     const next: Record<string, string> = {}
     if (!ruleId) next.rule = "Select a pricing rule"
     if (!material) next.material = "Select a material"
+    if (weightOz !== "" && (isNaN(Number(weightOz)) || Number(weightOz) <= 0)) {
+      next.weightOz = "Weight must be a positive number"
+    }
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -168,14 +161,23 @@ export function useRuleAssignState(initialRuleId = "", initialMaterial = "") {
   function reset() {
     setRuleId(initialRuleId)
     setMaterial(initialMaterial)
+    setWeightOz(initialWeightOz)
     setErrors({})
+  }
+
+  /** Returns weight_oz as number | null (null if field left blank) */
+  function weightOzValue(): number | null {
+    const n = Number(weightOz)
+    return weightOz !== "" && !isNaN(n) && n > 0 ? n : null
   }
 
   return {
     ruleId, setRuleId,
     material, setMaterial,
+    weightOz, setWeightOz,
     errors, setErrors,
     validate,
     reset,
+    weightOzValue,
   }
 }

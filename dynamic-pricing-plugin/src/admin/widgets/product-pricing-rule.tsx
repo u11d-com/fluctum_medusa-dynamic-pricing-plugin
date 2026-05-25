@@ -2,6 +2,7 @@ import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { DetailWidgetProps, HttpTypes } from "@medusajs/framework/types"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Container,
   Heading,
@@ -13,30 +14,27 @@ import {
   Table,
   toast,
   Prompt,
-  InlineTip,
 } from "@medusajs/ui"
 import { PencilSquare, Trash } from "@medusajs/icons"
 import { sdk } from "../lib/client"
-import { useRules, useMaterials, useVariantRule } from "../hooks"
+import { useRules, useMaterials, useVariantRule, useLiveSpotPrices } from "../hooks"
 import {
-  WeightDisplay,
-  WeightTip,
   RuleAssignForm,
   useRuleAssignState,
-  effectiveWeight,
+  computePrice,
 } from "../components"
-import type { VariantAssignment, PricingRuleWithMaterial } from "../types"
+import type { VariantAssignment, SpotPriceMap } from "../types"
 
 // ── Single-variant inline card ────────────────────────────────────────────────
 
 function SingleVariantCard({
   variant,
-  productWeight,
   queryKey,
+  spotPrices,
 }: {
   variant: HttpTypes.AdminProductVariant
-  productWeight: number | null | undefined
   queryKey: string[]
+  spotPrices: SpotPriceMap
 }) {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState(false)
@@ -48,7 +46,11 @@ function SingleVariantCard({
   const { data: configData } = useMaterials(editing)
   const materialOptions = configData?.config.materials ?? []
 
-  const form = useRuleAssignState(rule?.id ?? "", rule?.material ?? "")
+  const form = useRuleAssignState(
+    rule?.id ?? "",
+    rule?.material ?? "",
+    rule?.weight_oz != null ? String(rule.weight_oz) : ""
+  )
 
   const assign = useMutation({
     mutationFn: (body: object) =>
@@ -79,7 +81,11 @@ function SingleVariantCard({
 
   const handleSave = () => {
     if (!form.validate()) return
-    assign.mutate({ pricing_rule_id: form.ruleId, material: form.material })
+    assign.mutate({
+      pricing_rule_id: form.ruleId,
+      material: form.material,
+      weight_oz: form.weightOzValue(),
+    })
   }
 
   if (isLoading) {
@@ -92,15 +98,36 @@ function SingleVariantCard({
   }
 
   if (!editing && rule) {
+    const sp = spotPrices[rule.material]
+    const weight = rule.weight_oz
+    const finalPrice =
+      sp != null && weight != null
+        ? computePrice({
+            weight,
+            ask: sp.ask,
+            spreadFactor: Number(rule.spread_factor),
+            spreadFixed: Number(rule.spread_fixed),
+            premiumPercentage: Number(rule.premium_percentage),
+            premiumFixed: Number(rule.premium_fixed),
+          })
+        : null
+
     return (
       <div className="px-6 py-4 flex flex-col gap-3">
-        <WeightTip variantWeight={variant.weight} productWeight={productWeight} />
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <Text size="small" leading="compact" weight="plus">{rule.name}</Text>
               <Badge size="2xsmall" color="blue">{rule.material}</Badge>
-              <WeightDisplay variantWeight={variant.weight} productWeight={productWeight} />
+              {rule.weight_oz != null ? (
+                <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                  {rule.weight_oz} oz
+                </Text>
+              ) : (
+                <Text size="small" leading="compact" className="text-ui-fg-error">
+                  weight not set
+                </Text>
+              )}
             </div>
             <div className="flex items-center gap-6">
               {([
@@ -115,6 +142,39 @@ function SingleVariantCard({
                 </div>
               ))}
             </div>
+            {sp ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <Text size="small" leading="compact" className="text-ui-fg-subtle">Product price</Text>
+                  {finalPrice != null ? (
+                    <Text size="small" leading="compact" weight="plus">
+                      ${finalPrice.toFixed(2)}
+                    </Text>
+                  ) : (
+                    <Text size="small" leading="compact" className="text-ui-fg-error">
+                      weight not set — cannot compute
+                    </Text>
+                  )}
+                </div>
+                <div className="flex items-center gap-4">
+                  <Text size="small" leading="compact" className="text-ui-fg-subtle">Spot</Text>
+                  <Text size="small" leading="compact">${sp.price.toFixed(4)}</Text>
+                  <div className="flex items-center gap-1">
+                    <Text size="small" leading="compact" className="text-ui-fg-subtle">Ask</Text>
+                    <Text size="small" leading="compact">${sp.ask.toFixed(4)}</Text>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Text size="small" leading="compact" className="text-ui-fg-subtle">Bid</Text>
+                    <Text size="small" leading="compact">${sp.bid.toFixed(4)}</Text>
+                  </div>
+                  <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                    {new Date(sp.timestamp).toLocaleTimeString()}
+                  </Text>
+                </div>
+              </div>
+            ) : (
+              <Skeleton className="h-4 w-48" />
+            )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <Button
@@ -123,6 +183,7 @@ function SingleVariantCard({
               onClick={() => {
                 form.setRuleId(rule.id)
                 form.setMaterial(rule.material)
+                form.setWeightOz(rule.weight_oz != null ? String(rule.weight_oz) : "")
                 form.setErrors({})
                 setEditing(true)
               }}
@@ -167,16 +228,17 @@ function SingleVariantCard({
   // Edit / Assign form
   return (
     <div className="px-6 py-4 flex flex-col gap-4">
-      <WeightTip variantWeight={variant.weight} productWeight={productWeight} />
       <RuleAssignForm
         rules={rulesData?.pricing_rules ?? []}
         materials={materialOptions}
         ruleId={form.ruleId}
         material={form.material}
+        weightOz={form.weightOz}
         errors={form.errors}
         isPending={assign.isPending}
         onRuleChange={(v) => { form.setRuleId(v); form.setErrors({ ...form.errors, rule: undefined! }) }}
         onMaterialChange={(v) => { form.setMaterial(v); form.setErrors({ ...form.errors, material: undefined! }) }}
+        onWeightOzChange={(v) => { form.setWeightOz(v); form.setErrors({ ...form.errors, weightOz: undefined! }) }}
         onSave={handleSave}
         onCancel={() => { setEditing(false); form.setErrors({}) }}
       />
@@ -188,19 +250,15 @@ function SingleVariantCard({
 
 function BulkAssignDrawer({
   variants,
-  productWeight,
   productId,
   onAssigned,
 }: {
   variants: HttpTypes.AdminProductVariant[]
-  productWeight: number | null | undefined
   productId: string
   onAssigned: () => void
 }) {
   const [open, setOpen] = useState(false)
   const form = useRuleAssignState()
-
-  const missingWeight = variants.filter((v) => effectiveWeight(v.weight, productWeight) == null)
 
   const { data: rulesData } = useRules(open)
   const { data: configData } = useMaterials(open)
@@ -223,7 +281,11 @@ function BulkAssignDrawer({
 
   const handleSubmit = () => {
     if (!form.validate()) return
-    assign.mutate({ pricing_rule_id: form.ruleId, material: form.material })
+    assign.mutate({
+      pricing_rule_id: form.ruleId,
+      material: form.material,
+      weight_oz: form.weightOzValue(),
+    })
   }
 
   return (
@@ -240,47 +302,20 @@ function BulkAssignDrawer({
           </Drawer.Header>
 
           <Drawer.Body className="flex flex-col gap-y-6 overflow-auto p-6">
-            {missingWeight.length > 0 && (
-              <InlineTip variant="warning" label="Weight missing">
-                {missingWeight.length === variants.length
-                  ? "No variants have a weight set (variant or product level)."
-                  : `${missingWeight.length} variant(s) have no weight set.`
-                } Set weight in troy oz in the Shipping section.
-              </InlineTip>
-            )}
-
             <RuleAssignForm
               rules={rulesData?.pricing_rules ?? []}
               materials={materialOptions}
               ruleId={form.ruleId}
               material={form.material}
+              weightOz={form.weightOz}
               errors={form.errors}
               isPending={assign.isPending}
               onRuleChange={(v) => { form.setRuleId(v); form.setErrors({ ...form.errors, rule: undefined! }) }}
               onMaterialChange={(v) => { form.setMaterial(v); form.setErrors({ ...form.errors, material: undefined! }) }}
+              onWeightOzChange={(v) => { form.setWeightOz(v); form.setErrors({ ...form.errors, weightOz: undefined! }) }}
               onSave={handleSubmit}
               onCancel={() => { setOpen(false); form.reset() }}
             />
-
-            <div className="flex flex-col gap-y-2">
-              <Text size="small" leading="compact" weight="plus">Variant weights</Text>
-              {variants.map((v) => {
-                const w = effectiveWeight(v.weight, productWeight)
-                return (
-                  <div key={v.id} className="flex items-center justify-between">
-                    <Text size="small" leading="compact" className="text-ui-fg-subtle truncate max-w-[60%]">
-                      {v.title ?? v.sku ?? v.id}
-                    </Text>
-                    {w != null
-                      ? <Text size="small" leading="compact">
-                          {w} troy oz{v.weight == null ? " (product default)" : ""}
-                        </Text>
-                      : <Text size="small" leading="compact" className="text-ui-fg-error">not set</Text>
-                    }
-                  </div>
-                )
-              })}
-            </div>
           </Drawer.Body>
 
           <Drawer.Footer>
@@ -306,8 +341,9 @@ const ProductPricingRuleWidget = ({
 }: DetailWidgetProps<HttpTypes.AdminProduct>) => {
   const queryClient = useQueryClient()
   const queryKey = ["product-variant-pricing-rules", product.id]
+  const navigate = useNavigate()
 
-  const productWeight = product.weight
+  const spotPrices = useLiveSpotPrices()
 
   const variantsQueryKey = ["product-variants-for-pricing", product.id]
   const { data: variantsData, isLoading: variantsLoading } = useQuery<{
@@ -315,7 +351,7 @@ const ProductPricingRuleWidget = ({
   }>({
     queryKey: variantsQueryKey,
     queryFn: () =>
-      sdk.client.fetch(`/admin/products/${product.id}/variants?fields=id,title,sku,weight&limit=500`),
+      sdk.client.fetch(`/admin/products/${product.id}/variants?fields=id,title,sku&limit=500`),
   })
 
   const variants = variantsData?.variants ?? []
@@ -363,8 +399,8 @@ const ProductPricingRuleWidget = ({
         </div>
         <SingleVariantCard
           variant={variants[0]}
-          productWeight={productWeight}
           queryKey={["variant-pricing-rule", variants[0].id]}
+          spotPrices={spotPrices}
         />
       </Container>
     )
@@ -382,7 +418,6 @@ const ProductPricingRuleWidget = ({
         </div>
         <BulkAssignDrawer
           variants={variants}
-          productWeight={productWeight}
           productId={product.id}
           onAssigned={() => {
             queryClient.invalidateQueries({ queryKey })
@@ -397,15 +432,32 @@ const ProductPricingRuleWidget = ({
             <Table.HeaderCell>Variant</Table.HeaderCell>
             <Table.HeaderCell>Rule</Table.HeaderCell>
             <Table.HeaderCell>Material</Table.HeaderCell>
-            <Table.HeaderCell>Weight (troy oz)</Table.HeaderCell>
+            <Table.HeaderCell>Weight (oz)</Table.HeaderCell>
+            <Table.HeaderCell>Product Price</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {variants.map((v) => {
             const rule = assignments[v.id]?.pricing_rule ?? null
-            const w = effectiveWeight(v.weight, productWeight)
+            const weight = rule?.weight_oz ?? null
+            const sp = rule ? spotPrices[rule.material] : undefined
+            const finalPrice =
+              rule && sp && weight != null
+                ? computePrice({
+                    weight,
+                    ask: sp.ask,
+                    spreadFactor: Number(rule.spread_factor),
+                    spreadFixed: Number(rule.spread_fixed),
+                    premiumPercentage: Number(rule.premium_percentage),
+                    premiumFixed: Number(rule.premium_fixed),
+                  })
+                : null
             return (
-              <Table.Row key={v.id}>
+              <Table.Row
+                key={v.id}
+                className="cursor-pointer hover:bg-ui-bg-base-hover"
+                onClick={() => navigate(`/products/${product.id}/variants/${v.id}`)}
+              >
                 <Table.Cell>
                   <Text size="small" leading="compact" weight="plus">{v.title ?? v.sku ?? v.id}</Text>
                 </Table.Cell>
@@ -420,11 +472,26 @@ const ProductPricingRuleWidget = ({
                     : <Text size="small" leading="compact" className="text-ui-fg-subtle">—</Text>}
                 </Table.Cell>
                 <Table.Cell>
-                  {w != null
-                    ? <Text size="small" leading="compact">
-                        {w}{v.weight == null ? " (product default)" : ""}
-                      </Text>
-                    : <Text size="small" leading="compact" className="text-ui-fg-error">not set</Text>}
+                  {weight != null
+                    ? <Text size="small" leading="compact">{weight} oz</Text>
+                    : rule
+                      ? <Text size="small" leading="compact" className="text-ui-fg-error">not set</Text>
+                      : <Text size="small" leading="compact" className="text-ui-fg-subtle">—</Text>}
+                </Table.Cell>
+                <Table.Cell>
+                  {!rule ? (
+                    <Text size="small" leading="compact" className="text-ui-fg-subtle">—</Text>
+                  ) : finalPrice != null ? (
+                    <Text size="small" leading="compact" weight="plus">
+                      ${finalPrice.toFixed(2)}
+                    </Text>
+                  ) : sp ? (
+                    <Text size="small" leading="compact" className="text-ui-fg-error">
+                      weight not set
+                    </Text>
+                  ) : (
+                    <Skeleton className="h-4 w-20" />
+                  )}
                 </Table.Cell>
               </Table.Row>
             )

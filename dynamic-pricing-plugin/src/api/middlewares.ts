@@ -13,6 +13,7 @@ export type CreatePricingRuleSchema = z.infer<typeof CreatePricingRuleSchema>
 export const AssignVariantPricingRuleSchema = z.object({
   pricing_rule_id: z.string().min(1),
   material: z.string().min(1),
+  weight_oz: z.number().positive().nullable().optional(),
 })
 export type AssignVariantPricingRuleSchema = z.infer<typeof AssignVariantPricingRuleSchema>
 

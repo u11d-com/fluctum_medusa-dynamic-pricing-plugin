@@ -63,7 +63,7 @@ medusaIntegrationTestRunner({
       })
     }
 
-    async function createProduct(title: string, variants: { title: string; weight?: number }[]) {
+    async function createProduct(title: string, variants: { title: string }[]) {
       const res = await adminPost("/admin/products", {
         title,
         status: "published",
@@ -71,7 +71,6 @@ medusaIntegrationTestRunner({
         variants: variants.map((v) => ({
           title: v.title,
           manage_inventory: false,
-          weight: v.weight,
           options: { Weight: v.title },
           prices: [],
         })),
@@ -177,24 +176,25 @@ medusaIntegrationTestRunner({
         })
         const ruleId = ruleRes.data.pricing_rule.id
 
-        // Create product with weight=2 on the variant
-        const product = await createProduct("2 oz Gold Coin", [{ title: "Default", weight: 2 }])
+        // Create product (weight field is shipping weight in grams, irrelevant for pricing)
+        const product = await createProduct("2 oz Gold Coin", [{ title: "Default" }])
         const variantId = product.variants[0].id
 
-        // Assign rule via product endpoint (bulk-assigns all variants)
+        // Assign rule via product endpoint (bulk-assigns all variants) with weight_oz
         const assignRes = await adminPost(
           `/admin/dynamic-pricing/products/${product.id}/pricing-rule`,
-          { pricing_rule_id: ruleId, material: "XAU" }
+          { pricing_rule_id: ruleId, material: "XAU", weight_oz: 2 }
         )
         expect(assignRes.status).toBe(201)
         expect(assignRes.data.success).toBe(true)
         expect(assignRes.data.results[variantId]).toBe(true)
 
-        // Verify link via variant GET
+        // Verify link via variant GET — weight_oz must be returned
         const getRes = await adminGet(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`)
         expect(getRes.status).toBe(200)
         expect(getRes.data.pricing_rule.id).toBe(ruleId)
         expect(getRes.data.pricing_rule.material).toBe("XAU")
+        expect(Number(getRes.data.pricing_rule.weight_oz)).toBeCloseTo(2)
       })
     })
 
@@ -349,6 +349,47 @@ medusaIntegrationTestRunner({
 
         const getRes = await adminGet(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`)
         expect(getRes.data.pricing_rule).toBeNull()
+      })
+
+      it("stores and returns weight_oz on the link", async () => {
+        const ruleRes = await adminPost("/admin/dynamic-pricing/pricing-rules", { name: "Weight Rule" })
+        const ruleId = ruleRes.data.pricing_rule.id
+
+        const { variants: [{ id: variantId }] } = await createProduct("Weight Test Product", [{ title: "1.5 oz" }])
+
+        // Assign with weight_oz = 1.5
+        const assignRes = await adminPost(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`, {
+          pricing_rule_id: ruleId, material: "XAU", weight_oz: 1.5,
+        })
+        expect(assignRes.status).toBe(201)
+
+        const getRes = await adminGet(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`)
+        expect(getRes.data.pricing_rule).not.toBeNull()
+        expect(getRes.data.pricing_rule.weight_oz).not.toBeNull()
+        expect(Number(getRes.data.pricing_rule.weight_oz)).toBeCloseTo(1.5)
+
+        // Re-assign with different weight_oz — must update
+        const reassignRes = await adminPost(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`, {
+          pricing_rule_id: ruleId, material: "XAU", weight_oz: 3,
+        })
+        expect(reassignRes.status).toBe(201)
+
+        const getRes2 = await adminGet(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`)
+        expect(Number(getRes2.data.pricing_rule.weight_oz)).toBeCloseTo(3)
+      })
+
+      it("allows assigning without weight_oz (null)", async () => {
+        const ruleRes = await adminPost("/admin/dynamic-pricing/pricing-rules", { name: "No Weight Rule" })
+        const ruleId = ruleRes.data.pricing_rule.id
+
+        const { variants: [{ id: variantId }] } = await createProduct("No Weight Product", [{ title: "Default" }])
+
+        await adminPost(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`, {
+          pricing_rule_id: ruleId, material: "XAG",
+        })
+
+        const getRes = await adminGet(`/admin/dynamic-pricing/variants/${variantId}/pricing-rule`)
+        expect(getRes.data.pricing_rule.weight_oz).toBeNull()
       })
 
       it("returns 400 for invalid material", async () => {

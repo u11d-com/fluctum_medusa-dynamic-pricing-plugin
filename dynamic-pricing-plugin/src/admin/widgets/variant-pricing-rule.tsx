@@ -1,6 +1,6 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { DetailWidgetProps, HttpTypes } from "@medusajs/framework/types"
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import {
   Container,
@@ -14,13 +14,80 @@ import {
 } from "@medusajs/ui"
 import { PencilSquare, Trash } from "@medusajs/icons"
 import { sdk } from "../lib/client"
-import { useVariantRule, useRules, useMaterials } from "../hooks"
+import { useVariantRule, useRules, useMaterials, useLiveSpotPrices } from "../hooks"
 import {
-  WeightDisplay,
-  WeightTip,
   RuleAssignForm,
   useRuleAssignState,
+  computePrice,
 } from "../components"
+import type { PricingRuleWithMaterial, SpotPricePayload } from "../types"
+
+// ── Live price display ────────────────────────────────────────────────────────
+
+function LivePriceDisplay({ rule }: { rule: PricingRuleWithMaterial }) {
+  const prices = useLiveSpotPrices()
+  const sp: SpotPricePayload | undefined = prices[rule.material]
+  const weight = rule.weight_oz
+
+  if (!sp) {
+    return (
+      <div className="flex items-center gap-2">
+        <Text size="small" leading="compact" className="text-ui-fg-subtle">
+          Live price
+        </Text>
+        <Skeleton className="h-4 w-24" />
+      </div>
+    )
+  }
+
+  const finalPrice =
+    weight != null
+      ? computePrice({
+          weight,
+          ask: sp.ask,
+          spreadFactor: Number(rule.spread_factor),
+          spreadFixed: Number(rule.spread_fixed),
+          premiumPercentage: Number(rule.premium_percentage),
+          premiumFixed: Number(rule.premium_fixed),
+        })
+      : null
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Text size="small" leading="compact" className="text-ui-fg-subtle">
+          Product price
+        </Text>
+        {finalPrice != null ? (
+          <Text size="small" leading="compact" weight="plus">
+            ${finalPrice.toFixed(2)}
+          </Text>
+        ) : (
+          <Text size="small" leading="compact" className="text-ui-fg-error">
+            weight not set — cannot compute
+          </Text>
+        )}
+      </div>
+      <div className="flex items-center gap-4">
+        <Text size="small" leading="compact" className="text-ui-fg-subtle">Spot</Text>
+        <Text size="small" leading="compact">${sp.price.toFixed(4)}</Text>
+        <div className="flex items-center gap-1">
+          <Text size="small" leading="compact" className="text-ui-fg-subtle">Ask</Text>
+          <Text size="small" leading="compact">${sp.ask.toFixed(4)}</Text>
+        </div>
+        <div className="flex items-center gap-1">
+          <Text size="small" leading="compact" className="text-ui-fg-subtle">Bid</Text>
+          <Text size="small" leading="compact">${sp.bid.toFixed(4)}</Text>
+        </div>
+        <Text size="small" leading="compact" className="text-ui-fg-subtle">
+          {new Date(sp.timestamp).toLocaleTimeString()}
+        </Text>
+      </div>
+    </div>
+  )
+}
+
+// ── Widget ────────────────────────────────────────────────────────────────────
 
 const VariantPricingRuleWidget = ({
   data: variant,
@@ -30,16 +97,6 @@ const VariantPricingRuleWidget = ({
 
   const [editing, setEditing] = useState(false)
 
-  // Fetch parent product weight as fallback
-  const { data: productData } = useQuery<{ product: { weight: number | null } }>({
-    queryKey: ["product-weight", variant.product_id],
-    queryFn: () =>
-      sdk.client.fetch(`/admin/products/${variant.product_id}?fields=weight`),
-    enabled: variant.weight == null && !!variant.product_id,
-    staleTime: 60_000,
-  })
-  const productWeight = productData?.product?.weight ?? null
-
   const { data, isLoading } = useVariantRule(variant.id)
   const rule = data?.pricing_rule ?? null
 
@@ -47,7 +104,11 @@ const VariantPricingRuleWidget = ({
   const { data: configData } = useMaterials(editing)
   const materialOptions = configData?.config.materials ?? []
 
-  const form = useRuleAssignState(rule?.id ?? "", rule?.material ?? "")
+  const form = useRuleAssignState(
+    rule?.id ?? "",
+    rule?.material ?? "",
+    rule?.weight_oz != null ? String(rule.weight_oz) : ""
+  )
 
   const assign = useMutation({
     mutationFn: (body: object) =>
@@ -79,13 +140,18 @@ const VariantPricingRuleWidget = ({
   const openEdit = () => {
     form.setRuleId(rule?.id ?? "")
     form.setMaterial(rule?.material ?? "")
+    form.setWeightOz(rule?.weight_oz != null ? String(rule.weight_oz) : "")
     form.setErrors({})
     setEditing(true)
   }
 
   const handleSave = () => {
     if (!form.validate()) return
-    assign.mutate({ pricing_rule_id: form.ruleId, material: form.material })
+    assign.mutate({
+      pricing_rule_id: form.ruleId,
+      material: form.material,
+      weight_oz: form.weightOzValue(),
+    })
   }
 
   // ── Loading ──
@@ -107,16 +173,17 @@ const VariantPricingRuleWidget = ({
       <Container className="divide-y p-0">
         <div className="px-6 py-4"><Heading level="h2">Dynamic Pricing</Heading></div>
         <div className="px-6 py-4 flex flex-col gap-4">
-          <WeightTip variantWeight={variant.weight} productWeight={productWeight} />
           <RuleAssignForm
             rules={rulesData?.pricing_rules ?? []}
             materials={materialOptions}
             ruleId={form.ruleId}
             material={form.material}
+            weightOz={form.weightOz}
             errors={form.errors}
             isPending={assign.isPending}
             onRuleChange={(v) => { form.setRuleId(v); form.setErrors({ ...form.errors, rule: undefined! }) }}
             onMaterialChange={(v) => { form.setMaterial(v); form.setErrors({ ...form.errors, material: undefined! }) }}
+            onWeightOzChange={(v) => { form.setWeightOz(v); form.setErrors({ ...form.errors, weightOz: undefined! }) }}
             onSave={handleSave}
             onCancel={() => { setEditing(false); form.setErrors({}) }}
           />
@@ -155,11 +222,18 @@ const VariantPricingRuleWidget = ({
           </div>
         </div>
         <div className="px-6 py-4 flex flex-col gap-3">
-          <WeightTip variantWeight={variant.weight} productWeight={productWeight} />
           <div className="flex items-center gap-2">
             <Text size="small" leading="compact" weight="plus">{rule.name}</Text>
             <Badge size="2xsmall" color="blue">{rule.material}</Badge>
-            <WeightDisplay variantWeight={variant.weight} productWeight={productWeight} />
+            {rule.weight_oz != null ? (
+              <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                {rule.weight_oz} oz
+              </Text>
+            ) : (
+              <Text size="small" leading="compact" className="text-ui-fg-error">
+                weight not set
+              </Text>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-x-8 gap-y-1">
             {([
@@ -174,6 +248,7 @@ const VariantPricingRuleWidget = ({
               </div>
             ))}
           </div>
+          <LivePriceDisplay rule={rule} />
         </div>
       </Container>
     )

@@ -5,13 +5,12 @@ import DynamicPricingModule from "../modules/dynamic-pricing"
 /**
  * Links a Medusa ProductVariant to a PricingRule (one-to-one).
  *
- * Extra column on the link table:
- *   - material: spot price symbol (e.g. "XAU", "XAG"), validated against
- *               plugin config at assignment time
- *
- * Weight is intentionally NOT stored here — it lives on the native
- * ProductVariant.weight field (troy oz), editable from the standard
- * Medusa admin variant form.
+ * Extra columns on the link table:
+ *   - material:   spot price symbol (e.g. "XAU", "XAG"), validated against
+ *                 plugin config at assignment time
+ *   - weight_oz:  pricing weight in troy ounces (31.103 g), set explicitly
+ *                 at assignment time. Intentionally separate from
+ *                 ProductVariant.weight which is the shipping weight in grams.
  */
 export default defineLink(
   ProductModule.linkable.productVariant,
@@ -22,6 +21,10 @@ export default defineLink(
         material: {
           type: "text",
           nullable: false,
+        },
+        weight_oz: {
+          type: "float",
+          nullable: true,
         },
       },
     },

@@ -9,7 +9,7 @@ export async function POST(
   req: MedusaRequest<BulkAssignProductPricingRuleSchema>,
   res: MedusaResponse
 ) {
-  const { pricing_rule_id, material } = req.validatedBody
+  const { pricing_rule_id, material, weight_oz } = req.validatedBody
 
   const { materials } = getPluginOptions()
   const upperMaterial = material.toUpperCase()
@@ -35,7 +35,7 @@ export async function POST(
   const results: Record<string, boolean> = {}
   for (const variant of product.variants ?? []) {
     await assignVariantPricingRuleWorkflow(req.scope).run({
-      input: { variant_id: variant.id, pricing_rule_id, material: upperMaterial },
+      input: { variant_id: variant.id, pricing_rule_id, material: upperMaterial, weight_oz: weight_oz ?? null },
     })
     results[variant.id] = true
   }
