@@ -4,3 +4,4 @@ export { resolvePluginOptions, ConfigValidationError } from "./modules/dynamic-p
 export { randomProvider } from "./providers/random/index"
 export { createGoldApiProvider } from "./providers/gold-api/index"
 export type { GoldApiProviderOptions } from "./providers/gold-api/index"
+export { seedProductsWorkflow } from "./workflows/seed-products"
