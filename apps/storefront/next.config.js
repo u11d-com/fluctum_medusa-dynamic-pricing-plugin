@@ -18,14 +18,10 @@ const nextConfig = {
       fullUrl: true,
     },
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
@@ -38,6 +34,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "*.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "jwdkcxwjmzopyijqvodr.supabase.co",
+        pathname: "/storage/v1/object/public/product-images/**",
       },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [

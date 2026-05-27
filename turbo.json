@@ -9,9 +9,6 @@
       "cache": false,
       "persistent": true
     },
-    "start": {
-      "dependsOn": ["^build"]
-    },
     "lint": {
       "outputs": []
     },
@@ -25,9 +22,6 @@
     },
     "test:integration": {
       "cache": false,
-      "outputs": []
-    },
-    "seed": {
       "outputs": []
     }
   }

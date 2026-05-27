@@ -274,30 +274,45 @@ const seedProductsStep = createStep(
     }
 
     // ── Create pricing rules ─────────────────────────────────────────────────
-    const [goldRule] = await dynamicPricingModule.createPricingRules([{
-      name: "Gold Standard",
-      spread_factor: 1.015,
-      spread_fixed: 0,
-      premium_percentage: 0,
-      premium_fixed: 0,
-    }])
-    const [silverRule] = await dynamicPricingModule.createPricingRules([{
-      name: "Silver Standard",
-      spread_factor: 1.02,
-      spread_fixed: 0,
-      premium_percentage: 0,
-      premium_fixed: 0,
-    }])
-    const ruleByMaterial: Record<string, typeof goldRule> = {
-      XAU: goldRule,
-      XAG: silverRule,
+    // Smaller products have larger spreads (higher cost-to-value ratio).
+    // Some products get a premium percentage (collectible/limited).
+    type PricingRuleDef = { name: string; spread_factor: number; spread_fixed: number; premium_percentage: number; premium_fixed: number }
+    const pricingRuleDefs: PricingRuleDef[] = [
+      { name: "Gold Small",    spread_factor: 1.03,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+      { name: "Gold Medium",   spread_factor: 1.02,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+      { name: "Gold Standard", spread_factor: 1.015, spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+      { name: "Gold Bar",      spread_factor: 1.01,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+      { name: "Silver Small",  spread_factor: 1.04,  spread_fixed: 0, premium_percentage: 3, premium_fixed: 0 },
+      { name: "Silver Standard", spread_factor: 1.025, spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+      { name: "Silver Bulk",   spread_factor: 1.015, spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+      { name: "Silver Bar",    spread_factor: 1.02,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
+    ]
+    const createdRules = await dynamicPricingModule.createPricingRules(pricingRuleDefs)
+    const ruleByName: Record<string, (typeof createdRules)[number]> = {}
+    for (const r of createdRules) {
+      ruleByName[r.name] = r
+    }
+
+    function pickRule(material: string, weightOz: number, category: string): string {
+      if (material === "XAU") {
+        if (category === "Gold Bars") return "Gold Bar"
+        if (weightOz <= 0.25) return "Gold Small"
+        if (weightOz <= 0.5) return "Gold Medium"
+        return "Gold Standard"
+      }
+      if (category === "Silver Bars") {
+        if (weightOz >= 100) return "Silver Bulk"
+        return "Silver Bar"
+      }
+      if (weightOz <= 0.5) return "Silver Small"
+      if (weightOz >= 5) return "Silver Bulk"
+      return "Silver Standard"
     }
 
     // ── Create products with variants ────────────────────────────────────────
     const createdProductNames: string[] = []
 
     for (const seed of SEED_PRODUCTS) {
-      const rule = ruleByMaterial[seed.material]
       const weightLabels = seed.variants.map((v) => v.title)
 
       const [product] = await productModule.createProducts([{
@@ -321,14 +336,16 @@ const seedProductsStep = createStep(
         { relations: ["variants"] }
       )
 
-      // Link each variant to the pricing rule with material + weight
+      // Link each variant to the appropriate pricing rule based on weight
       const now = new Date()
       const linkRows = (productWithVariants.variants ?? []).map((variant) => {
         const seedVariant = seed.variants.find((sv) => sv.title === variant.title)
+        const ruleName = pickRule(seed.material, seedVariant?.weight_oz ?? 0, seed.category)
+        const rule = ruleByName[ruleName]
         return {
           id: generateEntityId("", "link"),
           product_variant_id: variant.id,
-          pricing_rule_id: rule.id,
+          pricing_rule_id: rule!.id,
           material: seed.material,
           weight_oz: seedVariant?.weight_oz ?? null,
           created_at: now,
@@ -347,7 +364,7 @@ const seedProductsStep = createStep(
     return new StepResponse({
       success: true,
       created_products: createdProductNames,
-      pricing_rules: [goldRule.name, silverRule.name],
+      pricing_rules: pricingRuleDefs.map((r) => r.name),
       categories: categoryNames,
     })
   }

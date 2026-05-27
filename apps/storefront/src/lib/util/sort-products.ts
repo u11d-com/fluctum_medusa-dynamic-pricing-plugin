@@ -6,10 +6,27 @@ interface MinPricedProduct extends HttpTypes.StoreProduct {
 }
 
 /**
- * Helper function to sort products by price until the store API supports sorting by price
+ * Sort products by material (Gold before Silver), then alphabetically by title.
+ * Material is inferred from the product handle (e.g. "american-gold-eagle" → Gold).
+ */
+export function sortByCategory(
+  products: HttpTypes.StoreProduct[]
+): HttpTypes.StoreProduct[] {
+  return [...products].sort((a, b) => {
+    const aHandle = a.handle ?? ""
+    const bHandle = b.handle ?? ""
+    const aMaterial = aHandle.includes("gold") ? 0 : 1
+    const bMaterial = bHandle.includes("gold") ? 0 : 1
+    if (aMaterial !== bMaterial) return aMaterial - bMaterial
+    return (a.title ?? "").localeCompare(b.title ?? "")
+  })
+}
+
+/**
+ * Helper function to sort products — uses category sort by default.
  * @param products
  * @param sortBy
- * @returns products sorted by price
+ * @returns products sorted by the given strategy
  */
 export function sortProducts(
   products: HttpTypes.StoreProduct[],
@@ -17,34 +34,14 @@ export function sortProducts(
 ): HttpTypes.StoreProduct[] {
   const sortedProducts = products as MinPricedProduct[]
 
-  if (["price_asc", "price_desc"].includes(sortBy)) {
-    // Precompute the minimum price for each product
-    sortedProducts.forEach((product) => {
-      if (product.variants && product.variants.length > 0) {
-        product._minPrice = Math.min(
-          ...product.variants.map(
-            (variant) => variant?.calculated_price?.calculated_amount || 0
-          )
-        )
-      } else {
-        product._minPrice = Infinity
-      }
-    })
-
-    // Sort products based on the precomputed minimum prices
-    sortedProducts.sort((a, b) => {
-      const diff = a._minPrice! - b._minPrice!
-      return sortBy === "price_asc" ? diff : -diff
-    })
-  }
-
   if (sortBy === "created_at") {
     sortedProducts.sort((a, b) => {
       return (
         new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
       )
     })
+    return sortedProducts
   }
 
-  return sortedProducts
+  return sortByCategory(sortedProducts)
 }

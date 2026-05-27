@@ -1,27 +1,23 @@
 {
   "name": "dynamic-pricing",
-  "private": false,
+  "private": true,
   "packageManager": "npm@11.6.2",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "npm -r dev",
-    "build": "npm -r build",
-    "start": "turbo start",
-    "lint": "turbo lint",
+    "dev": "turbo run dev --filter=@dtc/backend --filter=@dtc/storefront --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "npm --workspaces --if-present run test:unit",
     "test:integration": "npm -w @dtc/backend run test:integration",
-    "backend:seed": "turbo seed --filter=@dtc/backend",
-    "backend:dev": "turbo dev --filter=@dtc/backend",
-    "storefront:dev": "turbo dev --filter=@dtc/storefront"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.0.5",
-      "@types/react-dom": "19.0.5"
-    }
+    "backend:migrate": "npm -w @dtc/backend run migrate",
+    "backend:seed": "npm -w @dtc/backend run seed",
+    "backend:dev": "npm -w @dtc/backend run dev",
+    "backend:create-admin": "npm -w @dtc/backend run create-admin",
+    "storefront:dev": "npm -w @dtc/storefront run dev",
+    "plugin:build": "npm -w @u11d/dynamic-pricing-plugin run build && npx --yes yalc push"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
@@ -33,6 +29,8 @@
     "dynamic-pricing-plugin"
   ],
   "overrides": {
+    "@types/react": "19.0.5",
+    "@types/react-dom": "19.0.5",
     "ajv": "^8.0.0"
   },
   "dependencies": {

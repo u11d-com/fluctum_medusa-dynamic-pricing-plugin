@@ -1,5 +1,7 @@
 import { listProductsWithSort } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { listSpotPrices } from "@lib/data/spot-prices"
+import { getVariantPricingData } from "@lib/data/variant-pricing"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -64,6 +66,18 @@ export default async function PaginatedProducts({
     countryCode,
   })
 
+  const allVariantIds = products
+    .flatMap((p) => p.variants ?? [])
+    .map((v) => v.id)
+    .filter(Boolean) as string[]
+
+  const [spotPrices, pricingData] = await Promise.all([
+    listSpotPrices().catch(() => []),
+    allVariantIds.length > 0
+      ? getVariantPricingData(allVariantIds).catch(() => ({}))
+      : Promise.resolve({}),
+  ])
+
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 
   return (
@@ -75,7 +89,7 @@ export default async function PaginatedProducts({
         {products.map((p) => {
           return (
             <li key={p.id}>
-              <ProductPreview product={p} region={region} />
+              <ProductPreview product={p} region={region} spotPrices={spotPrices} pricingData={pricingData} />
             </li>
           )
         })}
