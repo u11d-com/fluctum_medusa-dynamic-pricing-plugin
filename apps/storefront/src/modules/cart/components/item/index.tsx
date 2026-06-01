@@ -101,8 +101,8 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
             <div className="flex items-center border border-gray-200 rounded">
               <button
                 className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30"
-                disabled={updating || item.quantity <= 1}
-                onClick={() => changeQuantity(item.quantity - 1)}
+                disabled={updating || parseInt(inputValue, 10) <= 1}
+                onClick={() => changeQuantity(parseInt(inputValue, 10) - 1)}
                 data-testid="product-decrement-button"
               >
                 −
@@ -121,7 +121,7 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
               <button
                 className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
                 disabled={updating}
-                onClick={() => changeQuantity(item.quantity + 1)}
+                onClick={() => changeQuantity(parseInt(inputValue, 10) + 1)}
                 data-testid="product-increment-button"
               >
                 +

@@ -12,10 +12,10 @@
     "build": "next build",
     "start": "next start -p 8000",
     "lint": "next lint",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@u11d/dynamic-pricing-plugin": "*",
     "@headlessui/react": "^2.2.0",
     "@medusajs/icons": "2.15.2",
     "@medusajs/js-sdk": "2.15.2",
@@ -23,6 +23,7 @@
     "@radix-ui/react-accordion": "^1.2.3",
     "@stripe/react-stripe-js": "^5.3.0",
     "@stripe/stripe-js": "^8.2.0",
+    "@u11d/dynamic-pricing-plugin": "*",
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
     "next": "^16.2.6",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@medusajs/types": "2.15.2",
+    "@playwright/test": "^1.60.0",
     "@types/lodash": "^4.14.195",
     "@types/node": "^20.0.0",
     "@types/pg": "^8.11.0",
