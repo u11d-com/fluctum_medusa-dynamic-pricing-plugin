@@ -26,6 +26,7 @@ export default defineLink(
           type: "float",
           nullable: true,
         },
+
       },
     },
   }

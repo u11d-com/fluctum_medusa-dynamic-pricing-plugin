@@ -92,6 +92,27 @@ export default function ProductActions({
     router.replace(pathname + "?" + params.toString())
   }, [selectedVariant, isValidVariant])
 
+  // Sort option values by variant weight (ascending) for the "Weight" option
+  const sortedOptions = useMemo(() => {
+    if (!product.options?.length) return product.options ?? []
+
+    return product.options.map((option) => {
+      if (option.title !== "Weight") return option
+
+      const weightMap = new Map<string, number>()
+      for (const v of product.variants ?? []) {
+        const optVal = v.options?.find((o) => o.option_id === option.id)?.value
+        if (optVal && v.weight != null) weightMap.set(optVal, v.weight)
+      }
+
+      const sortedValues = [...(option.values ?? [])].sort((a, b) => {
+        return (weightMap.get(a.value) ?? 0) - (weightMap.get(b.value) ?? 0)
+      })
+
+      return { ...option, values: sortedValues }
+    })
+  }, [product.options, product.variants])
+
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
     // If we don't manage inventory, we can always add to cart
@@ -141,7 +162,7 @@ export default function ProductActions({
         <div>
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
-              {(product.options || []).map((option) => {
+              {(sortedOptions || []).map((option) => {
                 return (
                   <div key={option.id}>
                     <OptionSelect
@@ -161,6 +182,16 @@ export default function ProductActions({
         </div>
 
         <ProductPrice product={product} variant={selectedVariant} />
+
+        {selectedVariant && (
+          <div className="text-small-regular text-ui-fg-muted">
+            {selectedVariant.manage_inventory && selectedVariant.inventory_quantity != null
+              ? (selectedVariant.inventory_quantity > 0
+                  ? `${selectedVariant.inventory_quantity} in stock`
+                  : "Out of stock")
+              : "In stock"}
+          </div>
+        )}
 
         <Button
           onClick={handleAddToCart}

@@ -3,46 +3,68 @@
 import { Table, Text, clx } from "@modules/common/components/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import CartItemSelect from "@modules/cart/components/cart-item-select"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
-import LineItemPrice from "@modules/common/components/line-item-price"
-import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import ItemPrice from "./item-price"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
+  cart?: HttpTypes.StoreCart
   type?: "full" | "preview"
   currencyCode: string
+  lockedPrice?: { unit_price: number; total: number } | null
 }
 
-const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
+const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [inputValue, setInputValue] = useState<string>(String(item.quantity))
+
+  useEffect(() => {
+    setInputValue(String(item.quantity))
+  }, [item.quantity])
 
   const changeQuantity = async (quantity: number) => {
+    const clamped = Math.max(1, quantity)
+    setInputValue(String(clamped))
     setError(null)
     setUpdating(true)
 
     await updateLineItem({
       lineId: item.id,
-      quantity,
+      quantity: clamped,
     })
       .catch((err) => {
         setError(err.message)
+        setInputValue(String(item.quantity))
       })
       .finally(() => {
         setUpdating(false)
       })
   }
 
-  // TODO: Update this to grab the actual max inventory
-  const maxQtyFromInventory = 10
-  const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
+  const commitQuantity = () => {
+    const parsed = parseInt(inputValue, 10)
+    if (isNaN(parsed) || parsed < 1) {
+      setInputValue(String(item.quantity))
+      return
+    }
+    if (parsed !== item.quantity) {
+      changeQuantity(parsed)
+    } else {
+      setInputValue(String(item.quantity))
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur()
+    }
+  }
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
@@ -76,67 +98,50 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         <Table.Cell>
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
-            <CartItemSelect
-              value={item.quantity}
-              onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
-              data-testid="product-select-button"
-            >
-              {/* TODO: Update this with the v2 way of managing inventory */}
-              {Array.from(
-                {
-                  length: Math.min(maxQuantity, 10),
-                },
-                (_, i) => (
-                  <option value={i + 1} key={i}>
-                    {i + 1}
-                  </option>
-                )
-              )}
-
-              <option value={1} key={1}>
-                1
-              </option>
-            </CartItemSelect>
-            {updating && <Spinner />}
+            <div className="flex items-center border border-gray-200 rounded">
+              <button
+                className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30"
+                disabled={updating || item.quantity <= 1}
+                onClick={() => changeQuantity(item.quantity - 1)}
+                data-testid="product-decrement-button"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min={1}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onBlur={commitQuantity}
+                onKeyDown={handleKeyDown}
+                disabled={updating}
+                className="w-10 h-8 flex items-center justify-center text-small-regular border-x border-gray-200 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                data-testid="product-quantity"
+              />
+              <button
+                className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
+                disabled={updating}
+                onClick={() => changeQuantity(item.quantity + 1)}
+                data-testid="product-increment-button"
+              >
+                +
+              </button>
+            </div>
+            {updating && (
+              <span className="text-ui-fg-muted text-small-regular">...</span>
+            )}
           </div>
           <ErrorMessage error={error} data-testid="product-error-message" />
         </Table.Cell>
       )}
 
-      {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
-          <LineItemUnitPrice
-            item={item}
-            style="tight"
-            currencyCode={currencyCode}
-          />
-        </Table.Cell>
-      )}
-
-      <Table.Cell className="!pr-0">
-        <span
-          className={clx("!pr-0", {
-            "flex flex-col items-end h-full justify-center": type === "preview",
-          })}
-        >
-          {type === "preview" && (
-            <span className="flex gap-x-1 ">
-              <Text className="text-ui-fg-muted">{item.quantity}x </Text>
-              <LineItemUnitPrice
-                item={item}
-                style="tight"
-                currencyCode={currencyCode}
-              />
-            </span>
-          )}
-          <LineItemPrice
-            item={item}
-            style="tight"
-            currencyCode={currencyCode}
-          />
-        </span>
-      </Table.Cell>
+      <ItemPrice
+        item={item}
+        type={type}
+        currencyCode={currencyCode}
+        lockedPrice={lockedPrice}
+        cart={cart}
+      />
     </Table.Row>
   )
 }

@@ -5,7 +5,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "../thumbnail"
 import { listSpotPrices } from "@lib/data/spot-prices"
 import { getVariantPricingData, type VariantPricingData } from "@lib/data/variant-pricing"
-import { computeFinalPrice } from "@lib/util/price-formula"
+import { computeFinalPrice } from "@u11d/dynamic-pricing-plugin/utils/price-formula"
 import { convertToLocale } from "@lib/util/money"
 import PreviewPrice from "./preview-price.client"
 

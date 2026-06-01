@@ -24,7 +24,7 @@ import { getLocale } from "./locale-actions"
 export async function retrieveCart(cartId?: string, fields?: string) {
   const id = cartId || (await getCartId())
   fields ??=
-    "*items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name"
+    "*items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +shipping_methods.name"
 
   if (!id) {
     return null
@@ -255,84 +255,6 @@ export async function initiatePaymentSession(
     .catch(medusaError)
 }
 
-export async function applyPromotions(codes: string[]) {
-  const cartId = await getCartId()
-
-  if (!cartId) {
-    throw new Error("No existing cart found")
-  }
-
-  const headers = {
-    ...(await getAuthHeaders()),
-  }
-
-  return sdk.store.cart
-    .update(cartId, { promo_codes: codes }, {}, headers)
-    .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
-    })
-    .catch(medusaError)
-}
-
-export async function applyGiftCard(code: string) {
-  //   const cartId = getCartId()
-  //   if (!cartId) return "No cartId cookie found"
-  //   try {
-  //     await updateCart(cartId, { gift_cards: [{ code }] }).then(() => {
-  //       revalidateTag("cart")
-  //     })
-  //   } catch (error: any) {
-  //     throw error
-  //   }
-}
-
-export async function removeDiscount(code: string) {
-  // const cartId = getCartId()
-  // if (!cartId) return "No cartId cookie found"
-  // try {
-  //   await deleteDiscount(cartId, code)
-  //   revalidateTag("cart")
-  // } catch (error: any) {
-  //   throw error
-  // }
-}
-
-export async function removeGiftCard(
-  codeToRemove: string,
-  giftCards: any[]
-  // giftCards: GiftCard[]
-) {
-  //   const cartId = getCartId()
-  //   if (!cartId) return "No cartId cookie found"
-  //   try {
-  //     await updateCart(cartId, {
-  //       gift_cards: [...giftCards]
-  //         .filter((gc) => gc.code !== codeToRemove)
-  //         .map((gc) => ({ code: gc.code })),
-  //     }).then(() => {
-  //       revalidateTag("cart")
-  //     })
-  //   } catch (error: any) {
-  //     throw error
-  //   }
-}
-
-export async function submitPromotionForm(
-  currentState: unknown,
-  formData: FormData
-) {
-  const code = formData.get("code") as string
-  try {
-    await applyPromotions([code])
-  } catch (e: any) {
-    return e.message
-  }
-}
-
 // TODO: Pass a POJO instead of a form entity here
 export async function setAddresses(currentState: unknown, formData: FormData) {
   try {
@@ -386,8 +308,48 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
   )
 }
 
+type LockPricesResult = {
+  locks: { variant_id: string; unit_price: number; quantity: number; material: string }[]
+  expires_at: string
+}
+
+/**
+ * Locks (or reuses existing locks) for cart items.
+ * When force=false (default): reuses existing valid locks if they exist for all items.
+ * When force=true: deletes old locks and creates fresh ones.
+ * Returns lock info including the expiry timestamp.
+ */
+export async function lockCartPrices(cartId: string, force = false): Promise<LockPricesResult> {
+  const baseUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+  const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  }
+  if (publishableKey) {
+    headers["x-publishable-api-key"] = publishableKey
+  }
+
+  const url = `${baseUrl}/store/dynamic-pricing/carts/${cartId}/price-lock${force ? "?force=true" : ""}`
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    cache: "no-store",
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "")
+    throw new Error(`Failed to lock prices: ${res.status} ${text}`)
+  }
+
+  return res.json()
+}
+
 /**
  * Places an order for a cart. If no cart ID is provided, it will use the cart ID from the cookies.
+ * Does NOT re-lock prices — prices are already locked on checkout entry
+ * (via CheckoutSummary useEffect) and the validate hook checks lock validity
+ * before completing the cart.
  * @param cartId - optional - The ID of the cart to place an order for.
  * @returns The cart object if the order was successful, or null if not.
  */

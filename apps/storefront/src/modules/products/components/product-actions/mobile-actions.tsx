@@ -52,6 +52,27 @@ const MobileActions: React.FC<MobileActionsProps> = ({
 
   const isSimple = isSimpleProduct(product)
 
+  // Sort option values by variant weight (ascending) for the "Weight" option
+  const sortedOptions = useMemo(() => {
+    if (!product.options?.length) return product.options ?? []
+
+    return product.options.map((option) => {
+      if (option.title !== "Weight") return option
+
+      const weightMap = new Map<string, number>()
+      for (const v of product.variants ?? []) {
+        const optVal = v.options?.find((o) => o.option_id === option.id)?.value
+        if (optVal && v.weight != null) weightMap.set(optVal, v.weight)
+      }
+
+      const sortedValues = [...(option.values ?? [])].sort((a, b) => {
+        return (weightMap.get(a.value) ?? 0) - (weightMap.get(b.value) ?? 0)
+      })
+
+      return { ...option, values: sortedValues }
+    })
+  }, [product.options, product.variants])
+
   return (
     <>
       <div
@@ -174,7 +195,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <div className="bg-white px-6 py-12">
                     {(product.variants?.length ?? 0) > 1 && (
                       <div className="flex flex-col gap-y-6">
-                        {(product.options || []).map((option) => {
+                        {(sortedOptions || []).map((option) => {
                           return (
                             <div key={option.id}>
                               <OptionSelect

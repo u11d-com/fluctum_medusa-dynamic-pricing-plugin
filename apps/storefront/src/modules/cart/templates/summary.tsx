@@ -1,12 +1,13 @@
 "use client"
 
 import { Button, Heading } from "@modules/common/components/ui"
-
 import CartTotals from "@modules/common/components/cart-totals"
 import Divider from "@modules/common/components/divider"
-import DiscountCode from "@modules/checkout/components/discount-code"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useCartPricing } from "@lib/hooks/use-cart-pricing"
+import { lockCartPrices } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
+import { useRouter, useParams } from "next/navigation"
+import { useState } from "react"
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart
@@ -23,22 +24,44 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 }
 
 const Summary = ({ cart }: SummaryProps) => {
+  const { subtotal: dynamicSubtotal } = useCartPricing(cart)
+  const router = useRouter()
+  const params = useParams()
+  const [isLocking, setIsLocking] = useState(false)
   const step = getCheckoutStep(cart)
+
+  const dynamicTotal = dynamicSubtotal > 0
+    ? dynamicSubtotal + (cart.shipping_subtotal ?? 0) + (cart.tax_total ?? 0)
+    : undefined
+
+  const handleCheckout = async () => {
+    if (!cart.id) return
+    setIsLocking(true)
+
+    try {
+      await lockCartPrices(cart.id, true)
+      const countryCode = params?.countryCode as string
+      router.push(`/${countryCode}/checkout?step=${step}`)
+    } catch {
+      setIsLocking(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-y-4">
       <Heading level="h2" className="text-[2rem] leading-[2.75rem]">
         Summary
       </Heading>
-      <DiscountCode cart={cart} />
       <Divider />
-      <CartTotals totals={cart} />
-      <LocalizedClientLink
-        href={"/checkout?step=" + step}
+      <CartTotals totals={cart} subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : undefined} totalOverride={dynamicTotal} />
+      <Button
+        className="w-full h-10"
+        onClick={handleCheckout}
+        disabled={isLocking}
         data-testid="checkout-button"
       >
-        <Button className="w-full h-10">Go to checkout</Button>
-      </LocalizedClientLink>
+        {isLocking ? "Locking prices..." : "Go to checkout"}
+      </Button>
     </div>
   )
 }

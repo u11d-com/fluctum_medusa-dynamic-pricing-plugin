@@ -3,6 +3,7 @@ import { SqlEntityManager } from "@mikro-orm/knex"
 import { Knex } from "knex"
 import SpotPrice from "./models/spot-price"
 import PricingRule from "./models/pricing-rule"
+import CartPriceLock from "./models/cart-price-lock"
 
 type SpotPriceRow = {
   id: string
@@ -22,6 +23,7 @@ type ServiceContainer = {
 class DynamicPricingModuleService extends MedusaService({
   SpotPrice,
   PricingRule,
+  CartPriceLock,
 }) {
   private readonly manager_: SqlEntityManager
 
@@ -34,13 +36,6 @@ class DynamicPricingModuleService extends MedusaService({
     return this.manager_.getKnex()
   }
 
-  /**
-   * Returns the most recent SpotPrice row for each distinct material using a
-   * single DISTINCT ON query.
-   *
-   * With the composite (material, created_at DESC) index this is an
-   * index-only scan — O(distinct materials), not O(total rows).
-   */
   async getLatestSpotPrices(materials?: string[]): Promise<SpotPriceRow[]> {
     const knex = this.manager_.getKnex()
 
@@ -61,13 +56,17 @@ class DynamicPricingModuleService extends MedusaService({
 
     const rows: SpotPriceRow[] = await query
 
-    // Knex returns numeric columns as strings from PostgreSQL
     return rows.map((row) => ({
       ...row,
       price: Number(row.price),
       ask: Number(row.ask),
       bid: Number(row.bid),
     }))
+  }
+
+  async deleteCartPriceLocksByCart(cartId: string): Promise<void> {
+    const knex = this.manager_.getKnex()
+    await knex("cart_price_lock").where("cart_id", cartId).delete()
   }
 }
 

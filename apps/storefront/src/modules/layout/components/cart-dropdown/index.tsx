@@ -14,6 +14,7 @@ import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
+import { useCartPricing } from "@lib/hooks/use-cart-pricing"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
@@ -22,6 +23,7 @@ const CartDropdown = ({
 }: {
   cart?: HttpTypes.StoreCart | null
 }) => {
+  const { itemPrices, subtotal: dynamicSubtotal } = useCartPricing(cartState ?? null)
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
     undefined
   )
@@ -35,7 +37,7 @@ const CartDropdown = ({
       return acc + item.quantity
     }, 0) || 0
 
-  const subtotal = cartState?.subtotal ?? 0
+  const subtotal = dynamicSubtotal > 0 ? dynamicSubtotal : (cartState?.subtotal ?? 0)
   const itemRef = useRef<number>(totalItems || 0)
 
   const timedOpen = () => {
@@ -159,6 +161,7 @@ const CartDropdown = ({
                                   item={item}
                                   style="tight"
                                   currencyCode={cartState.currency_code}
+                                  price={itemPrices[item.id]?.total}
                                 />
                               </div>
                             </div>

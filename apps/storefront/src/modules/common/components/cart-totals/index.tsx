@@ -11,27 +11,29 @@ type CartTotalsProps = {
     currency_code: string
     item_subtotal?: number | null
     shipping_subtotal?: number | null
-    discount_subtotal?: number | null
   }
+  subtotalOverride?: number
+  totalOverride?: number
 }
 
-const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
+const CartTotals: React.FC<CartTotalsProps> = ({ totals, subtotalOverride, totalOverride }) => {
   const {
     currency_code,
     total,
     tax_total,
     item_subtotal,
     shipping_subtotal,
-    discount_subtotal,
   } = totals
+
+  const displaySubtotal = subtotalOverride ?? item_subtotal ?? 0
 
   return (
     <div>
       <div className="flex flex-col gap-y-2 txt-medium text-ui-fg-subtle ">
         <div className="flex items-center justify-between">
           <span>Subtotal (excl. shipping and taxes)</span>
-          <span data-testid="cart-subtotal" data-value={item_subtotal || 0}>
-            {convertToLocale({ amount: item_subtotal ?? 0, currency_code })}
+          <span data-testid="cart-subtotal" data-value={displaySubtotal}>
+            {convertToLocale({ amount: displaySubtotal, currency_code })}
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -40,22 +42,6 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
             {convertToLocale({ amount: shipping_subtotal ?? 0, currency_code })}
           </span>
         </div>
-        {!!discount_subtotal && (
-          <div className="flex items-center justify-between">
-            <span>Discount</span>
-            <span
-              className="text-ui-fg-interactive"
-              data-testid="cart-discount"
-              data-value={discount_subtotal || 0}
-            >
-              -{" "}
-              {convertToLocale({
-                amount: discount_subtotal ?? 0,
-                currency_code,
-              })}
-            </span>
-          </div>
-        )}
         <div className="flex justify-between">
           <span className="flex gap-x-1 items-center ">Taxes</span>
           <span data-testid="cart-taxes" data-value={tax_total || 0}>
@@ -69,9 +55,9 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
         <span
           className="txt-xlarge-plus"
           data-testid="cart-total"
-          data-value={total || 0}
+          data-value={(totalOverride ?? total) || 0}
         >
-          {convertToLocale({ amount: total ?? 0, currency_code })}
+          {convertToLocale({ amount: totalOverride ?? total ?? 0, currency_code })}
         </span>
       </div>
       <div className="h-px w-full border-b border-gray-200 mt-4" />

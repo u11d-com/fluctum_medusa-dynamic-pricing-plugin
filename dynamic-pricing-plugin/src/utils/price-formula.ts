@@ -38,5 +38,6 @@ export function computeFinalPrice(factors: PricingFactors): number {
 
   const base = weight * spotPrice * spreadFactor * currencyConversion
   const withPremiumPct = base * (1 + premiumPercentage / 100)
-  return withPremiumPct + spreadFixed + premiumFixed
+  const raw = withPremiumPct + spreadFixed + premiumFixed
+  return Math.round(raw * 100) / 100
 }

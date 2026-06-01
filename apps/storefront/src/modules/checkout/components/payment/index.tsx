@@ -54,12 +54,8 @@ const Payment = ({
     }
   }
 
-  const paidByGiftcard = !!(
-    (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
-  )
-
   const paymentReady =
-    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) || paidByGiftcard
+    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0)
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -141,7 +137,7 @@ const Payment = ({
       </div>
       <div>
         <div className={isOpen ? "block" : "hidden"}>
-          {!paidByGiftcard && availablePaymentMethods?.length && (
+          {availablePaymentMethods?.length && (
             <>
               <RadioGroup
                 value={selectedPaymentMethod}
@@ -171,20 +167,6 @@ const Payment = ({
             </>
           )}
 
-          {paidByGiftcard && (
-            <div className="flex flex-col w-1/3">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
-              </Text>
-              <Text
-                className="txt-medium text-ui-fg-subtle"
-                data-testid="payment-method-summary"
-              >
-                Gift card
-              </Text>
-            </div>
-          )}
-
           <ErrorMessage
             error={error}
             data-testid="payment-method-error-message"
@@ -197,7 +179,7 @@ const Payment = ({
             isLoading={isLoading}
             disabled={
               (isStripeLike(selectedPaymentMethod) && !cardComplete) ||
-              (!selectedPaymentMethod && !paidByGiftcard)
+              !selectedPaymentMethod
             }
             data-testid="submit-payment-button"
           >
@@ -242,18 +224,6 @@ const Payment = ({
                   </Text>
                 </div>
               </div>
-            </div>
-          ) : paidByGiftcard ? (
-            <div className="flex flex-col w-1/3">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
-              </Text>
-              <Text
-                className="txt-medium text-ui-fg-subtle"
-                data-testid="payment-method-summary"
-              >
-                Gift card
-              </Text>
             </div>
           ) : null}
         </div>

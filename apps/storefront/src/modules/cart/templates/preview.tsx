@@ -9,9 +9,10 @@ import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 
 type ItemsTemplateProps = {
   cart: HttpTypes.StoreCart
+  lockedPrices?: Record<string, { unit_price: number; total: number }> | null
 }
 
-const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
+const ItemsPreviewTemplate = ({ cart, lockedPrices }: ItemsTemplateProps) => {
   const items = cart.items
   const hasOverflow = items && items.length > 4
 
@@ -36,6 +37,7 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
                       item={item}
                       type="preview"
                       currencyCode={cart.currency_code}
+                      lockedPrice={lockedPrices?.[item.id]}
                     />
                   )
                 })

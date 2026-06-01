@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { generateEntityId } from "@medusajs/framework/utils"
 import { LINK_TABLE, getLinkKnex } from "./link-table"
+import type { LinkRow } from "./link-row"
 
 export type UpsertVariantLinkStepInput = {
   variant_id: string
@@ -35,6 +36,7 @@ export const upsertVariantLinkStep = createStep(
       pricing_rule_id: input.pricing_rule_id,
       material: input.material,
       weight_oz: input.weight_oz,
+
       created_at: now,
       updated_at: now,
       deleted_at: null,
@@ -42,7 +44,7 @@ export const upsertVariantLinkStep = createStep(
 
     return new StepResponse(null, existing)
   },
-  async (existing: any[], { container }) => {
+  async (existing: LinkRow[], { container }) => {
     if (!existing?.length) return
     const knex = getLinkKnex(container)
     await knex(LINK_TABLE).where({ product_variant_id: existing[0].product_variant_id }).delete()

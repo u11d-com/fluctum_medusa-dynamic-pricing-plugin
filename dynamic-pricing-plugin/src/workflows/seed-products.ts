@@ -1,6 +1,6 @@
 import { createStep, StepResponse, createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
-import { Modules } from "@medusajs/framework/utils"
-import { IProductModuleService } from "@medusajs/types"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { IProductModuleService, ProductVariantDTO } from "@medusajs/types"
 import DynamicPricingModuleService from "../modules/dynamic-pricing/service"
 import { DYNAMIC_PRICING_MODULE } from "../modules/dynamic-pricing"
 import { getLinkKnex, LINK_TABLE } from "./steps/link-table"
@@ -24,6 +24,12 @@ const IMAGES = {
   goldBritannia: [
     "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1747767682052-rm_gold_brit_1varies_1oz_rev_0.5x.png",
   ],
+  goldBarRand: [
+    "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1750119111120-AU1BARRAND_1.png",
+  ],
+  goldBarValcambi: [
+    "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1749508250789-AU1.6705VALCAMBI_01.png",
+  ],
   silverEagle: [
     "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1753278066306-AG1USE-T2-rev.png",
   ],
@@ -33,6 +39,12 @@ const IMAGES = {
   silverKrugerrand: [
     "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1747773560395-AG1KR-1-rev.png",
   ],
+  silverBarPamp: [
+    "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1747771385591-AG10BARPAMP-single.png",
+  ],
+  silverBarValcambi: [
+    "https://jwdkcxwjmzopyijqvodr.supabase.co/storage/v1/object/public/product-images/1748442100994-AG32.15BARVALCAMBI-noSerial.jpg",
+  ],
 }
 
 // ── Seed data ──────────────────────────────────────────────────────────────────
@@ -40,6 +52,7 @@ const IMAGES = {
 type SeedVariant = {
   title: string
   weight_oz: number
+  year: string
 }
 
 type SeedProduct = {
@@ -60,19 +73,19 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldEagle,
     variants: [
-      { title: "1/10 oz", weight_oz: 0.1 },
-      { title: "1/4 oz", weight_oz: 0.25 },
-      { title: "1/2 oz", weight_oz: 0.5 },
-      { title: "1 oz", weight_oz: 1 },
+      { title: "1/10 oz", weight_oz: 0.1, year: "2024" },
+      { title: "1/4 oz", weight_oz: 0.25, year: "2025" },
+      { title: "1/2 oz", weight_oz: 0.5, year: "2026" },
+      { title: "1 oz", weight_oz: 1, year: "Random" },
     ],
   },
   {
-    title: "American Gold Buffalo",
+    title: "1 oz 2026 American Gold Buffalo",
     subtitle: "US Mint, 99.99% pure gold",
     material: "XAU",
     category: "Gold Coins",
     images: IMAGES.goldBuffalo,
-    variants: [{ title: "1 oz", weight_oz: 1 }],
+    variants: [{ title: "1 oz 2026", weight_oz: 1, year: "2026" }],
   },
   {
     title: "Canadian Gold Maple Leaf",
@@ -81,10 +94,10 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldMaple,
     variants: [
-      { title: "1/10 oz", weight_oz: 0.1 },
-      { title: "1/4 oz", weight_oz: 0.25 },
-      { title: "1/2 oz", weight_oz: 0.5 },
-      { title: "1 oz", weight_oz: 1 },
+      { title: "1/10 oz", weight_oz: 0.1, year: "2024" },
+      { title: "1/4 oz", weight_oz: 0.25, year: "2025" },
+      { title: "1/2 oz", weight_oz: 0.5, year: "2026" },
+      { title: "1 oz", weight_oz: 1, year: "Random" },
     ],
   },
   {
@@ -94,10 +107,10 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldKrugerrand,
     variants: [
-      { title: "1/10 oz", weight_oz: 0.1 },
-      { title: "1/4 oz", weight_oz: 0.25 },
-      { title: "1/2 oz", weight_oz: 0.5 },
-      { title: "1 oz", weight_oz: 1 },
+      { title: "1/10 oz", weight_oz: 0.1, year: "2024" },
+      { title: "1/4 oz", weight_oz: 0.25, year: "2025" },
+      { title: "1/2 oz", weight_oz: 0.5, year: "2026" },
+      { title: "1 oz", weight_oz: 1, year: "Random" },
     ],
   },
   {
@@ -107,10 +120,10 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldBritannia,
     variants: [
-      { title: "1/10 oz", weight_oz: 0.1 },
-      { title: "1/4 oz", weight_oz: 0.25 },
-      { title: "1/2 oz", weight_oz: 0.5 },
-      { title: "1 oz", weight_oz: 1 },
+      { title: "1/10 oz", weight_oz: 0.1, year: "2024" },
+      { title: "1/4 oz", weight_oz: 0.25, year: "2025" },
+      { title: "1/2 oz", weight_oz: 0.5, year: "2026" },
+      { title: "1 oz", weight_oz: 1, year: "Random" },
     ],
   },
   // ── Gold Bars ──
@@ -119,13 +132,13 @@ const SEED_PRODUCTS: SeedProduct[] = [
     subtitle: "Swiss refinery, 99.99% pure gold, minted",
     material: "XAU",
     category: "Gold Bars",
-    images: IMAGES.goldBritannia,
+    images: IMAGES.goldBarValcambi,
     variants: [
-      { title: "1 g", weight_oz: 0.03215 },
-      { title: "5 g", weight_oz: 0.16075 },
-      { title: "10 g", weight_oz: 0.3215 },
-      { title: "1 oz", weight_oz: 1 },
-      { title: "100 g", weight_oz: 3.215 },
+      { title: "1 g", weight_oz: 0.03215, year: "2025" },
+      { title: "5 g", weight_oz: 0.16075, year: "2026" },
+      { title: "10 g", weight_oz: 0.3215, year: "Random" },
+      { title: "1 oz", weight_oz: 1, year: "2026" },
+      { title: "100 g", weight_oz: 3.215, year: "Random" },
     ],
   },
   {
@@ -133,56 +146,56 @@ const SEED_PRODUCTS: SeedProduct[] = [
     subtitle: "Royal Canadian Mint, 99.99% pure gold",
     material: "XAU",
     category: "Gold Bars",
-    images: IMAGES.goldBritannia,
+    images: IMAGES.goldBarRand,
     variants: [
-      { title: "1 oz", weight_oz: 1 },
-      { title: "10 oz", weight_oz: 10 },
+      { title: "1 oz", weight_oz: 1, year: "2025" },
+      { title: "10 oz", weight_oz: 10, year: "2026" },
     ],
   },
   // ── Silver Coins ──
   {
-    title: "American Silver Eagle",
+    title: "1 oz 2026 American Silver Eagle",
     subtitle: "US Mint bullion coin, 99.9% pure silver",
     material: "XAG",
     category: "Silver Coins",
     images: IMAGES.silverEagle,
-    variants: [{ title: "1 oz", weight_oz: 1 }],
+    variants: [{ title: "1 oz 2026", weight_oz: 1, year: "2026" }],
   },
   {
-    title: "Canadian Silver Maple Leaf",
+    title: "1 oz 2026 Canadian Silver Maple Leaf",
     subtitle: "Royal Canadian Mint, 99.99% pure silver",
     material: "XAG",
     category: "Silver Coins",
     images: IMAGES.silverMaple,
-    variants: [{ title: "1 oz", weight_oz: 1 }],
+    variants: [{ title: "1 oz 2026", weight_oz: 1, year: "2026" }],
   },
   {
-    title: "Austrian Silver Philharmonic",
+    title: "1 oz 2026 Austrian Silver Philharmonic",
     subtitle: "Austrian Mint, 99.9% pure silver",
     material: "XAG",
     category: "Silver Coins",
-    images: IMAGES.silverEagle,
-    variants: [{ title: "1 oz", weight_oz: 1 }],
+    images: IMAGES.silverKrugerrand,
+    variants: [{ title: "1 oz 2026", weight_oz: 1, year: "2026" }],
   },
   {
-    title: "Silver Britannia",
+    title: "1 oz 2026 Silver Britannia",
     subtitle: "The Royal Mint UK, 99.9% pure silver",
     material: "XAG",
     category: "Silver Coins",
     images: IMAGES.silverEagle,
-    variants: [{ title: "1 oz", weight_oz: 1 }],
+    variants: [{ title: "1 oz 2026", weight_oz: 1, year: "2026" }],
   },
   {
     title: "Mexican Silver Libertad",
     subtitle: "Casa de Moneda de México, 99.9% pure silver",
     material: "XAG",
     category: "Silver Coins",
-    images: IMAGES.silverEagle,
+    images: IMAGES.silverKrugerrand,
     variants: [
-      { title: "1/2 oz", weight_oz: 0.5 },
-      { title: "1 oz", weight_oz: 1 },
-      { title: "2 oz", weight_oz: 2 },
-      { title: "5 oz", weight_oz: 5 },
+      { title: "1/2 oz", weight_oz: 0.5, year: "2024" },
+      { title: "1 oz", weight_oz: 1, year: "2025" },
+      { title: "2 oz", weight_oz: 2, year: "2026" },
+      { title: "5 oz", weight_oz: 5, year: "Random" },
     ],
   },
   // ── Silver Bars ──
@@ -191,11 +204,11 @@ const SEED_PRODUCTS: SeedProduct[] = [
     subtitle: "Swiss refinery, 99.9% pure silver, minted",
     material: "XAG",
     category: "Silver Bars",
-    images: IMAGES.silverEagle,
+    images: IMAGES.silverBarPamp,
     variants: [
-      { title: "1 oz", weight_oz: 1 },
-      { title: "5 oz", weight_oz: 5 },
-      { title: "10 oz", weight_oz: 10 },
+      { title: "1 oz", weight_oz: 1, year: "2024" },
+      { title: "5 oz", weight_oz: 5, year: "2025" },
+      { title: "10 oz", weight_oz: 10, year: "2026" },
     ],
   },
   {
@@ -203,11 +216,11 @@ const SEED_PRODUCTS: SeedProduct[] = [
     subtitle: "Valcambi Suisse, 99.9% pure silver",
     material: "XAG",
     category: "Silver Bars",
-    images: IMAGES.silverEagle,
+    images: IMAGES.silverBarValcambi,
     variants: [
-      { title: "1 oz", weight_oz: 1 },
-      { title: "10 oz", weight_oz: 10 },
-      { title: "100 oz", weight_oz: 100 },
+      { title: "1 oz", weight_oz: 1, year: "2024" },
+      { title: "10 oz", weight_oz: 10, year: "2025" },
+      { title: "100 oz", weight_oz: 100, year: "2026" },
     ],
   },
 ]
@@ -275,9 +288,11 @@ const seedProductsStep = createStep(
 
     // ── Create pricing rules ─────────────────────────────────────────────────
     // Smaller products have larger spreads (higher cost-to-value ratio).
-    // Some products get a premium percentage (collectible/limited).
+    // Year-based premium is baked directly into each rule's spread_factor
+    // (separate rules created per year, no runtime year logic needed).
     type PricingRuleDef = { name: string; spread_factor: number; spread_fixed: number; premium_percentage: number; premium_fixed: number }
-    const pricingRuleDefs: PricingRuleDef[] = [
+
+    const BASE_RULE_DEFS: PricingRuleDef[] = [
       { name: "Gold Small",    spread_factor: 1.03,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
       { name: "Gold Medium",   spread_factor: 1.02,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
       { name: "Gold Standard", spread_factor: 1.015, spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
@@ -287,13 +302,15 @@ const seedProductsStep = createStep(
       { name: "Silver Bulk",   spread_factor: 1.015, spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
       { name: "Silver Bar",    spread_factor: 1.02,  spread_fixed: 0, premium_percentage: 0, premium_fixed: 0 },
     ]
-    const createdRules = await dynamicPricingModule.createPricingRules(pricingRuleDefs)
-    const ruleByName: Record<string, (typeof createdRules)[number]> = {}
-    for (const r of createdRules) {
-      ruleByName[r.name] = r
+
+    const YEAR_SPREAD_MULT: Record<string, number> = {
+      "2024": 1.002,
+      "2025": 1.005,
+      "2026": 1.01,
+      "Random": 1,
     }
 
-    function pickRule(material: string, weightOz: number, category: string): string {
+    function pickBaseRule(material: string, weightOz: number, category: string): string {
       if (material === "XAU") {
         if (category === "Gold Bars") return "Gold Bar"
         if (weightOz <= 0.25) return "Gold Small"
@@ -309,8 +326,45 @@ const seedProductsStep = createStep(
       return "Silver Standard"
     }
 
+    // Generate year-versioned pricing rules
+    const seenRuleKeys = new Set<string>()
+    const pricingRuleDefs: PricingRuleDef[] = []
+
+    for (const seed of SEED_PRODUCTS) {
+      for (const v of seed.variants) {
+        const baseName = pickBaseRule(seed.material, v.weight_oz, seed.category)
+        const yearKey = v.year === "Random" ? "Random" : v.year
+        const ruleKey = `${baseName} ${yearKey}`
+        if (seenRuleKeys.has(ruleKey)) continue
+        seenRuleKeys.add(ruleKey)
+
+        const base = BASE_RULE_DEFS.find((r) => r.name === baseName)!
+        const mult = YEAR_SPREAD_MULT[yearKey] ?? 1
+        pricingRuleDefs.push({
+          name: ruleKey,
+          spread_factor: Math.round(base.spread_factor * mult * 1e6) / 1e6,
+          spread_fixed: base.spread_fixed,
+          premium_percentage: base.premium_percentage,
+          premium_fixed: base.premium_fixed,
+        })
+      }
+    }
+
+    const createdRules = await dynamicPricingModule.createPricingRules(pricingRuleDefs)
+    const ruleByName: Record<string, (typeof createdRules)[number]> = {}
+    for (const r of createdRules) {
+      ruleByName[r.name] = r
+    }
+
+    function pickRule(material: string, weightOz: number, category: string, year: string): string {
+      const baseName = pickBaseRule(material, weightOz, category)
+      const yearKey = year === "Random" ? "Random" : year
+      return `${baseName} ${yearKey}`
+    }
+
     // ── Create products with variants ────────────────────────────────────────
     const createdProductNames: string[] = []
+    const createdProductIds: string[] = []
 
     for (const seed of SEED_PRODUCTS) {
       const weightLabels = seed.variants.map((v) => v.title)
@@ -325,10 +379,12 @@ const seedProductsStep = createStep(
         variants: seed.variants.map((v) => ({
           title: v.title,
           manage_inventory: false,
+          weight: Math.round(v.weight_oz * 31.103 * 100) / 100,
           options: { Weight: v.title },
-          prices: [],
+          prices: [{ amount: 1, currency_code: "usd" }],
         })),
       }])
+      createdProductIds.push(product.id)
 
       // Fetch back with variants to get variant IDs
       const [productWithVariants] = await productModule.listProducts(
@@ -336,11 +392,11 @@ const seedProductsStep = createStep(
         { relations: ["variants"] }
       )
 
-      // Link each variant to the appropriate pricing rule based on weight
+      // Link each variant to the appropriate pricing rule based on weight + year
       const now = new Date()
       const linkRows = (productWithVariants.variants ?? []).map((variant) => {
         const seedVariant = seed.variants.find((sv) => sv.title === variant.title)
-        const ruleName = pickRule(seed.material, seedVariant?.weight_oz ?? 0, seed.category)
+        const ruleName = pickRule(seed.material, seedVariant?.weight_oz ?? 0, seed.category, seedVariant?.year ?? "Random")
         const rule = ruleByName[ruleName]
         return {
           id: generateEntityId("", "link"),
@@ -361,9 +417,38 @@ const seedProductsStep = createStep(
       createdProductNames.push(seed.title)
     }
 
+    // ── Create price sets and link to variants ─────────────────────────────
+    // productModule.createProducts ignores `prices` — we must create price
+    // sets via the pricing module and link them manually.
+    const pricingModule = container.resolve(Modules.PRICING)
+    const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+
+    const allVariants: ProductVariantDTO[] = []
+    for (const pid of createdProductIds) {
+      const [p] = await productModule.listProducts({ id: [pid] }, { relations: ["variants"] })
+      if (p?.variants) allVariants.push(...p.variants)
+    }
+
+    const priceSets = await pricingModule.createPriceSets(
+      allVariants.map(() => ({
+        prices: [
+          { amount: 1, currency_code: "usd" },
+          { amount: 1, currency_code: "eur" },
+        ],
+      }))
+    )
+
+    await remoteLink.create(
+      allVariants.map((v, i) => ({
+        [Modules.PRODUCT]: { variant_id: v.id },
+        [Modules.PRICING]: { price_set_id: priceSets[i].id },
+      }))
+    )
+
     return new StepResponse({
       success: true,
       created_products: createdProductNames,
+      created_product_ids: createdProductIds,
       pricing_rules: pricingRuleDefs.map((r) => r.name),
       categories: categoryNames,
     })

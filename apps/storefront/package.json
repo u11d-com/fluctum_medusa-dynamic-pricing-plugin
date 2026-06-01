@@ -15,6 +15,7 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
+    "@u11d/dynamic-pricing-plugin": "*",
     "@headlessui/react": "^2.2.0",
     "@medusajs/icons": "2.15.2",
     "@medusajs/js-sdk": "2.15.2",

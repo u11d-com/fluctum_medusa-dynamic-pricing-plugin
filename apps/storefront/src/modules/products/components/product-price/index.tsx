@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
-import { computeFinalPrice } from "@lib/util/price-formula"
+import { computeFinalPrice } from "@u11d/dynamic-pricing-plugin/utils/price-formula"
 import { getVariantPricingData, type VariantPricingData } from "@lib/data/variant-pricing"
 import { convertToLocale } from "@lib/util/money"
 
