@@ -1,7 +1,7 @@
 "use server"
 
 import { sdk } from "@lib/config"
-import type { VariantPricingData } from "types/dynamic-pricing"
+import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
 
 export async function getVariantPricingData(
   variantIds: string[]

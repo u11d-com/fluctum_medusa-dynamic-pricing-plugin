@@ -2,7 +2,7 @@
 
 import { Button, Heading } from "@modules/common/components/ui"
 import CartTotals from "@modules/common/components/cart-totals"
-import Divider from "@modules/common/components/divider"
+import { Divider } from "@modules/common/components/ui"
 import { useCartPricing } from "@lib/hooks/use-cart-pricing"
 import { lockCartPrices } from "@lib/data/cart"
 import { getCountryCodeFromParams } from "@lib/util/route"
@@ -50,7 +50,7 @@ const Summary = ({ cart }: SummaryProps) => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <Heading level="h2" variant="checkout">
+      <Heading level="h2" size="2xl">
         Summary
       </Heading>
       <Divider />

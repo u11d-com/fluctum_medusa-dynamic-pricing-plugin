@@ -2,7 +2,7 @@ import { login } from "@lib/data/customer"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
-import Input from "@modules/common/components/input"
+import { Button, Heading, Input, Text } from "@modules/common/components/ui"
 import { useActionState } from "react"
 
 type Props = {
@@ -17,10 +17,10 @@ const Login = ({ setCurrentView }: Props) => {
       className="max-w-sm w-full flex flex-col items-center"
       data-testid="login-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">Welcome back</h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-8">
+      <Heading level="h1" size="md" className="uppercase mb-6">Welcome back</Heading>
+      <Text className="text-center mb-8">
         Sign in to access an enhanced shopping experience.
-      </p>
+      </Text>
       <form className="w-full" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
@@ -46,17 +46,20 @@ const Login = ({ setCurrentView }: Props) => {
           Sign in
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
+      <Text as="span" variant="muted" className="text-center mt-6">
         Not a member?{" "}
-        <button
+        <Button
+          variant="link"
+          size="small"
+          type="button"
           onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="underline"
+          className="underline px-0 h-auto"
           data-testid="register-button"
         >
           Join us
-        </button>
+        </Button>
         .
-      </span>
+      </Text>
     </div>
   )
 }

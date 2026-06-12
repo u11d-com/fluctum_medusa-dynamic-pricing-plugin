@@ -1,5 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import type { SpotPricePayload, VariantPricingData } from "types/dynamic-pricing"
+import type { SpotPricePayload, VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
 import { listSpotPrices } from "@lib/data/spot-prices"
 import { getVariantPricingData } from "@lib/data/variant-pricing"
 import { collectVariantIds, computeProductDynamicPrice, getProductDisplayTitle } from "@lib/util/dynamic-pricing"

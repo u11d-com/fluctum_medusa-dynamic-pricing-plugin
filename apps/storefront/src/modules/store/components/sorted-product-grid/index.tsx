@@ -3,12 +3,13 @@
 import { useMemo } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
-import type { VariantPricingData } from "types/dynamic-pricing"
+import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import PreviewPrice from "@modules/products/components/product-preview/preview-price.client"
 import ProductCard from "@modules/products/components/product-card"
 import { getProductDisplayTitle } from "@lib/util/dynamic-pricing"
 import { sortProducts } from "@lib/util/sort-products"
+import { Text } from "@modules/common/components/ui"
 
 // ── Product card ─────────────────────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ export default function SortedProductGrid({ products, pricingData, sortBy, initi
 
   if (sorted.length === 0) {
     return (
-      <p className="font-sans text-sm text-ui-fg-muted py-8">No products found.</p>
+      <Text className="py-8">No products found.</Text>
     )
   }
 

@@ -135,27 +135,32 @@ const CartDropdown = ({
                            <div className="flex flex-col flex-1 gap-y-1">
                              <div className="flex items-start justify-between">
                                <div className="flex flex-col min-w-0 pr-3">
-                                   <h3 className="text-sm font-medium text-ui-fg-base break-words leading-5">
+                                   <Heading
+                                     level="h3"
+                                     size="sm"
+                                     className="text-sm font-medium text-ui-fg-base break-words leading-5"
+                                   >
                                      <LocalizedClientLink
                                        href={`/products/${item.product_handle}`}
                                        data-testid="product-link"
-                                   >
-                                     {item.title}
-                                   </LocalizedClientLink>
-                                 </h3>
+                                     >
+                                       {item.title}
+                                     </LocalizedClientLink>
+                                   </Heading>
                                   <LineItemOptions
                                      variant={item.variant}
                                      data-testid="cart-item-variant"
                                      data-value={item.variant}
                                      className="text-xs text-ui-fg-muted whitespace-normal break-words overflow-visible text-clip"
                                    />
-                                  <span
-                                    className="text-xs text-ui-fg-muted"
-                                    data-testid="cart-item-quantity"
-                                    data-value={item.quantity}
-                                  >
-                                   Qty: {item.quantity}
-                                 </span>
+                                   <Text
+                                     as="span"
+                                     variant="caption"
+                                     data-testid="cart-item-quantity"
+                                     data-value={item.quantity}
+                                   >
+                                    Qty: {item.quantity}
+                                  </Text>
                               </div>
                                <div className="flex justify-end shrink-0">
                                  <LineItemPrice
@@ -178,13 +183,14 @@ const CartDropdown = ({
                       </div>
                     ))}
                 </div>
-                <div className="p-4 flex flex-col gap-y-4 text-small-regular border-t border-ui-border-base">
+                <div className="p-4 flex flex-col gap-y-4 border-t border-ui-border-base">
                   <div className="flex items-center justify-between">
-                    <span className="text-ui-fg-base font-semibold">
+                    <Text as="span" className="font-semibold">
                       Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
-                    </span>
-                    <span
+                      <Text as="span" className="font-normal">(excl. taxes)</Text>
+                    </Text>
+                    <Text
+                      as="span"
                       className="text-large-semi"
                       data-testid="cart-subtotal"
                       data-value={subtotal}
@@ -193,7 +199,7 @@ const CartDropdown = ({
                         amount: subtotal,
                         currency_code: cartState.currency_code,
                       })}
-                    </span>
+                    </Text>
                   </div>
                   <LocalizedClientLink href="/cart" passHref>
                     <Button
@@ -209,8 +215,8 @@ const CartDropdown = ({
               ) : (
                 <div>
                   <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-                    <div className="bg-ui-fg-base text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
-                      <span>0</span>
+                    <div className="bg-ui-fg-base flex items-center justify-center w-6 h-6 rounded-full text-white">
+                      <Text as="span" className="text-small-regular text-white">0</Text>
                     </div>
                     <Text variant="muted">Your shopping bag is empty.</Text>
                     <div>

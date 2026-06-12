@@ -4,6 +4,7 @@ import { listCategories } from "@lib/data/categories"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { Heading } from "@modules/common/components/ui"
 
 import PaginatedProducts from "./paginated-products"
 
@@ -41,7 +42,7 @@ const StoreTemplate = async ({
       />
       <div className="w-full">
         <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">{title}</h1>
+          <Heading level="h1" size="lg" data-testid="store-page-title">{title}</Heading>
         </div>
         <Suspense fallback={<SkeletonProductGrid />}>
           <PaginatedProducts

@@ -1,5 +1,6 @@
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
+import { Heading, Text } from "@modules/common/components/ui"
 
 type OrderSummaryProps = {
   order: HttpTypes.StoreOrder
@@ -19,26 +20,26 @@ const OrderSummary = ({ order }: OrderSummaryProps) => {
 
   return (
     <div>
-      <h2 className="text-base-semi">Order Summary</h2>
-      <div className="text-small-regular text-ui-fg-base my-2">
-        <div className="flex items-center justify-between text-base-regular text-ui-fg-base mb-2">
-          <span>Subtotal</span>
-          <span>{getAmount(order.subtotal)}</span>
+      <Heading level="h2" size="sm">Order Summary</Heading>
+      <div className="my-2">
+        <div className="flex items-center justify-between mb-2">
+          <Text as="span">Subtotal</Text>
+          <Text as="span">{getAmount(order.subtotal)}</Text>
         </div>
         <div className="flex flex-col gap-y-1">
           <div className="flex items-center justify-between">
-            <span>Shipping</span>
-            <span>{getAmount(order.shipping_total)}</span>
+            <Text as="span" variant="muted">Shipping</Text>
+            <Text as="span" variant="muted">{getAmount(order.shipping_total)}</Text>
           </div>
           <div className="flex items-center justify-between">
-            <span>Taxes</span>
-            <span>{getAmount(order.tax_total)}</span>
+            <Text as="span" variant="muted">Taxes</Text>
+            <Text as="span" variant="muted">{getAmount(order.tax_total)}</Text>
           </div>
         </div>
         <div className="h-px w-full border-b border-ui-border-base border-dashed my-4" />
-        <div className="flex items-center justify-between text-base-regular text-ui-fg-base mb-2">
-          <span>Total</span>
-          <span>{getAmount(order.total)}</span>
+        <div className="flex items-center justify-between mb-2">
+          <Text as="span">Total</Text>
+          <Text as="span">{getAmount(order.total)}</Text>
         </div>
       </div>
     </div>

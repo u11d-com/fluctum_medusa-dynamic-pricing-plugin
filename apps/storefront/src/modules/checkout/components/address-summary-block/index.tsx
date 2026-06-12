@@ -13,9 +13,9 @@ const AddressSummaryBlock = ({
 }: AddressSummaryBlockProps) => {
   return (
     <div className="flex flex-col w-1/3" data-testid={dataTestId}>
-      <Text className="txt-medium-plus text-ui-fg-base mb-1">{title}</Text>
+      <Text as="span" variant="label" className="mb-1">{title}</Text>
       {lines.filter(Boolean).map((line, index) => (
-        <Text key={`${line}-${index}`} className="txt-medium text-ui-fg-subtle">
+        <Text key={`${line}-${index}`} variant="muted">
           {line}
         </Text>
       ))}

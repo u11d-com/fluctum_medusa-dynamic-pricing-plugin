@@ -3,8 +3,9 @@
 import { useSpotPrices } from "@lib/context/spot-price-context"
 import { convertToLocale } from "@lib/util/money"
 import type { HttpTypes } from "@medusajs/types"
+import { Text } from "@modules/common/components/ui"
 import { computeCheapestVariantPrice } from "@lib/util/dynamic-pricing"
-import type { VariantPricingData } from "types/dynamic-pricing"
+import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
 
 export default function PreviewPrice({
   variants,
@@ -25,11 +26,11 @@ export default function PreviewPrice({
   if (displayPrice === null) return null
 
   return (
-    <span className="text-ui-fg-muted" data-testid="price">
+    <Text as="span" variant="muted" data-testid="price">
       {convertToLocale({
         amount: displayPrice,
         currency_code: "USD",
       })}
-    </span>
+    </Text>
   )
 }

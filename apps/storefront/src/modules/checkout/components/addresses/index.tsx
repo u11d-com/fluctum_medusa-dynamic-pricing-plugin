@@ -3,8 +3,7 @@ import { setAddresses } from "@lib/data/cart"
 import useToggleState from "@lib/hooks/use-toggle-state"
 import compareAddresses from "@lib/util/compare-addresses"
 import { HttpTypes } from "@medusajs/types"
-import Divider from "@modules/common/components/divider"
-import { Heading } from "@modules/common/components/ui"
+import { Divider, Heading, Text } from "@modules/common/components/ui"
 import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useActionState } from "react"
@@ -85,7 +84,8 @@ const Addresses = ({
               <div>
                 <Heading
                   level="h2"
-                  className="text-3xl-regular gap-x-4 pb-6 pt-8"
+                  size="2xl"
+                  className="gap-x-4 pb-6 pt-8"
                 >
                   Billing address
                 </Heading>
@@ -101,7 +101,7 @@ const Addresses = ({
         </form>
       ) : (
         <div>
-          <div className="text-small-regular">
+          <div>
             {cart && cart.shipping_address ? (
               <div className="flex items-start gap-x-8">
                 <div className="flex items-start gap-x-1 w-full">
@@ -159,6 +159,7 @@ const Addresses = ({
             ) : (
               <div>
                 <Spinner />
+                <Text className="sr-only">Loading address data</Text>
               </div>
             )}
           </div>

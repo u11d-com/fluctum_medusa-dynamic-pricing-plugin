@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { Suspense } from "react"
 
 import InteractiveLink from "@modules/common/components/interactive-link"
+import { Heading, Text } from "@modules/common/components/ui"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -57,11 +58,13 @@ export default function CategoryTemplate({
                 /
               </span>
             ))}
-          <h1 data-testid="category-page-title">{category.name}</h1>
+          <Heading level="h1" size="lg" data-testid="category-page-title">
+            {category.name}
+          </Heading>
         </div>
         {category.description && (
           <div className="mb-8 text-base-regular">
-            <p>{category.description}</p>
+            <Text>{category.description}</Text>
           </div>
         )}
         {category.category_children && (

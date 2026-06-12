@@ -29,7 +29,7 @@ export default function CheckoutStepCard({
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
-          variant="checkout"
+          size="2xl"
           className={clx("flex flex-row gap-x-2 items-baseline", {
             "opacity-50 pointer-events-none select-none": disabled,
           })}

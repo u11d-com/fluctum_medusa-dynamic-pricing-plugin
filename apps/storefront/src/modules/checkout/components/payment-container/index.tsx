@@ -1,8 +1,6 @@
 import { Radio as RadioGroupOption } from "@headlessui/react"
-import { ChoiceCard, Text } from "@modules/common/components/ui"
+import { ChoiceCard, Radio, Text } from "@modules/common/components/ui"
 import React, { useContext, useMemo, type JSX } from "react"
-
-import Radio from "@modules/common/components/radio"
 
 import { isManual } from "@lib/constants"
 import SkeletonCardDetails from "@modules/skeletons/components/skeleton-card-details"
@@ -38,12 +36,12 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
       <ChoiceCard
         selected={selectedPaymentOptionId === paymentProviderId}
         disabled={disabled}
-        className="flex flex-col gap-y-2 text-small-regular cursor-pointer py-4 px-8"
+        className="flex flex-col gap-y-2 cursor-pointer py-4 px-8"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-4">
             <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-            <Text className="text-base-regular">
+            <Text>
               {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
             </Text>
             {isManual(paymentProviderId) && isDevelopment && (
@@ -107,7 +105,7 @@ export const StripeCardContainer = ({
       {selectedPaymentOptionId === paymentProviderId &&
         (stripeReady ? (
           <div className="my-4 transition-all duration-150 ease-in-out">
-            <Text className="txt-medium-plus text-ui-fg-base mb-1">
+            <Text as="span" variant="label" className="mb-1">
               Enter your card details:
             </Text>
             <CardElement

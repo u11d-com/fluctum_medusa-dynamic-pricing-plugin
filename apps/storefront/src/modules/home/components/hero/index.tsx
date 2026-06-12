@@ -49,7 +49,7 @@ const Hero = () => {
           <div className="max-w-2xl">
             <Heading
               level="h1"
-              variant="hero"
+              size="2xl"
               className="text-white md:text-[3.5rem]"
             >
               Precious metals at{" "}
@@ -211,7 +211,7 @@ const Hero = () => {
               </div>
               <Heading
                 level="h3"
-                variant="card"
+                size="md"
                 className="text-base font-medium text-white mb-2"
               >
                 {item.title}

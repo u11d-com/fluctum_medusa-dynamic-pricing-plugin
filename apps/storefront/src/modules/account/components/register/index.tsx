@@ -1,7 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
-import Input from "@modules/common/components/input"
+import { Button, Heading, Input, Text } from "@modules/common/components/ui"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
@@ -20,13 +20,13 @@ const Register = ({ setCurrentView }: Props) => {
       className="max-w-sm flex flex-col items-center"
       data-testid="register-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">
+      <Heading level="h1" size="md" className="uppercase mb-6">
         Become a fluctum Member
-      </h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-4">
+      </Heading>
+      <Text className="text-center mb-4">
         Create your fluctum profile, and get access to an enhanced
         shopping experience.
-      </p>
+      </Text>
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
@@ -68,7 +68,7 @@ const Register = ({ setCurrentView }: Props) => {
           />
         </div>
         <ErrorMessage error={message} data-testid="register-error" />
-        <span className="text-center text-ui-fg-base text-small-regular mt-6">
+        <Text as="span" variant="muted" className="text-center mt-6">
           By creating an account, you agree to fluctum&apos;s{" "}
           <LocalizedClientLink
             href="/content/privacy-policy"
@@ -84,21 +84,24 @@ const Register = ({ setCurrentView }: Props) => {
             Terms of Use
           </LocalizedClientLink>
           .
-        </span>
+        </Text>
         <SubmitButton className="w-full mt-6" data-testid="register-button">
           Join
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
+      <Text as="span" variant="muted" className="text-center mt-6">
         Already a member?{" "}
-        <button
+        <Button
+          variant="link"
+          size="small"
+          type="button"
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
-          className="underline"
+          className="underline px-0 h-auto"
         >
           Sign in
-        </button>
+        </Button>
         .
-      </span>
+      </Text>
     </div>
   )
 }

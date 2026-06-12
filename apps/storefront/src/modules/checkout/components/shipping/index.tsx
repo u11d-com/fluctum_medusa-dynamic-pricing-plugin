@@ -6,9 +6,7 @@ import { convertToLocale } from "@lib/util/money"
 import { Loader } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import ErrorMessage from "@modules/checkout/components/error-message"
-import Divider from "@modules/common/components/divider"
-import MedusaRadio from "@modules/common/components/radio"
-import { Button, ChoiceCard, Text } from "@modules/common/components/ui"
+import { Button, ChoiceCard, Divider, Radio as SelectionRadio, Text } from "@modules/common/components/ui"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import CheckoutStepCard from "../checkout-step-card"
@@ -196,12 +194,12 @@ const Shipping: React.FC<ShippingProps> = ({
         <>
           <div className="grid">
             <div className="flex flex-col">
-              <span className="font-medium txt-medium text-ui-fg-base">
+              <Text as="span" variant="label">
                 Shipping method
-              </span>
-              <span className="mb-4 text-ui-fg-muted txt-medium">
+              </Text>
+              <Text as="span" variant="muted" className="mb-4">
                 How would you like you order delivered
-              </span>
+              </Text>
             </div>
             <div data-testid="delivery-options-container">
               <div className="pb-8 md:pt-0 pt-2">
@@ -225,19 +223,19 @@ const Shipping: React.FC<ShippingProps> = ({
                     >
                       <ChoiceCard
                         selected={showPickupOptions === PICKUP_OPTION_ON}
-                        className="w-full flex items-center justify-between text-small-regular cursor-pointer py-4 px-8"
+                        className="w-full flex items-center justify-between cursor-pointer py-4 px-8"
                       >
                         <div className="flex items-center gap-x-4">
-                          <MedusaRadio
-                            checked={showPickupOptions === PICKUP_OPTION_ON}
-                          />
-                          <span className="text-base-regular">
+                            <SelectionRadio
+                              checked={showPickupOptions === PICKUP_OPTION_ON}
+                            />
+                          <Text as="span">
                             Pick up your order
-                          </span>
+                          </Text>
                         </div>
-                        <span className="justify-self-end text-ui-fg-base">
+                        <Text as="span" className="justify-self-end">
                           -
-                        </span>
+                        </Text>
                       </ChoiceCard>
                     </Radio>
                   </RadioGroup>
@@ -267,17 +265,17 @@ const Shipping: React.FC<ShippingProps> = ({
                         <ChoiceCard
                           selected={option.id === shippingMethodId}
                           disabled={isDisabled}
-                          className="w-full flex items-center justify-between text-small-regular cursor-pointer py-4 px-8"
+                          className="w-full flex items-center justify-between cursor-pointer py-4 px-8"
                         >
                           <div className="flex items-center gap-x-4">
-                            <MedusaRadio
+                            <SelectionRadio
                               checked={option.id === shippingMethodId}
                             />
-                            <span className="text-base-regular">
+                            <Text as="span">
                               {option.name}
-                            </span>
+                            </Text>
                           </div>
-                          <span className="justify-self-end text-ui-fg-base">
+                          <Text as="span" className="justify-self-end">
                             {option.price_type === "flat" ? (
                               convertToLocale({
                                 amount: option.amount!,
@@ -293,7 +291,7 @@ const Shipping: React.FC<ShippingProps> = ({
                             ) : (
                               "-"
                             )}
-                          </span>
+                          </Text>
                         </ChoiceCard>
                       </Radio>
                     )
@@ -306,12 +304,12 @@ const Shipping: React.FC<ShippingProps> = ({
           {showPickupOptions === PICKUP_OPTION_ON && (
             <div className="grid">
               <div className="flex flex-col">
-                <span className="font-medium txt-medium text-ui-fg-base">
+                <Text as="span" variant="label">
                   Store
-                </span>
-                <span className="mb-4 text-ui-fg-muted txt-medium">
+                </Text>
+                <Text as="span" variant="muted" className="mb-4">
                   Choose a store near you
-                </span>
+                </Text>
               </div>
               <div data-testid="delivery-options-container">
                 <div className="pb-8 md:pt-0 pt-2">
@@ -335,27 +333,27 @@ const Shipping: React.FC<ShippingProps> = ({
                           <ChoiceCard
                             selected={option.id === shippingMethodId}
                             disabled={option.insufficient_inventory}
-                            className="w-full flex items-center justify-between text-small-regular cursor-pointer py-4 px-8"
+                            className="w-full flex items-center justify-between cursor-pointer py-4 px-8"
                           >
                             <div className="flex items-start gap-x-4">
-                              <MedusaRadio
+                              <SelectionRadio
                                 checked={option.id === shippingMethodId}
                               />
                               <div className="flex flex-col">
-                                <span className="text-base-regular">
+                                <Text as="span">
                                   {option.name}
-                                </span>
-                                <span className="text-base-regular text-ui-fg-muted">
+                                </Text>
+                                <Text as="span" variant="muted">
                                   {formatAddress(getPickupAddress(option))}
-                                </span>
+                                </Text>
                               </div>
                             </div>
-                            <span className="justify-self-end text-ui-fg-base">
+                            <Text as="span" className="justify-self-end">
                               {convertToLocale({
                                 amount: option.amount!,
                                 currency_code: cart?.currency_code,
                               })}
-                            </span>
+                            </Text>
                           </ChoiceCard>
                         </Radio>
                       )
@@ -385,13 +383,13 @@ const Shipping: React.FC<ShippingProps> = ({
         </>
       ) : (
         <div>
-          <div className="text-small-regular">
+          <div>
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
               <div className="flex flex-col w-1/3">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">
+                <Text as="span" variant="label" className="mb-1">
                   Method
                 </Text>
-                <Text className="txt-medium text-ui-fg-subtle">
+                <Text variant="muted">
                   {cart.shipping_methods!.at(-1)!.name}{" "}
                   {convertToLocale({
                     amount: cart.shipping_methods!.at(-1)!.amount!,

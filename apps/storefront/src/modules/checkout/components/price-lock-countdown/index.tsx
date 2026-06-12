@@ -39,20 +39,20 @@ export default function PriceLockCountdown({ expiresAt, isRefreshing, onRefresh,
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           {isRefreshing ? (
-            <span className="text-sm text-ui-fg-muted">Locking Prices…</span>
+            <Text as="span" variant="muted">Locking Prices...</Text>
           ) : remaining > 0 ? (
-            <span className="text-sm text-ui-fg-base">
+            <Text as="span">
               Prices locked for{" "}
-              <span className="font-mono font-semibold text-ui-fg-base tabular-nums">
+              <Text as="span" className="font-mono font-semibold text-ui-fg-base tabular-nums">
                 {minutes}:{seconds.toString().padStart(2, "0")}
-              </span>
-            </span>
+              </Text>
+            </Text>
           ) : expiresAt ? (
-            <span className="text-sm text-tag-orange-text font-medium">
+            <Text as="span" className="text-tag-orange-text font-medium">
               Prices expired
-            </span>
+            </Text>
           ) : (
-            <span className="text-sm text-ui-fg-muted">Initializing…</span>
+            <Text as="span" variant="muted">Initializing...</Text>
           )}
           <Button
             type="button"
@@ -66,9 +66,9 @@ export default function PriceLockCountdown({ expiresAt, isRefreshing, onRefresh,
           </Button>
         </div>
         {expiresAt && (
-          <span className="text-[10px] text-ui-fg-muted font-mono">
+          <Text as="span" variant="caption" className="text-[10px] font-mono">
             {new Date(expiresAt).toLocaleTimeString()}
-          </span>
+          </Text>
         )}
       </div>
     </StatusNotice>

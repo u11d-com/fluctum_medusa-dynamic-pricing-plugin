@@ -6,7 +6,7 @@ import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
-import type { LockPricesResult } from "types/dynamic-pricing"
+import type { LockPricesResult } from "@u11d/dynamic-pricing-plugin/client"
 import {
   getAuthHeaders,
   getCacheOptions,

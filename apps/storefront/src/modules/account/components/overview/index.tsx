@@ -1,4 +1,4 @@
-import { Container } from "@modules/common/components/ui"
+import { Container, Heading, Text } from "@modules/common/components/ui"
 
 import ChevronDown from "@modules/common/icons/chevron-down"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -14,60 +14,63 @@ const Overview = ({ customer, orders }: OverviewProps) => {
   return (
     <div data-testid="overview-page-wrapper">
       <div className="hidden small:block">
-        <div className="text-xl-semi flex justify-between items-center mb-4">
-          <span data-testid="welcome-message" data-value={customer?.first_name}>
+        <div className="flex justify-between items-center mb-4">
+          <Text as="span" className="text-xl-semi" data-testid="welcome-message" data-value={customer?.first_name}>
             Hello {customer?.first_name}
-          </span>
-          <span className="text-small-regular text-ui-fg-base">
+          </Text>
+          <Text as="span" variant="muted">
             Signed in as:{" "}
-            <span
+            <Text
+              as="span"
               className="font-semibold"
               data-testid="customer-email"
               data-value={customer?.email}
             >
               {customer?.email}
-            </span>
-          </span>
+            </Text>
+          </Text>
         </div>
         <div className="flex flex-col py-8 border-t border-ui-border-base">
           <div className="flex flex-col gap-y-4 h-full col-span-1 row-span-2 flex-1">
             <div className="flex items-start gap-x-16 mb-6">
               <div className="flex flex-col gap-y-4">
-                <h3 className="text-large-semi">Profile</h3>
+                <Heading level="h3" size="md">Profile</Heading>
                 <div className="flex items-end gap-x-2">
-                  <span
+                  <Text
+                    as="span"
                     className="text-3xl-semi leading-none"
                     data-testid="customer-profile-completion"
                     data-value={getProfileCompletion(customer)}
                   >
                     {getProfileCompletion(customer)}%
-                  </span>
-                  <span className="uppercase text-base-regular text-ui-fg-subtle">
+                  </Text>
+                  <Text as="span" variant="muted" className="uppercase">
                     Completed
-                  </span>
+                  </Text>
                 </div>
               </div>
 
               <div className="flex flex-col gap-y-4">
-                <h3 className="text-large-semi">Addresses</h3>
+                <Heading level="h3" size="md">Addresses</Heading>
                 <div className="flex items-end gap-x-2">
-                  <span
+                  <Text
+                    as="span"
                     className="text-3xl-semi leading-none"
                     data-testid="addresses-count"
                     data-value={customer?.addresses?.length || 0}
                   >
                     {customer?.addresses?.length || 0}
-                  </span>
-                  <span className="uppercase text-base-regular text-ui-fg-subtle">
+                  </Text>
+                  <Text as="span" variant="muted" className="uppercase">
                     Saved
-                  </span>
+                  </Text>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col gap-y-4">
               <div className="flex items-center gap-x-2">
-                <h3 className="text-large-semi">Recent orders</h3>
+                <Heading level="h3" size="md">Recent orders</Heading>
               </div>
               <ul
                 className="flex flex-col gap-y-4"
@@ -85,29 +88,31 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                           href={`/account/orders/details/${order.id}`}
                         >
                           <Container className="bg-gray-50 flex justify-between items-center p-4">
-                            <div className="grid grid-cols-3 grid-rows-2 text-small-regular gap-x-4 flex-1">
-                              <span className="font-semibold">Date placed</span>
-                              <span className="font-semibold">
+                            <div className="grid grid-cols-3 grid-rows-2 gap-x-4 flex-1">
+                              <Text as="span" className="font-semibold" variant="muted">Date placed</Text>
+                              <Text as="span" className="font-semibold" variant="muted">
                                 Order number
-                              </span>
-                              <span className="font-semibold">
+                              </Text>
+                              <Text as="span" className="font-semibold" variant="muted">
                                 Total amount
-                              </span>
-                              <span data-testid="order-created-date">
+                              </Text>
+                              <Text as="span" data-testid="order-created-date" variant="muted">
                                 {new Date(order.created_at).toDateString()}
-                              </span>
-                              <span
+                              </Text>
+                              <Text
+                                as="span"
                                 data-testid="order-id"
                                 data-value={order.display_id}
+                                className="text-small-regular"
                               >
                                 #{order.display_id}
-                              </span>
-                              <span data-testid="order-amount">
+                              </Text>
+                              <Text as="span" data-testid="order-amount" variant="muted">
                                 {convertToLocale({
                                   amount: order.total,
                                   currency_code: order.currency_code,
                                 })}
-                              </span>
+                              </Text>
                             </div>
                             <button
                               className="flex items-center justify-between"
@@ -124,7 +129,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                     )
                   })
                 ) : (
-                  <span data-testid="no-orders-message">No recent orders</span>
+                  <Text as="span" data-testid="no-orders-message">No recent orders</Text>
                 )}
               </ul>
             </div>

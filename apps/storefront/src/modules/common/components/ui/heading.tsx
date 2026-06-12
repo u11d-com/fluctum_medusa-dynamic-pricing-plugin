@@ -3,12 +3,12 @@ import { HTMLAttributes, forwardRef } from "react"
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
   level?: "h1" | "h2" | "h3"
-  variant?: "page" | "section" | "card" | "hero" | "checkout"
+  size?: "sm" | "md" | "lg" | "xl" | "2xl"
 }
 
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (
-    { className, level: Component = "h2", variant, children, ...props },
+    { className, level: Component = "h2", size, children, ...props },
     ref
   ) => {
     return (
@@ -16,14 +16,14 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
         ref={ref}
         className={clsx(
           "font-semibold text-balance",
-          variant === "page" && "text-3xl leading-[1.2]",
-          variant === "section" && "text-2xl leading-[1.25]",
-          variant === "card" && "text-xl leading-[1.3]",
-          variant === "hero" && "text-4xl leading-[1.1] font-light tracking-tight",
-          variant === "checkout" && "text-[2rem] leading-[2.75rem]",
-          !variant && Component === "h1" && "text-3xl",
-          !variant && Component === "h2" && "text-2xl",
-          !variant && Component === "h3" && "text-xl",
+          size === "sm" && "text-lg leading-[1.35]",
+          size === "md" && "text-xl leading-[1.3]",
+          size === "lg" && "text-2xl leading-[1.25]",
+          size === "xl" && "text-3xl leading-[1.2]",
+          size === "2xl" && "text-[2rem] leading-[2.75rem]",
+          !size && Component === "h1" && "text-3xl leading-[1.2]",
+          !size && Component === "h2" && "text-2xl leading-[1.25]",
+          !size && Component === "h3" && "text-xl leading-[1.3]",
           className
         )}
         {...props}

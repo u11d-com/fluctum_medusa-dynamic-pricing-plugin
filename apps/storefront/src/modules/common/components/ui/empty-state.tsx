@@ -17,7 +17,7 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
         className={clsx("py-16 px-2 flex flex-col justify-center items-start", className)}
         {...props}
       >
-        <Heading level="h1" variant="checkout" className="text-ui-fg-base">
+        <Heading level="h1" size="2xl" className="text-ui-fg-base">
           {title}
         </Heading>
         {description && (

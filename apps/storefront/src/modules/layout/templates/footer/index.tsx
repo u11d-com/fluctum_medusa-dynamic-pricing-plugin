@@ -21,9 +21,9 @@ export default async function Footer() {
                 fluctum
               </span>
             </LocalizedClientLink>
-            <p className="text-xs text-white/40 leading-relaxed">
+            <Text as="p" className="text-xs text-white/40 leading-relaxed">
               Open-source dynamic pricing framework for precious metals. Real-time spot prices, transparent fair-market value.
-            </p>
+            </Text>
           </div>
 
           <div className="flex flex-col gap-y-3">

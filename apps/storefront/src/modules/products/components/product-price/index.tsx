@@ -11,7 +11,8 @@ import {
   computeVariantDynamicPrice,
   indexSpotPricesByMaterial,
 } from "@lib/util/dynamic-pricing"
-import type { VariantPricingData } from "types/dynamic-pricing"
+import { Text } from "@modules/common/components/ui"
+import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
 
 export default function ProductPrice({
   product,
@@ -77,22 +78,22 @@ export default function ProductPrice({
 
   if (displayPrice === null) {
     return (
-      <div className="flex flex-col text-ui-fg-base">
-        <span className="text-sm text-ui-fg-muted" data-testid="product-price-unavailable">
+      <div className="flex flex-col">
+        <Text as="span" variant="muted" data-testid="product-price-unavailable">
           Price unavailable
-        </span>
+        </Text>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col text-ui-fg-base">
-      <span className="text-xl-semi">
+    <div className="flex flex-col">
+      <Text as="span" className="text-xl-semi">
         {!variant && "From "}
-        <span data-testid="product-price" data-value={displayPrice}>
+        <Text as="span" data-testid="product-price" data-value={displayPrice}>
           {convertToLocale({ amount: displayPrice, currency_code: "USD" })}
-        </span>
-      </span>
+        </Text>
+      </Text>
     </div>
   )
 }

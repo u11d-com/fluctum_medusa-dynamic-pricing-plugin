@@ -3,7 +3,7 @@
 import React, { useEffect, useActionState } from "react";
 import { getFormString } from "@lib/util/form-data"
 
-import Input from "@modules/common/components/input"
+import { Input } from "@modules/common/components/ui"
 
 import AccountInfo from "../account-info"
 import { HttpTypes } from "@medusajs/types"

@@ -12,6 +12,10 @@
       "types": "./.medusa/server/src/index.d.ts",
       "default": "./.medusa/server/src/index.js"
     },
+    "./client": {
+      "types": "./.medusa/server/src/client.d.ts",
+      "default": "./.medusa/server/src/client.js"
+    },
     "./package.json": "./package.json",
     "./workflows": "./.medusa/server/src/workflows/index.js",
     "./jobs/fetch-spot-prices": "./.medusa/server/src/jobs/fetch-spot-prices.js",

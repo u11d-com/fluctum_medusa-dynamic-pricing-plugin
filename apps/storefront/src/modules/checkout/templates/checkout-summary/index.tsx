@@ -5,12 +5,12 @@ import { Heading, Surface } from "@modules/common/components/ui"
 import ItemsPreviewTemplate from "@modules/cart/templates/preview"
 import PriceLockCountdown from "@modules/checkout/components/price-lock-countdown"
 import CartTotals from "@modules/common/components/cart-totals"
-import Divider from "@modules/common/components/divider"
+import { Divider } from "@modules/common/components/ui"
 import { lockCartPrices } from "@lib/data/cart"
 import { buildLockedPriceMap } from "@lib/util/dynamic-pricing"
 import { useState, useMemo, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
-import type { LockedPriceMap } from "types/dynamic-pricing"
+import type { LockedPriceMap } from "@u11d/dynamic-pricing-plugin/client"
 
 type Props = {
   cart: HttpTypes.StoreCart
@@ -93,7 +93,7 @@ const CheckoutSummary = ({
         <Divider className="my-6 small:hidden" />
         <Heading
           level="h2"
-          variant="checkout"
+          size="2xl"
           className="flex flex-row items-baseline"
         >
           In your Cart

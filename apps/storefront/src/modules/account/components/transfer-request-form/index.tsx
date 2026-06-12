@@ -29,10 +29,10 @@ export default function TransferRequestForm() {
           <Heading level="h3" className="!text-sm font-semibold text-neutral-950">
             Order transfers
           </Heading>
-          <p className="text-small-regular text-neutral-500">
+          <Text>
             Can&apos;t find the order you are looking for?
             <br /> Connect an order to your account.
-          </p>
+          </Text>
         </div>
         <form
           action={formAction}

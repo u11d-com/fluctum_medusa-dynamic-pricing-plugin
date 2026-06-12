@@ -2,8 +2,7 @@
 
 import React, { useActionState, useEffect, useMemo } from "react"
 
-import Input from "@modules/common/components/input"
-import NativeSelect from "@modules/common/components/native-select"
+import { Input, NativeSelect } from "@modules/common/components/ui"
 
 import { addCustomerAddress, updateCustomerAddress } from "@lib/data/customer"
 import { HttpTypes } from "@medusajs/types"
@@ -169,11 +168,11 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
           />
           <NativeSelect
             name="country_code"
+            placeholder="-"
             defaultValue={billingAddress?.country_code || undefined}
             required
             data-testid="billing-country-code-select"
           >
-            <option value="">-</option>
             {regionOptions.map((option, i) => {
               return (
                 <option key={i} value={option?.value}>

@@ -1,11 +1,10 @@
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
-import { ChoiceCard, clx } from "@modules/common/components/ui"
+import { ChoiceCard, Radio, Text, clx } from "@modules/common/components/ui"
 import { Fragment, useMemo } from "react"
 
 import compareAddresses from "@lib/util/compare-addresses"
 import { HttpTypes } from "@medusajs/types"
-import Radio from "@modules/common/components/radio"
 
 export type AddressFields = Pick<
   HttpTypes.StoreCartAddress,
@@ -72,11 +71,11 @@ const AddressSelect = ({
         >
           {({ open }) => (
             <>
-              <span className="block truncate">
+              <Text as="span" className="block truncate">
                 {selectedAddress
                   ? selectedAddress.address_1
                   : "Choose an address"}
-              </span>
+              </Text>
               <ChevronUpDown
                 className={clx("transition-rotate duration-200", {
                   "transform rotate-180": open,
@@ -113,28 +112,28 @@ const AddressSelect = ({
                         data-testid="shipping-address-radio"
                       />
                       <div className="flex flex-col">
-                        <span className="text-left text-base-semi">
+                        <Text as="span" className="text-left text-base-semi">
                           {address.first_name} {address.last_name}
-                        </span>
+                        </Text>
                         {address.company && (
-                          <span className="text-small-regular text-ui-fg-base">
+                          <Text as="span">
                             {address.company}
-                          </span>
+                          </Text>
                         )}
-                        <div className="flex flex-col text-left text-base-regular mt-2">
-                          <span>
+                        <div className="flex flex-col text-left mt-2">
+                          <Text as="span">
                             {address.address_1}
                             {address.address_2 && (
-                              <span>, {address.address_2}</span>
+                              <Text as="span">, {address.address_2}</Text>
                             )}
-                          </span>
-                          <span>
+                          </Text>
+                          <Text as="span">
                             {address.postal_code}, {address.city}
-                          </span>
-                          <span>
+                          </Text>
+                          <Text as="span">
                             {address.province && `${address.province}, `}
                             {address.country_code?.toUpperCase()}
-                          </span>
+                          </Text>
                         </div>
                       </div>
                     </div>

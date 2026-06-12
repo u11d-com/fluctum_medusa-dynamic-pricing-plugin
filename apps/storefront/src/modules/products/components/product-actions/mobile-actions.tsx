@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react"
-import { Button, clx } from "@modules/common/components/ui"
+import { Button, IconButton, Text, clx } from "@modules/common/components/ui"
 import React, { Fragment, useMemo } from "react"
 
 import useToggleState from "@lib/hooks/use-toggle-state"
@@ -100,11 +100,11 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               {selectedPrice ? (
                 <div className="flex items-end gap-x-2 text-ui-fg-base">
                   {selectedPrice.price_type === "sale" && (
-                    <p>
-                      <span className="line-through text-small-regular">
+                    <Text>
+                      <Text as="span" className="line-through text-small-regular">
                         {selectedPrice.original_price}
-                      </span>
-                    </p>
+                      </Text>
+                    </Text>
                   )}
                   <span
                     className={clx({
@@ -184,7 +184,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   data-testid="mobile-actions-modal"
                 >
                   <div className="w-full flex justify-end pr-6">
-                    <button
+                    <IconButton
                       type="button"
                       onClick={close}
                       aria-label="Close product options"
@@ -192,7 +192,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                       data-testid="close-modal-button"
                     >
                       <X />
-                    </button>
+                    </IconButton>
                   </div>
                   <div className="bg-ui-bg-base px-6 py-12">
                     {(product.variants?.length ?? 0) > 1 && (

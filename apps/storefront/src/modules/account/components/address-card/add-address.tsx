@@ -9,8 +9,8 @@ import useToggleState from "@lib/hooks/use-toggle-state"
 import { HttpTypes } from "@medusajs/types"
 import CountrySelect from "@modules/checkout/components/country-select"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
-import Input from "@modules/common/components/input"
 import Modal from "@modules/common/components/modal"
+import { Input, Text } from "@modules/common/components/ui"
 
 const AddAddress = ({
   region,
@@ -52,7 +52,7 @@ const AddAddress = ({
         onClick={open}
         data-testid="add-address-button"
       >
-        <span className="text-base-semi">New address</span>
+        <Text as="span" className="text-base-semi">New address</Text>
         <Plus />
       </button>
 

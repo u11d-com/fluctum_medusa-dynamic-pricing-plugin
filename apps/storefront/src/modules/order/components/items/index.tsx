@@ -1,9 +1,8 @@
 import repeat from "@lib/util/repeat"
 import { sortByCreatedAtDesc } from "@lib/util/line-item"
 import { HttpTypes } from "@medusajs/types"
-import { Table } from "@modules/common/components/ui"
+import { Divider, Table } from "@modules/common/components/ui"
 
-import Divider from "@modules/common/components/divider"
 import Item from "@modules/order/components/item"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 

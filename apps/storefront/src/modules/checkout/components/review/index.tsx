@@ -26,9 +26,9 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
     >
       {isOpen && previousStepsCompleted && (
         <>
-          <div className="flex items-start gap-x-1 w-full mb-6">
-            <div className="w-full">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
+            <div className="flex items-start gap-x-1 w-full mb-6">
+              <div className="w-full">
+              <Text as="span" variant="label" className="mb-1">
                   By placing your order, you agree to our Terms of Sale and
                   Returns Policy and acknowledge our Privacy Policy.
               </Text>

@@ -1,7 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import { Container } from "@modules/common/components/ui"
-import Checkbox from "@modules/common/components/checkbox"
-import Input from "@modules/common/components/input"
+import { Checkbox, Container, Input, Text } from "@modules/common/components/ui"
 import React, { useEffect, useMemo, useState } from "react"
 import AddressFields, {
   createAddressFormData,
@@ -84,9 +82,9 @@ const ShippingAddress = ({
     <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
         <Container className="mb-6 flex flex-col gap-y-4 p-5">
-          <p className="text-small-regular">
+          <Text className="text-small-regular">
             {`Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
-          </p>
+          </Text>
           <AddressSelect
             addresses={customer.addresses}
             addressInput={toAddressFromFormData("shipping_address", formData)}

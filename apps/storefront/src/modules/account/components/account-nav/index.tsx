@@ -1,7 +1,7 @@
 "use client"
 
 import { ArrowRightOnRectangle } from "@medusajs/icons"
-import { clx } from "@modules/common/components/ui"
+import { Heading, Text, clx } from "@modules/common/components/ui"
 import { useParams, usePathname } from "next/navigation"
 import { getCountryCodeFromParams } from "@lib/util/route"
 
@@ -49,8 +49,8 @@ const AccountNav = ({
           </LocalizedClientLink>
         ) : (
           <>
-            <div className="text-xl-semi mb-4 px-8">
-              Hello {customer?.first_name}
+            <div className="mb-4 px-8">
+              <Text className="text-xl-semi">Hello {customer?.first_name}</Text>
             </div>
             <div className="text-base-regular">
               <ul>
@@ -119,7 +119,7 @@ const AccountNav = ({
       <div className="hidden small:block" data-testid="account-nav">
         <div>
           <div className="pb-4">
-            <h3 className="text-base-semi">Account</h3>
+            <Heading level="h3" size="sm" className="text-base-semi">Account</Heading>
           </div>
           <div className="text-base-regular">
             <ul className="flex mb-0 justify-start items-start flex-col gap-y-4">

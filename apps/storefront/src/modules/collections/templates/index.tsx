@@ -5,6 +5,7 @@ import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import PaginatedProducts from "@modules/store/templates/paginated-products"
 import { HttpTypes } from "@medusajs/types"
+import { Heading } from "@modules/common/components/ui"
 
 export default function CollectionTemplate({
   sortBy,
@@ -25,7 +26,7 @@ export default function CollectionTemplate({
       <RefinementList sortBy={sort} />
       <div className="w-full">
         <div className="mb-8 text-2xl-semi">
-          <h1>{collection.title}</h1>
+          <Heading level="h1" size="lg">{collection.title}</Heading>
         </div>
         <Suspense
           fallback={

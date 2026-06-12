@@ -6,6 +6,7 @@ import ProfileName from "@modules/account/components/profile-name"
 import { notFound } from "next/navigation"
 import { listRegions } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
+import { Divider, Heading, Text } from "@modules/common/components/ui"
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -23,12 +24,12 @@ export default async function Profile() {
   return (
     <div className="w-full" data-testid="profile-page-wrapper">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Profile</h1>
-        <p className="text-base-regular">
+        <Heading level="h1" size="lg">Profile</Heading>
+        <Text>
           View and update your profile information, including your name, email,
           and phone number. You can also update your billing address, or change
           your password.
-        </p>
+        </Text>
       </div>
       <div className="flex flex-col gap-y-8 w-full">
         <ProfileName customer={customer} />
@@ -41,8 +42,4 @@ export default async function Profile() {
       </div>
     </div>
   )
-}
-
-const Divider = () => {
-  return <div className="w-full h-px bg-gray-200" />
 }
