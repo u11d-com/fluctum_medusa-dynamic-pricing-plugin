@@ -75,17 +75,22 @@ const StripePaymentButton = ({
   )
 
   const disabled = !stripe || !elements ? true : false
+  const clientSecret =
+    typeof session?.data.client_secret === "string"
+      ? session.data.client_secret
+      : null
 
   const handlePayment = async () => {
     setSubmitting(true)
 
-    if (!stripe || !elements || !card || !cart) {
+    if (!stripe || !elements || !card || !cart || !clientSecret) {
       setSubmitting(false)
+      setErrorMessage("Missing payment session client secret")
       return
     }
 
     await stripe
-      .confirmCardPayment(session?.data.client_secret as string, {
+      .confirmCardPayment(clientSecret, {
         payment_method: {
           card: card,
           billing_details: {

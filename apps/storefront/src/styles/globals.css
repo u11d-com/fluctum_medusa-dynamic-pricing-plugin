@@ -2,19 +2,159 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@layer base {
+  :root {
+    --brand-primary: #7c3aed;
+    --brand-primary-hover: #6d28d9;
+    --brand-primary-soft: rgba(124, 58, 237, 0.12);
+    --tag-neutral-border: rgba(228, 228, 231, 1);
+    --tag-neutral-icon: rgba(161, 161, 170, 1);
+    --bg-switch-off-hover: rgba(212, 212, 216, 1);
+    --border-menu-bot: rgba(255, 255, 255, 1);
+    --border-menu-top: rgba(228, 228, 231, 1);
+    --bg-subtle-hover: rgba(244, 244, 245, 1);
+    --contrast-fg-primary: rgba(255, 255, 255, 0.88);
+    --bg-switch-off: rgba(228, 228, 231, 1);
+    --contrast-bg-base-pressed: rgba(63, 63, 70, 1);
+    --bg-field-component-hover: rgba(250, 250, 250, 1);
+    --bg-base-pressed: rgba(228, 228, 231, 1);
+    --tag-neutral-text: rgba(82, 82, 91, 1);
+    --tag-red-text: rgba(159, 18, 57, 1);
+    --contrast-bg-base: rgba(24, 24, 27, 1);
+    --border-strong: rgba(212, 212, 216, 1);
+    --contrast-border-base: rgba(255, 255, 255, 0.15);
+    --bg-field: rgba(250, 250, 250, 1);
+    --tag-blue-text: rgba(30, 64, 175, 1);
+    --button-inverted-pressed: rgba(82, 82, 91, 1);
+    --border-interactive: rgba(124, 58, 237, 1);
+    --bg-base-hover: rgba(244, 244, 245, 1);
+    --contrast-bg-subtle: rgba(39, 39, 42, 1);
+    --bg-highlight: rgba(245, 243, 255, 1);
+    --contrast-fg-secondary: rgba(255, 255, 255, 0.56);
+    --tag-red-bg: rgba(255, 228, 230, 1);
+    --button-transparent: rgba(255, 255, 255, 0);
+    --button-danger-pressed: rgba(159, 18, 57, 1);
+    --fg-on-color: rgba(255, 255, 255, 1);
+    --button-inverted-hover: rgba(63, 63, 70, 1);
+    --bg-field-component: rgba(255, 255, 255, 1);
+    --tag-orange-text: rgba(154, 52, 18, 1);
+    --tag-green-icon: rgba(16, 185, 129, 1);
+    --border-base: rgba(228, 228, 231, 1);
+    --bg-base: rgba(255, 255, 255, 1);
+    --tag-orange-border: rgba(254, 215, 170, 1);
+    --tag-red-border: rgba(254, 205, 211, 1);
+    --tag-green-border: rgba(167, 243, 208, 1);
+    --tag-green-text: rgba(6, 95, 70, 1);
+    --button-neutral: rgba(255, 255, 255, 1);
+    --tag-blue-border: rgba(191, 219, 254, 1);
+    --fg-interactive-hover: rgba(124, 58, 237, 1);
+    --tag-orange-icon: rgba(249, 115, 22, 1);
+    --button-neutral-hover: rgba(244, 244, 245, 1);
+    --fg-interactive: rgba(124, 58, 237, 1);
+    --bg-component-pressed: rgba(228, 228, 231, 1);
+    --tag-purple-bg: rgba(237, 233, 254, 1);
+    --contrast-bg-base-hover: rgba(39, 39, 42, 1);
+    --bg-component: rgba(250, 250, 250, 1);
+    --bg-subtle: rgba(250, 250, 250, 1);
+    --tag-purple-text: rgba(91, 33, 182, 1);
+    --contrast-border-bot: rgba(255, 255, 255, 0.1);
+    --button-inverted: rgba(39, 39, 42, 1);
+    --tag-red-icon: rgba(244, 63, 94, 1);
+    --button-transparent-hover: rgba(244, 244, 245, 1);
+    --button-neutral-pressed: rgba(228, 228, 231, 1);
+    --tag-purple-icon: rgba(124, 58, 237, 1);
+    --bg-field-hover: rgba(244, 244, 245, 1);
+    --fg-on-inverted: rgba(255, 255, 255, 1);
+    --bg-interactive: rgba(124, 58, 237, 1);
+    --border-danger: rgba(190, 18, 60, 1);
+    --button-transparent-pressed: rgba(228, 228, 231, 1);
+    --tag-purple-border: rgba(221, 214, 254, 1);
+    --bg-highlight-hover: rgba(237, 233, 254, 1);
+    --border-error: rgba(225, 29, 72, 1);
+    --button-danger: rgba(225, 29, 72, 1);
+    --tag-blue-bg: rgba(219, 234, 254, 1);
+    --border-transparent: rgba(255, 255, 255, 0);
+    --button-danger-hover: rgba(190, 18, 60, 1);
+    --bg-subtle-pressed: rgba(228, 228, 231, 1);
+    --fg-error: rgba(225, 29, 72, 1);
+    --bg-component-hover: rgba(244, 244, 245, 1);
+    --bg-disabled: rgba(244, 244, 245, 1);
+    --tag-blue-icon: rgba(96, 165, 250, 1);
+    --fg-subtle: rgba(82, 82, 91, 1);
+    --tag-orange-bg-hover: rgba(254, 215, 170, 1);
+    --tag-green-bg-hover: rgba(167, 243, 208, 1);
+    --tag-red-bg-hover: rgba(254, 205, 211, 1);
+    --tag-purple-bg-hover: rgba(221, 214, 254, 1);
+    --tag-neutral-bg-hover: rgba(228, 228, 231, 1);
+    --tag-blue-bg-hover: rgba(191, 219, 254, 1);
+    --tag-green-bg: rgba(209, 250, 229, 1);
+    --tag-neutral-bg: rgba(244, 244, 245, 1);
+    --tag-orange-bg: rgba(255, 237, 213, 1);
+    --fg-base: rgba(24, 24, 27, 1);
+    --contrast-border-top: rgba(24, 24, 27, 1);
+    --bg-overlay: rgba(24, 24, 27, 0.4);
+    --fg-disabled: rgba(161, 161, 170, 1);
+    --fg-muted: rgba(113, 113, 122, 1);
+    --alpha-250: rgba(24, 24, 27, 0.1);
+    --alpha-400: rgba(24, 24, 27, 0.24);
+
+    /* Shadow-based tokens */
+    --buttons-danger-focus: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(225, 29, 72, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --details-contrast-on-bg-interactive: 0px 1px 2px 0px rgba(30, 58, 138, 0.6);
+    --borders-error: 0px 0px 0px 1px rgba(225, 29, 72, 1), 0px 0px 0px 3px rgba(225, 29, 72, 0.15);
+    --borders-focus: 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 0px 3px rgba(124, 58, 237, 0.6);
+    --buttons-danger: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(225, 29, 72, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --buttons-inverted-focus: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(39, 39, 42, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --elevation-card-hover: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 2px 8px 0px rgba(0, 0, 0, 0.08);
+    --details-switch-handle: 0px 0px 2px 1px rgba(255, 255, 255, 1) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.16), 0px 5px 4px 0px rgba(0, 0, 0, 0.04), 0px 3px 3px 0px rgba(0, 0, 0, 0.04), 0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 0px 1px 0px rgba(0, 0, 0, 0.04);
+    --buttons-neutral: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --borders-base: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --elevation-card-rest: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
+    --buttons-neutral-focus: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --details-switch-background-focus: 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 0px 3px rgba(124, 58, 237, 0.6), 0px 1px 1px 0px rgba(0, 0, 0, 0.06) inset, 0px 2px 4px 0px rgba(0, 0, 0, 0.06) inset, 0px 0px 0px 0.75px rgba(0, 0, 0, 0.06) inset, 0px 0px 8px 0px rgba(0, 0, 0, 0.04) inset;
+    --details-switch-background: 0px 1px 1px 0px rgba(0, 0, 0, 0.06) inset, 0px 2px 4px 0px rgba(0, 0, 0, 0.06) inset, 0px 0px 0px 0.75px rgba(0, 0, 0, 0.06) inset, 0px 0px 8px 0px rgba(0, 0, 0, 0.04) inset;
+    --elevation-flyout: 0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+    --elevation-tooltip: 0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.08), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08);
+    --elevation-modal: 0px 0px 0px 1px rgba(244, 244, 245, 1) inset, 0px 0px 0px 1.5px rgba(0, 0, 0, 0.06) inset, 0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+    --elevation-code-block: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
+    --buttons-inverted: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(39, 39, 42, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --elevation-commandbar: 0px 0px 0px 0.75px rgba(244, 244, 245, 1) inset, 0px 0px 0px 1.25px rgba(0, 0, 0, 0.06) inset, 0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+    --borders-interactive-with-focus: 0px -1px 2px 0px rgba(237, 233, 254, 0.5), 0px 0px 0px 1px rgba(124, 58, 237, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --borders-interactive-with-shadow: 0px -1px 2px 0px rgba(237, 233, 254, 0.5), 0px 0px 0px 1px rgba(124, 58, 237, 1);
+    --borders-interactive-with-active: 0px 0px 0px 1px rgba(124, 58, 237, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.15);
+  }
+
+  html {
+    background-color: #f9fafb;
+    color: var(--fg-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #f9fafb;
+    color: var(--fg-base);
+    font-family: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
 @layer utilities {
-  /* Chrome, Safari and Opera */
+  /* Override @medusajs/ui-preset's hard-coded Inter in all txt-* typography tokens */
+  [class*="txt-"] {
+    font-family: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-
   .no-scrollbar::-webkit-scrollbar-track {
     background-color: transparent;
   }
-
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   input:focus ~ label,
@@ -35,10 +175,11 @@
   select:-webkit-autofill,
   select:-webkit-autofill:hover,
   select:-webkit-autofill:focus {
-    border: 1px solid #212121;
-    -webkit-text-fill-color: #212121;
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    border: 1px solid var(--border-base);
+    -webkit-text-fill-color: var(--fg-base);
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-field) inset;
     transition: background-color 5000s ease-in-out 0s;
+    caret-color: var(--fg-base);
   }
 
   input[type="search"]::-webkit-search-decoration,
@@ -54,58 +195,62 @@
     @apply max-w-[1440px] w-full mx-auto px-6;
   }
 
+  .surface-card {
+    @apply bg-white rounded-xl border border-gray-100 shadow-sm;
+  }
+
+  .surface-muted {
+    @apply bg-ui-bg-subtle rounded-xl border border-ui-border-base;
+  }
+
+  .surface-dark {
+    @apply bg-black border border-white/10 rounded-xl text-white;
+  }
+
+  .surface-floating {
+    @apply bg-white border border-ui-border-base rounded-xl shadow-lg;
+  }
+
   .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+    @apply px-4 py-2 border border-white/20 rounded-full hover:bg-white hover:text-black transition-colors duration-200 ease-in;
   }
 
   .text-xsmall-regular {
     @apply text-[10px] leading-4 font-normal;
   }
-
   .text-small-regular {
     @apply text-xs leading-5 font-normal;
   }
-
   .text-small-semi {
     @apply text-xs leading-5 font-semibold;
   }
-
   .text-base-regular {
     @apply text-sm leading-6 font-normal;
   }
-
   .text-base-semi {
     @apply text-sm leading-6 font-semibold;
   }
-
   .text-large-regular {
     @apply text-base leading-6 font-normal;
   }
-
   .text-large-semi {
     @apply text-base leading-6 font-semibold;
   }
-
   .text-xl-regular {
     @apply text-2xl leading-[36px] font-normal;
   }
-
   .text-xl-semi {
     @apply text-2xl leading-[36px] font-semibold;
   }
-
   .text-2xl-regular {
     @apply text-[30px] leading-[48px] font-normal;
   }
-
   .text-2xl-semi {
     @apply text-[30px] leading-[48px] font-semibold;
   }
-
   .text-3xl-regular {
     @apply text-[32px] leading-[44px] font-normal;
   }
-
   .text-3xl-semi {
     @apply text-[32px] leading-[44px] font-semibold;
   }

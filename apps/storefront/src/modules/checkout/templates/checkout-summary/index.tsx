@@ -1,41 +1,19 @@
 "use client"
 
-import { Heading } from "@modules/common/components/ui"
+import { Heading, Surface } from "@modules/common/components/ui"
 
 import ItemsPreviewTemplate from "@modules/cart/templates/preview"
 import PriceLockCountdown from "@modules/checkout/components/price-lock-countdown"
 import CartTotals from "@modules/common/components/cart-totals"
 import Divider from "@modules/common/components/divider"
 import { lockCartPrices } from "@lib/data/cart"
+import { buildLockedPriceMap } from "@lib/util/dynamic-pricing"
 import { useState, useMemo, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
+import type { LockedPriceMap } from "types/dynamic-pricing"
 
 type Props = {
   cart: HttpTypes.StoreCart
-}
-
-type LockedPriceMap = Record<string, { unit_price: number; total: number }>
-
-function buildLockedPriceMap(
-  locks: { variant_id: string; unit_price: number; quantity: number }[],
-  items: { id: string; variant_id?: string | null; quantity: number }[]
-): LockedPriceMap {
-  const variantPriceMap = new Map<string, number>()
-  for (const lock of locks) {
-    variantPriceMap.set(lock.variant_id, lock.unit_price)
-  }
-
-  const prices: LockedPriceMap = {}
-  for (const item of items) {
-    const unitPrice = item.variant_id ? variantPriceMap.get(item.variant_id) : undefined
-    if (unitPrice !== undefined) {
-      prices[item.id] = {
-        unit_price: unitPrice,
-        total: Math.round(unitPrice * item.quantity * 100) / 100,
-      }
-    }
-  }
-  return prices
 }
 
 const CheckoutSummary = ({
@@ -111,11 +89,12 @@ const CheckoutSummary = ({
 
   return (
     <div className="sticky top-0 flex flex-col-reverse small:flex-col gap-y-8 py-8 small:py-0 ">
-      <div className="w-full bg-white flex flex-col">
+      <Surface className="w-full p-6 flex flex-col">
         <Divider className="my-6 small:hidden" />
         <Heading
           level="h2"
-          className="flex flex-row text-3xl-regular items-baseline"
+          variant="checkout"
+          className="flex flex-row items-baseline"
         >
           In your Cart
         </Heading>
@@ -130,11 +109,11 @@ const CheckoutSummary = ({
         {lockedPrices ? (
           <ItemsPreviewTemplate cart={cart} lockedPrices={lockedPrices} />
         ) : (
-          <div className="py-8 text-center text-sm text-gray-400">
-            {isRefreshing ? "Locking prices..." : "Loading cart items..."}
-          </div>
-        )}
-      </div>
+            <div className="py-8 text-center text-sm text-ui-fg-muted">
+              {isRefreshing ? "Locking Prices…" : "Loading Cart Items…"}
+            </div>
+          )}
+      </Surface>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import repeat from "@lib/util/repeat"
+import { sortByCreatedAtDesc } from "@lib/util/line-item"
 import { HttpTypes } from "@medusajs/types"
 import { Table } from "@modules/common/components/ui"
 
@@ -19,19 +20,15 @@ const Items = ({ order }: ItemsProps) => {
       <Table>
         <Table.Body data-testid="products-table">
           {items?.length
-            ? items
-                .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
-                })
-                .map((item) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      currencyCode={order.currency_code}
-                    />
-                  )
-                })
+            ? sortByCreatedAtDesc(items).map((item) => {
+                return (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    currencyCode={order.currency_code}
+                  />
+                )
+              })
             : repeat(5).map((i) => {
                 return <SkeletonLineItem key={i} />
               })}

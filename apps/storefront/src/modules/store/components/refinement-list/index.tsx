@@ -3,15 +3,29 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
 
+import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 import SortProducts, { SortOptions } from "./sort-products"
+
+type CategoryItem = {
+  id: string
+  name: string
+  handle: string
+}
 
 type RefinementListProps = {
   sortBy: SortOptions
+  categories?: CategoryItem[]
+  selectedCat?: string
   search?: boolean
-  'data-testid'?: string
+  "data-testid"?: string
 }
 
-const RefinementList = ({ sortBy, 'data-testid': dataTestId }: RefinementListProps) => {
+const RefinementList = ({
+  sortBy,
+  categories = [],
+  selectedCat,
+  "data-testid": dataTestId,
+}: RefinementListProps) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -20,7 +34,6 @@ const RefinementList = ({ sortBy, 'data-testid': dataTestId }: RefinementListPro
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams)
       params.set(name, value)
-
       return params.toString()
     },
     [searchParams]
@@ -31,9 +44,32 @@ const RefinementList = ({ sortBy, 'data-testid': dataTestId }: RefinementListPro
     router.push(`${pathname}?${query}`)
   }
 
+  const setCatParam = (handle: string) => {
+    const params = new URLSearchParams(searchParams)
+    if (handle === "all") {
+      params.delete("cat")
+    } else {
+      params.set("cat", handle)
+    }
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  const catItems = [
+    { value: "all", label: "All" },
+    ...categories.map((c) => ({ value: c.handle, label: c.name })),
+  ]
+
   return (
     <div className="flex small:flex-col gap-12 py-4 mb-8 small:px-0 pl-6 small:min-w-[250px] small:ml-[1.675rem]">
       <SortProducts sortBy={sortBy} setQueryParams={setQueryParams} data-testid={dataTestId} />
+      {categories.length > 0 && (
+        <FilterRadioGroup
+          title="Category"
+          items={catItems}
+          value={selectedCat ?? "all"}
+          handleChange={setCatParam}
+        />
+      )}
     </div>
   )
 }

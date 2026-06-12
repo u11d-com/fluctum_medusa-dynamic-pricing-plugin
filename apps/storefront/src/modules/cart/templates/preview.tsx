@@ -1,20 +1,22 @@
 "use client"
 
 import repeat from "@lib/util/repeat"
+import { sortByCreatedAtDesc } from "@lib/util/line-item"
 import { HttpTypes } from "@medusajs/types"
 import { Table, clx } from "@modules/common/components/ui"
+import type { LockedPriceMap } from "types/dynamic-pricing"
 
 import Item from "@modules/cart/components/item"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 
 type ItemsTemplateProps = {
   cart: HttpTypes.StoreCart
-  lockedPrices?: Record<string, { unit_price: number; total: number }> | null
+  lockedPrices?: LockedPriceMap | null
 }
 
 const ItemsPreviewTemplate = ({ cart, lockedPrices }: ItemsTemplateProps) => {
   const items = cart.items
-  const hasOverflow = items && items.length > 4
+  const hasOverflow = (items?.length ?? 0) > 4
 
   return (
     <div
@@ -26,21 +28,17 @@ const ItemsPreviewTemplate = ({ cart, lockedPrices }: ItemsTemplateProps) => {
       <Table>
         <Table.Body data-testid="items-table">
           {items
-            ? items
-                .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
-                })
-                .map((item) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      type="preview"
-                      currencyCode={cart.currency_code}
-                      lockedPrice={lockedPrices?.[item.id]}
-                    />
-                  )
-                })
+            ? sortByCreatedAtDesc(items).map((item) => {
+                return (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    type="preview"
+                    currencyCode={cart.currency_code}
+                    lockedPrice={lockedPrices?.[item.id]}
+                  />
+                )
+              })
             : repeat(5).map((i) => {
                 return <SkeletonLineItem key={i} />
               })}

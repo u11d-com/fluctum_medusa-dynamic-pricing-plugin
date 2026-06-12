@@ -1,8 +1,23 @@
 import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import type { SpotPricePayload, VariantPricingData } from "types/dynamic-pricing"
+import { computeProductDynamicPrice } from "@lib/util/dynamic-pricing"
 
-interface MinPricedProduct extends HttpTypes.StoreProduct {
-  _minPrice?: number
+const MATERIAL_ORDER: Record<string, number> = {
+  gold: 0,
+  silver: 1,
+  platinum: 2,
+  palladium: 3,
+}
+
+function materialRank(handle: string): number {
+  for (const [key, rank] of Object.entries(MATERIAL_ORDER)) {
+    if (handle.includes(key)) {
+      return rank
+    }
+  }
+
+  return Number.MAX_SAFE_INTEGER
 }
 
 /**
@@ -13,11 +28,13 @@ export function sortByCategory(
   products: HttpTypes.StoreProduct[]
 ): HttpTypes.StoreProduct[] {
   return [...products].sort((a, b) => {
-    const aHandle = a.handle ?? ""
-    const bHandle = b.handle ?? ""
-    const aMaterial = aHandle.includes("gold") ? 0 : 1
-    const bMaterial = bHandle.includes("gold") ? 0 : 1
-    if (aMaterial !== bMaterial) return aMaterial - bMaterial
+    const aMaterial = materialRank(a.handle ?? "")
+    const bMaterial = materialRank(b.handle ?? "")
+
+    if (aMaterial !== bMaterial) {
+      return aMaterial - bMaterial
+    }
+
     return (a.title ?? "").localeCompare(b.title ?? "")
   })
 }
@@ -30,9 +47,33 @@ export function sortByCategory(
  */
 export function sortProducts(
   products: HttpTypes.StoreProduct[],
-  sortBy: SortOptions
+  sortBy: SortOptions,
+  pricingData?: Record<string, VariantPricingData>,
+  spotPrices?: SpotPricePayload[]
 ): HttpTypes.StoreProduct[] {
-  const sortedProducts = products as MinPricedProduct[]
+  const sortedProducts = [...products]
+
+  if (sortBy === "price_asc" && pricingData && spotPrices) {
+    return sortedProducts.sort((a, b) => {
+      const leftPrice =
+        computeProductDynamicPrice(a, pricingData, spotPrices) ?? Number.POSITIVE_INFINITY
+      const rightPrice =
+        computeProductDynamicPrice(b, pricingData, spotPrices) ?? Number.POSITIVE_INFINITY
+
+      return leftPrice - rightPrice
+    })
+  }
+
+  if (sortBy === "price_desc" && pricingData && spotPrices) {
+    return sortedProducts.sort((a, b) => {
+      const leftPrice =
+        computeProductDynamicPrice(a, pricingData, spotPrices) ?? Number.NEGATIVE_INFINITY
+      const rightPrice =
+        computeProductDynamicPrice(b, pricingData, spotPrices) ?? Number.NEGATIVE_INFINITY
+
+      return rightPrice - leftPrice
+    })
+  }
 
   if (sortBy === "created_at") {
     sortedProducts.sort((a, b) => {

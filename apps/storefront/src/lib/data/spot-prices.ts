@@ -2,7 +2,7 @@
 
 import { sdk } from "@lib/config"
 import { getCacheOptions } from "./cookies"
-import { SpotPricePayload } from "types/spot-price"
+import type { SpotPricePayload } from "types/dynamic-pricing"
 
 export const listSpotPrices = async (
   material?: string

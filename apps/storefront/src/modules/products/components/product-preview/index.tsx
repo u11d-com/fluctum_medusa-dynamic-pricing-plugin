@@ -1,13 +1,11 @@
-import { Text } from "@modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import type { SpotPricePayload } from "types/spot-price"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import Thumbnail from "../thumbnail"
+import type { SpotPricePayload, VariantPricingData } from "types/dynamic-pricing"
 import { listSpotPrices } from "@lib/data/spot-prices"
-import { getVariantPricingData, type VariantPricingData } from "@lib/data/variant-pricing"
-import { computeFinalPrice } from "@u11d/dynamic-pricing-plugin/utils/price-formula"
-import { convertToLocale } from "@lib/util/money"
+import { getVariantPricingData } from "@lib/data/variant-pricing"
+import { collectVariantIds, computeProductDynamicPrice, getProductDisplayTitle } from "@lib/util/dynamic-pricing"
 import PreviewPrice from "./preview-price.client"
+import AddToCartButton from "../add-to-cart-button"
+import ProductCard from "../product-card"
 
 export default async function ProductPreview({
   product,
@@ -15,72 +13,66 @@ export default async function ProductPreview({
   region: _region,
   spotPrices: prefetchedSpotPrices,
   pricingData: prefetchedPricingData,
+  showAddToCart,
 }: {
   product: HttpTypes.StoreProduct
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
   spotPrices?: SpotPricePayload[]
   pricingData?: Record<string, VariantPricingData>
+  showAddToCart?: boolean
 }) {
   const [spotPrices, pricingData] = prefetchedSpotPrices && prefetchedPricingData
     ? [prefetchedSpotPrices, prefetchedPricingData]
     : await Promise.all([
-        listSpotPrices().catch(() => []),
-        getVariantPricingData(
-          (product.variants ?? []).map((v) => v.id).filter(Boolean) as string[]
-        ).catch(() => ({})),
+        listSpotPrices().catch((): SpotPricePayload[] => []),
+        getVariantPricingData(collectVariantIds(product.variants)).catch(
+          (): Record<string, VariantPricingData> => ({})
+        ),
       ])
 
-  let cheapestPrice: number | null = null
+  const cheapestPrice = computeProductDynamicPrice(product, pricingData, spotPrices)
 
-  for (const variant of product.variants ?? []) {
-    const data = pricingData[variant.id]
-    if (!data) continue
+  const firstVariantId = product.variants?.[0]?.id
+  const displayTitle = getProductDisplayTitle(product)
 
-    const spot = spotPrices.find((s) => s.material === data.material)
-    if (!spot) continue
-
-    const price = computeFinalPrice({
-      weight: data.weight_oz,
-      spotPrice: spot.price,
-      spreadFactor: data.spread_factor,
-      spreadFixed: data.spread_fixed,
-      premiumPercentage: data.premium_percentage,
-      premiumFixed: data.premium_fixed,
-    })
-
-    if (cheapestPrice === null || price < cheapestPrice) {
-      cheapestPrice = price
-    }
+  if (showAddToCart) {
+    return (
+      <ProductCard
+        title={displayTitle}
+        href={`/products/${product.handle}`}
+        imageThumbnail={product.thumbnail}
+        images={product.images}
+        isFeatured={isFeatured}
+        withTranslateY={false}
+      >
+        <div className="mt-auto pt-3 flex items-center justify-between gap-2">
+          <PreviewPrice
+            variants={product.variants ?? []}
+            pricingData={pricingData}
+            initialPrice={cheapestPrice}
+          />
+          {firstVariantId && <AddToCartButton variantId={firstVariantId} />}
+        </div>
+      </ProductCard>
+    )
   }
 
-  const displayTitle =
-    product.variants?.length === 1 && product.variants[0]?.title
-      ? `${product.title} — ${product.variants[0].title}`
-      : product.title
-
   return (
-    <LocalizedClientLink href={`/products/${product.handle}`} className="group">
-      <div data-testid="product-wrapper">
-        <Thumbnail
-          thumbnail={product.thumbnail}
-          images={product.images}
-          size="full"
-          isFeatured={isFeatured}
+    <ProductCard
+      title={displayTitle}
+      href={`/products/${product.handle}`}
+      imageThumbnail={product.thumbnail}
+      images={product.images}
+      isFeatured={isFeatured}
+    >
+      <div className="mt-auto pt-2">
+        <PreviewPrice
+          variants={product.variants ?? []}
+          pricingData={pricingData}
+          initialPrice={cheapestPrice}
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
-            {displayTitle}
-          </Text>
-          <div className="flex items-center gap-x-2">
-            <PreviewPrice
-              variants={product.variants ?? []}
-              pricingData={pricingData}
-              initialPrice={cheapestPrice}
-            />
-          </div>
-        </div>
       </div>
-    </LocalizedClientLink>
+    </ProductCard>
   )
 }

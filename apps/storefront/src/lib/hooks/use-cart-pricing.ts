@@ -3,13 +3,9 @@
 import { useState, useEffect, useMemo } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
-import { computeFinalPrice } from "@u11d/dynamic-pricing-plugin/utils/price-formula"
-import { getVariantPricingData, type VariantPricingData } from "@lib/data/variant-pricing"
-
-export type CartItemPrice = {
-  unit_price: number
-  total: number
-}
+import { getVariantPricingData } from "@lib/data/variant-pricing"
+import { collectVariantIds, computeCartItemDynamicPrice } from "@lib/util/dynamic-pricing"
+import type { CartItemPrice, VariantPricingData } from "types/dynamic-pricing"
 
 export function useCartPricing(cart: HttpTypes.StoreCart | null): {
   itemPrices: Record<string, CartItemPrice>
@@ -21,12 +17,12 @@ export function useCartPricing(cart: HttpTypes.StoreCart | null): {
   const [pricingLoading, setPricingLoading] = useState(true)
 
   const variantIds = useMemo(() => {
-    return (cart?.items ?? [])
-      .map((item) => item.variant_id)
-      .filter((id): id is string => !!id)
+    return collectVariantIds((cart?.items ?? []).map((item) => ({ id: item.variant_id })))
   }, [cart?.items])
 
   useEffect(() => {
+    let cancelled = false
+
     if (variantIds.length === 0) {
       setPricingData({})
       setPricingLoading(false)
@@ -37,41 +33,34 @@ export function useCartPricing(cart: HttpTypes.StoreCart | null): {
 
     getVariantPricingData(variantIds)
       .then((data) => {
+        if (cancelled) {
+          return
+        }
+
         setPricingData(data)
         setPricingLoading(false)
       })
       .catch(() => {
+        if (cancelled) {
+          return
+        }
+
         setPricingLoading(false)
       })
+
+    return () => {
+      cancelled = true
+    }
   }, [variantIds])
 
   const itemPrices = useMemo(() => {
     const map: Record<string, CartItemPrice> = {}
 
     for (const item of cart?.items ?? []) {
-      const variantId = item.variant_id
-      if (!variantId) continue
+      const computed = computeCartItemDynamicPrice(item, pricingData, prices)
 
-      const data = pricingData[variantId]
-      if (!data) continue
-
-      const spot = prices.find((s) => s.material === data.material)
-      if (!spot) continue
-
-      const unitPrice = computeFinalPrice({
-        weight: data.weight_oz,
-        spotPrice: spot.price,
-        spreadFactor: data.spread_factor,
-        spreadFixed: data.spread_fixed,
-        premiumPercentage: data.premium_percentage,
-        premiumFixed: data.premium_fixed,
-      })
-
-      const total = Math.round(unitPrice * item.quantity * 100) / 100
-
-      map[item.id] = {
-        unit_price: unitPrice,
-        total,
+      if (computed) {
+        map[item.id] = computed
       }
     }
 

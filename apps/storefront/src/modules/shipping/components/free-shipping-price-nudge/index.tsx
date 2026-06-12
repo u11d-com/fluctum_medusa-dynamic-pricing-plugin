@@ -11,7 +11,12 @@ import {
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Button, clx } from "@modules/common/components/ui"
 import { useState } from "react"
-import { StoreFreeShippingPrice } from "types/global"
+
+type StoreFreeShippingPrice = StorePrice & {
+  target_reached: boolean
+  target_remaining: number
+  remaining_percentage: number
+}
 
 const computeTarget = (
   cart: HttpTypes.StoreCart,
@@ -211,7 +216,10 @@ function FreeShippingPopup({
     >
       <div>
         <Button
-          className="rounded-full bg-neutral-900 shadow-none outline-none border-none text-[15px] p-2"
+          className="rounded-full bg-neutral-900 shadow-none border-none text-[15px] p-2"
+          variant="icon"
+          size="xs"
+          aria-label="Dismiss free shipping message"
           onClick={() => setIsClosed(true)}
         >
           <XMark />
@@ -265,14 +273,14 @@ function FreeShippingPopup({
 
         <div className="flex gap-3">
           <LocalizedClientLink
-            className="rounded-2xl bg-transparent shadow-none outline-none border-[1px] border-white text-[15px] py-2.5 px-4"
+            className="rounded-2xl bg-transparent shadow-none border-[1px] border-white text-[15px] py-2.5 px-4"
             href="/cart"
           >
             View cart
           </LocalizedClientLink>
 
           <LocalizedClientLink
-            className="flex-grow rounded-2xl bg-white text-neutral-950 shadow-none outline-none border-[1px] border-white text-[15px] py-2.5 px-4 text-center"
+            className="flex-grow rounded-2xl bg-white text-neutral-950 shadow-none border-[1px] border-white text-[15px] py-2.5 px-4 text-center"
             href="/store"
           >
             View products

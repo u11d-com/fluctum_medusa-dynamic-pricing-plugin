@@ -3,7 +3,6 @@ const c = require("ansi-colors");
 const requiredEnvs = [
   {
     key: "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY",
-    // TODO: we need a good doc to point this to
     description:
       "Learn how to create a publishable key: https://docs.medusajs.com/v2/resources/storefront-development/publishable-api-keys",
   },
@@ -11,7 +10,6 @@ const requiredEnvs = [
 
 function checkEnvVariables() {
   const missingEnvs = requiredEnvs.filter(function (env) {
-    c;
     return !process.env[env.key];
   });
 

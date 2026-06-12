@@ -1,14 +1,15 @@
 import { Metadata } from "next"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
+import RecommendedProducts from "@modules/home/components/recommended-products"
 import Hero from "@modules/home/components/hero"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
+  title: "fluctum — Dynamic Pricing for Precious Metals",
   description:
-    "A performant frontend ecommerce starter template with Next.js 15 and Medusa.",
+    "An open-source dynamic pricing framework for precious metals (gold, silver, platinum, palladium) built on Medusa. Real-time spot prices, fair market value, and transparent pricing.",
 }
 
 export default async function Home(props: {
@@ -29,13 +30,14 @@ export default async function Home(props: {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-black">
       <Hero />
-      <div className="py-12">
+      <RecommendedProducts countryCode={countryCode} />
+      <div className="bg-black">
         <ul className="flex flex-col gap-x-6">
           <FeaturedProducts collections={collections} region={region} />
         </ul>
       </div>
-    </>
+    </div>
   )
 }

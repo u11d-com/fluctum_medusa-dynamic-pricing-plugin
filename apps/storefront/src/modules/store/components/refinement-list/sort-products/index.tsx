@@ -4,6 +4,10 @@ import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 
 export type SortOptions = "price_asc" | "price_desc" | "created_at" | "category"
 
+function isSortOption(value: string): value is SortOptions {
+  return value === "price_asc" || value === "price_desc" || value === "created_at" || value === "category"
+}
+
 type SortProductsProps = {
   sortBy: SortOptions
   setQueryParams: (name: string, value: SortOptions) => void
@@ -13,7 +17,7 @@ type SortProductsProps = {
 const sortOptions = [
   {
     value: "category",
-    label: "Category",
+    label: "Default",
   },
   {
     value: "created_at",
@@ -35,7 +39,11 @@ const SortProducts = ({
   setQueryParams,
 }: SortProductsProps) => {
   const handleChange = (value: string) => {
-    setQueryParams("sortBy", value as SortOptions)
+    if (!isSortOption(value)) {
+      return
+    }
+
+    setQueryParams("sortBy", value)
   }
 
   return (

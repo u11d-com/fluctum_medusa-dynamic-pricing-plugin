@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useActionState } from "react";
+import { getFormString } from "@lib/util/form-data"
 
 import Input from "@modules/common/components/input"
 
@@ -20,8 +21,8 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
     formData: FormData
   ) => {
     const customer = {
-      first_name: formData.get("first_name") as string,
-      last_name: formData.get("last_name") as string,
+      first_name: getFormString(formData, "first_name"),
+      last_name: getFormString(formData, "last_name"),
     }
 
     try {

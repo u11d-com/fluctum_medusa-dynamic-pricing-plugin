@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { Button, StatusNotice, Text } from "@modules/common/components/ui"
 
 type Props = {
   expiresAt: string | null
@@ -28,45 +29,48 @@ export default function PriceLockCountdown({ expiresAt, isRefreshing, onRefresh,
   const totalSec = Math.max(0, Math.ceil(remaining / 1000))
   const minutes = Math.floor(totalSec / 60)
   const seconds = totalSec % 60
+  const hasExpired = Boolean(expiresAt) && remaining <= 0
 
   return (
-    <div className="border border-gray-100 rounded-lg p-4 mb-6 bg-gray-50/50">
+    <StatusNotice tone={hasExpired ? "warning" : "info"} className="mb-6">
       {error && (
-        <div className="text-xs text-red-600 mb-2">{error}</div>
+        <Text variant="error" className="text-xs mb-2">{error}</Text>
       )}
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           {isRefreshing ? (
-            <span className="text-sm text-gray-500">Locking prices...</span>
+            <span className="text-sm text-ui-fg-muted">Locking Prices…</span>
           ) : remaining > 0 ? (
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-ui-fg-base">
               Prices locked for{" "}
-              <span className="font-mono font-semibold text-gray-900 tabular-nums">
+              <span className="font-mono font-semibold text-ui-fg-base tabular-nums">
                 {minutes}:{seconds.toString().padStart(2, "0")}
               </span>
             </span>
           ) : expiresAt ? (
-            <span className="text-sm text-orange-600 font-medium">
+            <span className="text-sm text-tag-orange-text font-medium">
               Prices expired
             </span>
           ) : (
-            <span className="text-sm text-gray-400">Initializing...</span>
+            <span className="text-sm text-ui-fg-muted">Initializing…</span>
           )}
-          <button
+          <Button
             type="button"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="text-xs text-gray-600 underline hover:text-gray-900 disabled:opacity-50"
+            variant="link"
+            size="xs"
+            className="text-xs"
           >
-            {isRefreshing ? "Locking..." : "Refresh prices"}
-          </button>
+            {isRefreshing ? "Locking…" : "Refresh Prices"}
+          </Button>
         </div>
         {expiresAt && (
-          <span className="text-[10px] text-gray-400 font-mono">
+          <span className="text-[10px] text-ui-fg-muted font-mono">
             {new Date(expiresAt).toLocaleTimeString()}
           </span>
         )}
       </div>
-    </div>
+    </StatusNotice>
   )
 }

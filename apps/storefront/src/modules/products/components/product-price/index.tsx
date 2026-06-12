@@ -3,9 +3,15 @@
 import { useState, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
-import { computeFinalPrice } from "@u11d/dynamic-pricing-plugin/utils/price-formula"
-import { getVariantPricingData, type VariantPricingData } from "@lib/data/variant-pricing"
+import { getVariantPricingData } from "@lib/data/variant-pricing"
 import { convertToLocale } from "@lib/util/money"
+import {
+  collectVariantIds,
+  computeProductDynamicPrice,
+  computeVariantDynamicPrice,
+  indexSpotPricesByMaterial,
+} from "@lib/util/dynamic-pricing"
+import type { VariantPricingData } from "types/dynamic-pricing"
 
 export default function ProductPrice({
   product,
@@ -19,64 +25,40 @@ export default function ProductPrice({
   const [pricingLoading, setPricingLoading] = useState(true)
 
   useEffect(() => {
-    const variantIds = (product.variants ?? []).map((v) => v.id).filter(Boolean) as string[]
-    console.log("[ProductPrice] variants on product:", product.variants?.length, "resolved IDs:", variantIds)
+    let cancelled = false
+    const variantIds = collectVariantIds(product.variants)
 
     if (variantIds.length === 0) {
-      console.log("[ProductPrice] no variant IDs, skipping pricing fetch")
       setPricingLoading(false)
       return
     }
 
     getVariantPricingData(variantIds)
       .then((data) => {
-        console.log("[ProductPrice] variant pricing data received, keys:", Object.keys(data))
+        if (cancelled) {
+          return
+        }
+
         setPricingData(data)
         setPricingLoading(false)
       })
-      .catch((err) => {
-        console.log("[ProductPrice] variant pricing fetch failed:", err)
+      .catch(() => {
+        if (cancelled) {
+          return
+        }
+
         setPricingLoading(false)
       })
+
+    return () => {
+      cancelled = true
+    }
   }, [product.variants])
 
-  console.log("[ProductPrice] render — spotLoading:", spotLoading, "pricingLoading:", pricingLoading, "prices:", prices.length, "pricingData keys:", Object.keys(pricingData))
+  const spotPriceByMaterial = indexSpotPricesByMaterial(prices)
 
   function computePrice(v: HttpTypes.StoreProductVariant): number | null {
-    const data = pricingData[v.id]
-    if (!data) {
-      console.log("[ProductPrice] no pricing data for variant", v.id, "title:", v.title)
-      return null
-    }
-
-    const spot = prices.find((s) => s.material === data.material)
-    if (!spot) {
-      console.log("[ProductPrice] no spot price for material", data.material, "variant:", v.title)
-      return null
-    }
-
-    const computed = computeFinalPrice({
-      weight: data.weight_oz,
-      spotPrice: spot.price,
-      spreadFactor: data.spread_factor,
-      spreadFixed: data.spread_fixed,
-      premiumPercentage: data.premium_percentage,
-      premiumFixed: data.premium_fixed,
-    })
-    console.log("[ProductPrice] computed price for", v.title, ":", computed)
-    return computed
-  }
-
-  function findCheapest(): number | null {
-    if (!product.variants) return null
-    let cheapest: number | null = null
-    for (const v of product.variants) {
-      const p = computePrice(v)
-      if (p !== null && (cheapest === null || p < cheapest)) {
-        cheapest = p
-      }
-    }
-    return cheapest
+    return computeVariantDynamicPrice(v.id, pricingData, spotPriceByMaterial)
   }
 
   const ready = !spotLoading && !pricingLoading
@@ -85,7 +67,9 @@ export default function ProductPrice({
     return <div className="block w-32 h-9 bg-gray-100 animate-pulse" />
   }
 
-  const displayPrice = variant ? computePrice(variant) : findCheapest()
+  const displayPrice = variant
+    ? computePrice(variant)
+    : computeProductDynamicPrice(product, pricingData, prices)
 
   if (displayPrice === null && prices.length === 0) {
     return null

@@ -17,7 +17,7 @@ const SkeletonCartTotals = ({ header = true }) => {
         <div className="w-20 h-3 bg-gray-100"></div>
       </div>
 
-      <div className="w-full border-b border-gray-200 border-dashed my-4"></div>
+      <div className="w-full border-b border-ui-border-base border-dashed my-4"></div>
 
       <div className="flex items-center justify-between">
         <div className="w-32 h-6 bg-gray-100 mb-4"></div>

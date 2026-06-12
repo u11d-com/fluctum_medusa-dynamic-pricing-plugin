@@ -54,7 +54,7 @@ export default async function ProductRail({
       <ul className="grid grid-cols-2 small:grid-cols-3 gap-x-6 gap-y-24 small:gap-y-36">
         {sortedProducts.map((product) => (
           <li key={product.id}>
-            <ProductPreview product={product} region={region} isFeatured spotPrices={spotPrices} pricingData={pricingData} />
+            <ProductPreview product={product} region={region} isFeatured showAddToCart spotPrices={spotPrices} pricingData={pricingData} />
           </li>
         ))}
       </ul>

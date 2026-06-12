@@ -5,6 +5,7 @@ import CartTotals from "@modules/common/components/cart-totals"
 import Divider from "@modules/common/components/divider"
 import { useCartPricing } from "@lib/hooks/use-cart-pricing"
 import { lockCartPrices } from "@lib/data/cart"
+import { getCountryCodeFromParams } from "@lib/util/route"
 import { HttpTypes } from "@medusajs/types"
 import { useRouter, useParams } from "next/navigation"
 import { useState } from "react"
@@ -27,6 +28,7 @@ const Summary = ({ cart }: SummaryProps) => {
   const { subtotal: dynamicSubtotal } = useCartPricing(cart)
   const router = useRouter()
   const params = useParams()
+  const countryCode = getCountryCodeFromParams(params)
   const [isLocking, setIsLocking] = useState(false)
   const step = getCheckoutStep(cart)
 
@@ -35,12 +37,11 @@ const Summary = ({ cart }: SummaryProps) => {
     : undefined
 
   const handleCheckout = async () => {
-    if (!cart.id) return
+    if (!cart.id || !countryCode) return
     setIsLocking(true)
 
     try {
       await lockCartPrices(cart.id, true)
-      const countryCode = params?.countryCode as string
       router.push(`/${countryCode}/checkout?step=${step}`)
     } catch {
       setIsLocking(false)
@@ -49,7 +50,7 @@ const Summary = ({ cart }: SummaryProps) => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <Heading level="h2" className="text-[2rem] leading-[2.75rem]">
+      <Heading level="h2" variant="checkout">
         Summary
       </Heading>
       <Divider />
@@ -60,7 +61,7 @@ const Summary = ({ cart }: SummaryProps) => {
         disabled={isLocking}
         data-testid="checkout-button"
       >
-        {isLocking ? "Locking prices..." : "Go to checkout"}
+        {isLocking ? "Locking Prices…" : "Go To Checkout"}
       </Button>
     </div>
   )

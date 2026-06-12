@@ -1,4 +1,5 @@
 import repeat from "@lib/util/repeat"
+import { sortByCreatedAtDesc } from "@lib/util/line-item"
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Table } from "@modules/common/components/ui"
 
@@ -14,7 +15,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   return (
     <div>
       <div className="pb-3 flex items-center">
-        <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
+        <Heading variant="checkout">Cart</Heading>
       </div>
       <Table>
         <Table.Header className="border-t-0">
@@ -32,20 +33,16 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
         </Table.Header>
         <Table.Body>
           {items
-            ? items
-                .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
-                })
-                .map((item) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      cart={cart}
-                      currencyCode={cart?.currency_code}
-                    />
-                  )
-                })
+            ? sortByCreatedAtDesc(items).map((item) => {
+                return (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    cart={cart}
+                    currencyCode={cart?.currency_code}
+                  />
+                )
+              })
             : repeat(5).map((i) => {
                 return <SkeletonLineItem key={i} />
               })}

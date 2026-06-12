@@ -1,6 +1,7 @@
 "use server"
 
 import { sdk } from "@lib/config"
+import { getFormString } from "@lib/util/form-data"
 import medusaError from "@lib/util/medusa-error"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { HttpTypes } from "@medusajs/types"
@@ -72,7 +73,7 @@ export const createTransferRequest = async (
   error: string | null
   order: HttpTypes.StoreOrder | null
 }> => {
-  const id = formData.get("order_id") as string
+  const id = getFormString(formData, "order_id")
 
   if (!id) {
     return { success: false, error: "Order ID is required", order: null }

@@ -17,6 +17,7 @@
     "backend:dev": "npm -w @dtc/backend run dev",
     "backend:create-admin": "npm -w @dtc/backend run create-admin",
     "storefront:dev": "npm -w @dtc/storefront run dev",
+    "storefront:check": "npm -w @dtc/storefront run check",
     "plugin:build": "npm -w @u11d/dynamic-pricing-plugin run build && npx --yes yalc push"
   },
   "devDependencies": {

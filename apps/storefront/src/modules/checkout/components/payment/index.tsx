@@ -2,7 +2,7 @@
 import { RadioGroup } from "@headlessui/react"
 import { isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
-import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
+import { CreditCard } from "@medusajs/icons"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer, {
   StripeCardContainer,
@@ -11,13 +11,12 @@ import Divider from "@modules/common/components/divider"
 import {
   Button,
   Container,
-  Heading,
   Text,
-  clx,
 } from "@modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import CheckoutStepCard from "../checkout-step-card"
 
 const Payment = ({
   cart,
@@ -108,33 +107,15 @@ const Payment = ({
   }, [isOpen])
 
   return (
-    <div className="bg-white">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <Heading
-          level="h2"
-          className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
-            {
-              "opacity-50 pointer-events-none select-none":
-                !isOpen && !paymentReady,
-            }
-          )}
-        >
-          Payment
-          {!isOpen && paymentReady && <CheckCircleSolid />}
-        </Heading>
-        {!isOpen && paymentReady && (
-          <Text>
-            <button
-              onClick={handleEdit}
-              className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
-              data-testid="edit-payment-button"
-            >
-              Edit
-            </button>
-          </Text>
-        )}
-      </div>
+    <CheckoutStepCard
+      title="Payment"
+      isOpen={isOpen}
+      isComplete={!isOpen && !!paymentReady}
+      disabled={!isOpen && !paymentReady}
+      canEdit={!isOpen && !!paymentReady}
+      onEdit={handleEdit}
+      dataTestId="checkout-payment-step"
+    >
       <div>
         <div className={isOpen ? "block" : "hidden"}>
           {availablePaymentMethods?.length && (
@@ -229,7 +210,7 @@ const Payment = ({
         </div>
       </div>
       <Divider className="mt-8" />
-    </div>
+    </CheckoutStepCard>
   )
 }
 

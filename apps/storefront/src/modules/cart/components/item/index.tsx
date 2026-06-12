@@ -86,7 +86,7 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
 
       <Table.Cell className="text-left">
         <Text
-          className="txt-medium-plus text-ui-fg-base"
+          className="text-sm font-medium text-ui-fg-base"
           data-testid="product-title"
         >
           {item.product_title}
@@ -98,8 +98,10 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
         <Table.Cell>
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
-            <div className="flex items-center border border-gray-200 rounded">
+            <div className="flex items-center border border-ui-border-base rounded">
               <button
+                type="button"
+                aria-label="Decrease quantity"
                 className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30"
                 disabled={updating || parseInt(inputValue, 10) <= 1}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) - 1)}
@@ -115,10 +117,12 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
                 onBlur={commitQuantity}
                 onKeyDown={handleKeyDown}
                 disabled={updating}
-                className="w-10 h-8 flex items-center justify-center text-small-regular border-x border-gray-200 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-10 h-8 flex items-center justify-center text-small-regular border-x border-ui-border-base text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 data-testid="product-quantity"
               />
               <button
+                type="button"
+                aria-label="Increase quantity"
                 className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
                 disabled={updating}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) + 1)}
@@ -128,7 +132,7 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
               </button>
             </div>
             {updating && (
-              <span className="text-ui-fg-muted text-small-regular">...</span>
+              <span className="text-ui-fg-muted text-small-regular">…</span>
             )}
           </div>
           <ErrorMessage error={error} data-testid="product-error-message" />

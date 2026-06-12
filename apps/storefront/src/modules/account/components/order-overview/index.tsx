@@ -13,7 +13,7 @@ const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
         {orders.map((o) => (
           <div
             key={o.id}
-            className="border-b border-gray-200 pb-6 last:pb-0 last:border-none"
+            className="border-b border-ui-border-base pb-6 last:pb-0 last:border-none"
           >
             <OrderCard order={o} />
           </div>

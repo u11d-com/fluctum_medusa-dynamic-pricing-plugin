@@ -20,6 +20,11 @@ module.exports = {
         padding: "padding-top padding-right padding-bottom padding-left",
       },
       colors: {
+        brand: {
+          primary: "var(--brand-primary)",
+          hover: "var(--brand-primary-hover)",
+          soft: "var(--brand-primary-soft)",
+        },
         grey: {
           0: "#FFFFFF",
           5: "#F9FAFB",
@@ -58,16 +63,8 @@ module.exports = {
         "3xl": "2rem",
       },
       fontFamily: {
-        sans: [
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Ubuntu",
-          "sans-serif",
-        ],
+        sans: ["var(--font-lato)", "ui-sans-serif", "system-ui", "sans-serif"],
+        cinzel: ["var(--font-cinzel)", "Georgia", "serif"],
       },
       keyframes: {
         ring: {

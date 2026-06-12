@@ -1,7 +1,7 @@
 "use client"
 
 import { convertToLocale } from "@lib/util/money"
-import { materialName } from "@lib/util/metal"
+import { materialName, materialDotClass } from "@lib/util/metal"
 import { useSpotPrices } from "@lib/context/spot-price-context"
 
 export default function SpotPriceBarClient() {
@@ -13,14 +13,10 @@ export default function SpotPriceBarClient() {
 
   return (
     <div className="bg-neutral-900 text-neutral-100 text-xs py-1.5">
-      <div className="content-container flex items-center justify-center gap-6">
+      <div className="content-container flex items-center justify-center gap-12">
         {prices.map((sp) => (
           <div key={sp.material} className="flex items-center gap-1.5">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                sp.material === "XAU" ? "bg-yellow-400" : "bg-gray-400"
-              }`}
-            />
+            <span className={`w-1.5 h-1.5 rounded-full ${materialDotClass(sp.material)}`} />
             <span className="font-semibold">{materialName(sp.material)}</span>
             <span>
               {convertToLocale({

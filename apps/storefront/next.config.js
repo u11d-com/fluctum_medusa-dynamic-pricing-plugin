@@ -18,9 +18,6 @@ const nextConfig = {
       fullUrl: true,
     },
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
     remotePatterns: [
       {

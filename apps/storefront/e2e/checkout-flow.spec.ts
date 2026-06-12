@@ -71,6 +71,27 @@ test.describe("Checkout flow", () => {
     await expect(quantityInput).toHaveValue("3")
   })
 
+  test("add product to cart from landing page", async ({ page }) => {
+    await page.goto("/")
+
+    const addBtn = page.getByTestId("add-to-cart-button").first()
+    await expect(addBtn).toBeVisible()
+    await expect(addBtn).toHaveText("Add to cart")
+
+    const productTitle = await page.getByTestId("product-title").first().textContent()
+    expect(productTitle).not.toBeNull()
+
+    await addBtn.click()
+    await expect(addBtn).toHaveText("Added!", { timeout: 10000 })
+
+    await expect(page.getByTestId("nav-cart-link")).toContainText("Cart (1)")
+
+    await page.goto("/cart")
+    await expect(page.getByTestId("product-quantity").first()).toBeVisible()
+    const quantityInput = page.getByTestId("product-quantity").first()
+    await expect(quantityInput).toHaveValue("1")
+  })
+
   test("complete full checkout flow with price lock", async ({ page }) => {
     await pickVariant(page, "1 oz")
     await page.waitForTimeout(300)

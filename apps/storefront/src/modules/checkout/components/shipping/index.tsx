@@ -3,14 +3,15 @@ import { Radio, RadioGroup } from "@headlessui/react"
 import { setShippingMethod } from "@lib/data/cart"
 import { calculatePriceForShippingOption } from "@lib/data/fulfillment"
 import { convertToLocale } from "@lib/util/money"
-import { CheckCircleSolid, Loader } from "@medusajs/icons"
+import { Loader } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import Divider from "@modules/common/components/divider"
 import MedusaRadio from "@modules/common/components/radio"
-import { Button, clx, Heading, Text } from "@modules/common/components/ui"
+import { Button, ChoiceCard, Text } from "@modules/common/components/ui"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import CheckoutStepCard from "../checkout-step-card"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -20,7 +21,32 @@ type ShippingProps = {
   availableShippingMethods: HttpTypes.StoreCartShippingOption[] | null
 }
 
-function formatAddress(address: HttpTypes.StoreCartAddress) {
+type FulfillmentSet = {
+  type?: string
+  location?: {
+    address?: HttpTypes.StoreCartAddress
+  }
+}
+
+type ShippingOptionWithFulfillmentSet = HttpTypes.StoreCartShippingOption & {
+  service_zone?: {
+    fulfillment_set?: FulfillmentSet
+  }
+}
+
+function isPickupOption(option: HttpTypes.StoreCartShippingOption): boolean {
+  const shippingOption = option as ShippingOptionWithFulfillmentSet
+  return shippingOption.service_zone?.fulfillment_set?.type === "pickup"
+}
+
+function getPickupAddress(
+  option: HttpTypes.StoreCartShippingOption
+): HttpTypes.StoreCartAddress | undefined {
+  const shippingOption = option as ShippingOptionWithFulfillmentSet
+  return shippingOption.service_zone?.fulfillment_set?.location?.address
+}
+
+function formatAddress(address?: HttpTypes.StoreCartAddress) {
   if (!address) {
     return ""
   }
@@ -70,11 +96,11 @@ const Shipping: React.FC<ShippingProps> = ({
   const isOpen = searchParams.get("step") === "delivery"
 
   const _shippingMethods = availableShippingMethods?.filter(
-    (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type !== "pickup"
+    (shippingMethod) => !isPickupOption(shippingMethod)
   )
 
-  const _pickupMethods = availableShippingMethods?.filter(
-    (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type === "pickup"
+  const _pickupMethods = availableShippingMethods?.filter((shippingMethod) =>
+    isPickupOption(shippingMethod)
   )
 
   const hasPickupOptions = !!_pickupMethods?.length
@@ -152,38 +178,20 @@ const Shipping: React.FC<ShippingProps> = ({
   }, [isOpen])
 
   return (
-    <div className="bg-white">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <Heading
-          level="h2"
-          className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
-            {
-              "opacity-50 pointer-events-none select-none":
-                !isOpen && cart.shipping_methods?.length === 0,
-            }
-          )}
-        >
-          Delivery
-          {!isOpen && (cart.shipping_methods?.length ?? 0) > 0 && (
-            <CheckCircleSolid />
-          )}
-        </Heading>
-        {!isOpen &&
-          cart?.shipping_address &&
-          cart?.billing_address &&
-          cart?.email && (
-            <Text>
-              <button
-                onClick={handleEdit}
-                className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
-                data-testid="edit-delivery-button"
-              >
-                Edit
-              </button>
-            </Text>
-          )}
-      </div>
+    <CheckoutStepCard
+      title="Delivery"
+      isOpen={isOpen}
+      isComplete={!isOpen && (cart.shipping_methods?.length ?? 0) > 0}
+      disabled={!isOpen && cart.shipping_methods?.length === 0}
+      canEdit={
+        !isOpen &&
+        !!cart?.shipping_address &&
+        !!cart?.billing_address &&
+        !!cart?.email
+      }
+      onEdit={handleEdit}
+      dataTestId="checkout-delivery-step"
+    >
       {isOpen ? (
         <>
           <div className="grid">
@@ -200,7 +208,7 @@ const Shipping: React.FC<ShippingProps> = ({
                 {hasPickupOptions && (
                   <RadioGroup
                     value={showPickupOptions}
-                    onChange={(_value) => {
+                    onChange={() => {
                       const id = _pickupMethods.find(
                         (option) => !option.insufficient_inventory
                       )?.id
@@ -213,25 +221,24 @@ const Shipping: React.FC<ShippingProps> = ({
                     <Radio
                       value={PICKUP_OPTION_ON}
                       data-testid="delivery-option-radio"
-                      className={clx(
-                        "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
-                        {
-                          "border-ui-border-interactive":
-                            showPickupOptions === PICKUP_OPTION_ON,
-                        }
-                      )}
+                      className="mb-2"
                     >
-                      <div className="flex items-center gap-x-4">
-                        <MedusaRadio
-                          checked={showPickupOptions === PICKUP_OPTION_ON}
-                        />
-                        <span className="text-base-regular">
-                          Pick up your order
+                      <ChoiceCard
+                        selected={showPickupOptions === PICKUP_OPTION_ON}
+                        className="w-full flex items-center justify-between text-small-regular cursor-pointer py-4 px-8"
+                      >
+                        <div className="flex items-center gap-x-4">
+                          <MedusaRadio
+                            checked={showPickupOptions === PICKUP_OPTION_ON}
+                          />
+                          <span className="text-base-regular">
+                            Pick up your order
+                          </span>
+                        </div>
+                        <span className="justify-self-end text-ui-fg-base">
+                          -
                         </span>
-                      </div>
-                      <span className="justify-self-end text-ui-fg-base">
-                        -
-                      </span>
+                      </ChoiceCard>
                     </Radio>
                   </RadioGroup>
                 )}
@@ -255,41 +262,39 @@ const Shipping: React.FC<ShippingProps> = ({
                         value={option.id}
                         data-testid="delivery-option-radio"
                         disabled={isDisabled}
-                        className={clx(
-                          "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
-                          {
-                            "border-ui-border-interactive":
-                              option.id === shippingMethodId,
-                            "hover:shadow-brders-none cursor-not-allowed":
-                              isDisabled,
-                          }
-                        )}
+                        className="mb-2"
                       >
-                        <div className="flex items-center gap-x-4">
-                          <MedusaRadio
-                            checked={option.id === shippingMethodId}
-                          />
-                          <span className="text-base-regular">
-                            {option.name}
+                        <ChoiceCard
+                          selected={option.id === shippingMethodId}
+                          disabled={isDisabled}
+                          className="w-full flex items-center justify-between text-small-regular cursor-pointer py-4 px-8"
+                        >
+                          <div className="flex items-center gap-x-4">
+                            <MedusaRadio
+                              checked={option.id === shippingMethodId}
+                            />
+                            <span className="text-base-regular">
+                              {option.name}
+                            </span>
+                          </div>
+                          <span className="justify-self-end text-ui-fg-base">
+                            {option.price_type === "flat" ? (
+                              convertToLocale({
+                                amount: option.amount!,
+                                currency_code: cart?.currency_code,
+                              })
+                            ) : calculatedPricesMap[option.id] ? (
+                              convertToLocale({
+                                amount: calculatedPricesMap[option.id],
+                                currency_code: cart?.currency_code,
+                              })
+                            ) : isLoadingPrices ? (
+                              <Loader />
+                            ) : (
+                              "-"
+                            )}
                           </span>
-                        </div>
-                        <span className="justify-self-end text-ui-fg-base">
-                          {option.price_type === "flat" ? (
-                            convertToLocale({
-                              amount: option.amount!,
-                              currency_code: cart?.currency_code,
-                            })
-                          ) : calculatedPricesMap[option.id] ? (
-                            convertToLocale({
-                              amount: calculatedPricesMap[option.id],
-                              currency_code: cart?.currency_code,
-                            })
-                          ) : isLoadingPrices ? (
-                            <Loader />
-                          ) : (
-                            "-"
-                          )}
-                        </span>
+                        </ChoiceCard>
                       </Radio>
                     )
                   })}
@@ -325,38 +330,33 @@ const Shipping: React.FC<ShippingProps> = ({
                           value={option.id}
                           disabled={option.insufficient_inventory}
                           data-testid="delivery-option-radio"
-                          className={clx(
-                            "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
-                            {
-                              "border-ui-border-interactive":
-                                option.id === shippingMethodId,
-                              "hover:shadow-brders-none cursor-not-allowed":
-                                option.insufficient_inventory,
-                            }
-                          )}
+                          className="mb-2"
                         >
-                          <div className="flex items-start gap-x-4">
-                            <MedusaRadio
-                              checked={option.id === shippingMethodId}
-                            />
-                            <div className="flex flex-col">
-                              <span className="text-base-regular">
-                                {option.name}
-                              </span>
-                              <span className="text-base-regular text-ui-fg-muted">
-                                {formatAddress(
-                                  (option as unknown as { service_zone?: { fulfillment_set?: { location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.location
-                                    ?.address as HttpTypes.StoreCartAddress
-                                )}
-                              </span>
+                          <ChoiceCard
+                            selected={option.id === shippingMethodId}
+                            disabled={option.insufficient_inventory}
+                            className="w-full flex items-center justify-between text-small-regular cursor-pointer py-4 px-8"
+                          >
+                            <div className="flex items-start gap-x-4">
+                              <MedusaRadio
+                                checked={option.id === shippingMethodId}
+                              />
+                              <div className="flex flex-col">
+                                <span className="text-base-regular">
+                                  {option.name}
+                                </span>
+                                <span className="text-base-regular text-ui-fg-muted">
+                                  {formatAddress(getPickupAddress(option))}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <span className="justify-self-end text-ui-fg-base">
-                            {convertToLocale({
-                              amount: option.amount!,
-                              currency_code: cart?.currency_code,
-                            })}
-                          </span>
+                            <span className="justify-self-end text-ui-fg-base">
+                              {convertToLocale({
+                                amount: option.amount!,
+                                currency_code: cart?.currency_code,
+                              })}
+                            </span>
+                          </ChoiceCard>
                         </Radio>
                       )
                     })}
@@ -373,7 +373,7 @@ const Shipping: React.FC<ShippingProps> = ({
             />
             <Button
               size="large"
-              className="mt"
+              className="mt-2"
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={!cart.shipping_methods?.[0]}
@@ -404,7 +404,7 @@ const Shipping: React.FC<ShippingProps> = ({
         </div>
       )}
       <Divider className="mt-8" />
-    </div>
+    </CheckoutStepCard>
   )
 }
 

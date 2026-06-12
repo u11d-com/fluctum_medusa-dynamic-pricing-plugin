@@ -3,6 +3,7 @@
 import { ArrowRightOnRectangle } from "@medusajs/icons"
 import { clx } from "@modules/common/components/ui"
 import { useParams, usePathname } from "next/navigation"
+import { getCountryCodeFromParams } from "@lib/util/route"
 
 import { signout } from "@lib/data/customer"
 import { HttpTypes } from "@medusajs/types"
@@ -18,10 +19,18 @@ const AccountNav = ({
   customer: HttpTypes.StoreCustomer | null
 }) => {
   const route = usePathname()
-  const { countryCode } = useParams() as { countryCode: string }
+  const countryCode = getCountryCodeFromParams(useParams())
 
   const handleLogout = async () => {
+    if (!countryCode) {
+      return
+    }
+
     await signout(countryCode)
+  }
+
+  if (!countryCode) {
+    return null
   }
 
   return (
@@ -48,7 +57,7 @@ const AccountNav = ({
                 <li>
                   <LocalizedClientLink
                     href="/account/profile"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    className="flex items-center justify-between py-4 border-b border-ui-border-base px-8"
                     data-testid="profile-link"
                   >
                     <>
@@ -63,7 +72,7 @@ const AccountNav = ({
                 <li>
                   <LocalizedClientLink
                     href="/account/addresses"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    className="flex items-center justify-between py-4 border-b border-ui-border-base px-8"
                     data-testid="addresses-link"
                   >
                     <>
@@ -78,7 +87,7 @@ const AccountNav = ({
                 <li>
                   <LocalizedClientLink
                     href="/account/orders"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    className="flex items-center justify-between py-4 border-b border-ui-border-base px-8"
                     data-testid="orders-link"
                   >
                     <div className="flex items-center gap-x-2">
@@ -91,7 +100,7 @@ const AccountNav = ({
                 <li>
                   <button
                     type="button"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8 w-full"
+                    className="flex items-center justify-between py-4 border-b border-ui-border-base px-8 w-full"
                     onClick={handleLogout}
                     data-testid="logout-button"
                   >

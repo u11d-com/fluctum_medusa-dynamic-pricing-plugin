@@ -25,7 +25,7 @@ export default defineConfig({
     {
       resolve: "@u11d/dynamic-pricing-plugin",
       options: {
-        materials: ["XAU", "XAG"],
+        materials: ["XAU", "XAG", "XPT", "XPD"],
         fetchIntervalSeconds: 10,
         priceLockDurationSeconds: 10 * 60,
         provider: process.env.GOLD_API_KEY

@@ -1,10 +1,12 @@
 "use server"
 
 import { sdk } from "@lib/config"
+import { getCheckboxValue, getFormString } from "@lib/util/form-data"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
+import type { LockPricesResult } from "types/dynamic-pricing"
 import {
   getAuthHeaders,
   getCacheOptions,
@@ -77,13 +79,13 @@ export async function getOrSetCart(countryCode: string) {
     await setCartId(cart.id)
 
     const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
+    revalidateTag(cartCacheTag, "max")
   }
 
   if (cart && cart?.region_id !== region.id) {
     await sdk.store.cart.update(cart.id, { region_id: region.id }, {}, headers)
     const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
+    revalidateTag(cartCacheTag, "max")
   }
 
   return cart
@@ -104,10 +106,10 @@ export async function updateCart(data: HttpTypes.StoreUpdateCart) {
     .update(cartId, data, {}, headers)
     .then(async ({ cart }: { cart: HttpTypes.StoreCart }) => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      revalidateTag(fulfillmentCacheTag, "max")
 
       return cart
     })
@@ -149,10 +151,10 @@ export async function addToCart({
     )
     .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      revalidateTag(fulfillmentCacheTag, "max")
     })
     .catch(medusaError)
 }
@@ -182,10 +184,10 @@ export async function updateLineItem({
     .updateLineItem(cartId, lineId, { quantity }, {}, headers)
     .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      revalidateTag(fulfillmentCacheTag, "max")
     })
     .catch(medusaError)
 }
@@ -209,10 +211,10 @@ export async function deleteLineItem(lineId: string) {
     .deleteLineItem(cartId, lineId, {}, headers)
     .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      revalidateTag(fulfillmentCacheTag, "max")
     })
     .catch(medusaError)
 }
@@ -232,7 +234,7 @@ export async function setShippingMethod({
     .addShippingMethod(cartId, { option_id: shippingMethodId }, {}, headers)
     .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
     })
     .catch(medusaError)
 }
@@ -249,68 +251,71 @@ export async function initiatePaymentSession(
     .initiatePaymentSession(cart, data, {}, headers)
     .then(async (resp) => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
       return resp
     })
     .catch(medusaError)
 }
 
-// TODO: Pass a POJO instead of a form entity here
 export async function setAddresses(currentState: unknown, formData: FormData) {
   try {
     if (!formData) {
       throw new Error("No form data found when setting addresses")
     }
-    const cartId = getCartId()
+    const cartId = await getCartId()
     if (!cartId) {
       throw new Error("No existing cart found when setting addresses")
     }
 
-    const data = {
-      shipping_address: {
-        first_name: formData.get("shipping_address.first_name"),
-        last_name: formData.get("shipping_address.last_name"),
-        address_1: formData.get("shipping_address.address_1"),
-        address_2: "",
-        company: formData.get("shipping_address.company"),
-        postal_code: formData.get("shipping_address.postal_code"),
-        city: formData.get("shipping_address.city"),
-        country_code: formData.get("shipping_address.country_code"),
-        province: formData.get("shipping_address.province"),
-        phone: formData.get("shipping_address.phone"),
-      },
-      email: formData.get("email"),
-    } as any
+    const shippingAddress = {
+      first_name: getFormString(formData, "shipping_address.first_name"),
+      last_name: getFormString(formData, "shipping_address.last_name"),
+      address_1: getFormString(formData, "shipping_address.address_1"),
+      address_2: "",
+      company: getFormString(formData, "shipping_address.company"),
+      postal_code: getFormString(formData, "shipping_address.postal_code"),
+      city: getFormString(formData, "shipping_address.city"),
+      country_code: getFormString(formData, "shipping_address.country_code"),
+      province: getFormString(formData, "shipping_address.province"),
+      phone: getFormString(formData, "shipping_address.phone"),
+    }
 
-    const sameAsBilling = formData.get("same_as_billing")
-    if (sameAsBilling === "on") data.billing_address = data.shipping_address
+    const data: HttpTypes.StoreUpdateCart = {
+      shipping_address: shippingAddress,
+      email: getFormString(formData, "email"),
+    }
 
-    if (sameAsBilling !== "on")
+    const sameAsBilling = getCheckboxValue(formData, "same_as_billing")
+
+    if (sameAsBilling) {
+      data.billing_address = shippingAddress
+    }
+
+    if (!sameAsBilling) {
       data.billing_address = {
-        first_name: formData.get("billing_address.first_name"),
-        last_name: formData.get("billing_address.last_name"),
-        address_1: formData.get("billing_address.address_1"),
+        first_name: getFormString(formData, "billing_address.first_name"),
+        last_name: getFormString(formData, "billing_address.last_name"),
+        address_1: getFormString(formData, "billing_address.address_1"),
         address_2: "",
-        company: formData.get("billing_address.company"),
-        postal_code: formData.get("billing_address.postal_code"),
-        city: formData.get("billing_address.city"),
-        country_code: formData.get("billing_address.country_code"),
-        province: formData.get("billing_address.province"),
-        phone: formData.get("billing_address.phone"),
+        company: getFormString(formData, "billing_address.company"),
+        postal_code: getFormString(formData, "billing_address.postal_code"),
+        city: getFormString(formData, "billing_address.city"),
+        country_code: getFormString(formData, "billing_address.country_code"),
+        province: getFormString(formData, "billing_address.province"),
+        phone: getFormString(formData, "billing_address.phone"),
       }
+    }
     await updateCart(data)
-  } catch (e: any) {
-    return e.message
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return e.message
+    }
+
+    return "Failed to set addresses"
   }
 
-  redirect(
-    `/${formData.get("shipping_address.country_code")}/checkout?step=delivery`
-  )
-}
-
-type LockPricesResult = {
-  locks: { variant_id: string; unit_price: number; quantity: number; material: string }[]
-  expires_at: string
+  const checkoutCountryCode = getFormString(formData, "shipping_address.country_code")
+  redirect(`/${checkoutCountryCode}/checkout?step=delivery`)
 }
 
 /**
@@ -320,29 +325,16 @@ type LockPricesResult = {
  * Returns lock info including the expiry timestamp.
  */
 export async function lockCartPrices(cartId: string, force = false): Promise<LockPricesResult> {
-  const baseUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
-  const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+  const query = force ? { force: "true" } : undefined
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  }
-  if (publishableKey) {
-    headers["x-publishable-api-key"] = publishableKey
-  }
-
-  const url = `${baseUrl}/store/dynamic-pricing/carts/${cartId}/price-lock${force ? "?force=true" : ""}`
-  const res = await fetch(url, {
-    method: "POST",
-    headers,
-    cache: "no-store",
-  })
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "")
-    throw new Error(`Failed to lock prices: ${res.status} ${text}`)
-  }
-
-  return res.json()
+  return sdk.client.fetch<LockPricesResult>(
+    `/store/dynamic-pricing/carts/${cartId}/price-lock`,
+    {
+      method: "POST",
+      query,
+      cache: "no-store",
+    }
+  )
 }
 
 /**
@@ -368,7 +360,7 @@ export async function placeOrder(cartId?: string) {
     .complete(id, {}, headers)
     .then(async (cartRes) => {
       const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      revalidateTag(cartCacheTag, "max")
       return cartRes
     })
     .catch(medusaError)
@@ -378,7 +370,7 @@ export async function placeOrder(cartId?: string) {
       cartRes.order.shipping_address?.country_code?.toLowerCase()
 
     const orderCacheTag = await getCacheTag("orders")
-    revalidateTag(orderCacheTag)
+    revalidateTag(orderCacheTag, "max")
 
     removeCartId()
     redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
@@ -403,14 +395,14 @@ export async function updateRegion(countryCode: string, currentPath: string) {
   if (cartId) {
     await updateCart({ region_id: region.id })
     const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
+    revalidateTag(cartCacheTag, "max")
   }
 
   const regionCacheTag = await getCacheTag("regions")
-  revalidateTag(regionCacheTag)
+  revalidateTag(regionCacheTag, "max")
 
   const productsCacheTag = await getCacheTag("products")
-  revalidateTag(productsCacheTag)
+  revalidateTag(productsCacheTag, "max")
 
   redirect(`/${countryCode}${currentPath}`)
 }

@@ -9,7 +9,12 @@ export const metadata: Metadata = {
   description: "View your cart",
 }
 
-export default async function Cart() {
+export default async function Cart({
+  params,
+}: {
+  params: Promise<{ countryCode: string }>
+}) {
+  const { countryCode } = await params
   const cart = await retrieveCart().catch((error) => {
     console.error(error)
     return notFound()
@@ -17,5 +22,5 @@ export default async function Cart() {
 
   const customer = await retrieveCustomer()
 
-  return <CartTemplate cart={cart} customer={customer} />
+  return <CartTemplate cart={cart} customer={customer} countryCode={countryCode} />
 }

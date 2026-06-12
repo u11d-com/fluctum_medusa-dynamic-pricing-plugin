@@ -1,7 +1,8 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from "react"
-import type { SpotPricePayload } from "types/spot-price"
+import type { SpotPricePayload } from "types/dynamic-pricing"
+import { sdk } from "@lib/config"
 
 const POLL_FALLBACK_MS = 30_000
 
@@ -12,6 +13,30 @@ type SpotPriceContextValue = {
 }
 
 const SpotPriceContext = createContext<SpotPriceContextValue | null>(null)
+
+function isSpotPricePayload(value: unknown): value is SpotPricePayload {
+  if (!value || typeof value !== "object") {
+    return false
+  }
+
+  const record = value as Record<string, unknown>
+
+  return (
+    typeof record.material === "string" &&
+    typeof record.price === "number" &&
+    typeof record.ask === "number" &&
+    typeof record.bid === "number" &&
+    typeof record.timestamp === "string"
+  )
+}
+
+function parseSpotPriceArray(value: unknown): SpotPricePayload[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.filter(isSpotPricePayload)
+}
 
 export function SpotPriceProvider({ children }: { children: ReactNode }) {
   const [prices, setPrices] = useState<SpotPricePayload[]>([])
@@ -49,7 +74,7 @@ export function SpotPriceProvider({ children }: { children: ReactNode }) {
 
       es.addEventListener("spot-prices", (event) => {
         try {
-          const data: SpotPricePayload[] = JSON.parse(event.data)
+          const data = parseSpotPriceArray(JSON.parse(event.data))
           if (!cancelled) onPrices(data)
         } catch {
           // ignore malformed events
@@ -69,20 +94,24 @@ export function SpotPriceProvider({ children }: { children: ReactNode }) {
 
     function startFallback() {
       if (cancelled) return
-      const baseUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
-      const key = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 
       const fetchPrices = async () => {
         try {
-          const res = await fetch(`${baseUrl}/store/dynamic-pricing/spot-prices`, {
-            headers: key ? { "x-publishable-api-key": key } : {},
-            cache: "no-store",
-          })
-          if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          const data: { spot_prices: SpotPricePayload[] } = await res.json()
-          if (!cancelled) onPrices(data.spot_prices)
+          const data = await sdk.client.fetch<{ spot_prices: SpotPricePayload[] }>(
+            "/store/dynamic-pricing/spot-prices",
+            {
+              method: "GET",
+              cache: "no-store",
+            }
+          )
+
+          if (!cancelled) {
+            onPrices(parseSpotPriceArray(data.spot_prices))
+          }
         } catch {
-          if (!cancelled) setError(true)
+          if (!cancelled) {
+            setError(true)
+          }
         }
       }
 
