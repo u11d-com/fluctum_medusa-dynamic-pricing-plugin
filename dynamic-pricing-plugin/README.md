@@ -1,64 +1,110 @@
-<p align="center">
-  <a href="https://www.medusajs.com">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/59018053/229103275-b5e482bb-4601-46e6-8142-244f531cebdb.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    </picture>
-  </a>
-</p>
-<h1 align="center">
-  Medusa Plugin Starter
-</h1>
+# @u11d/dynamic-pricing-plugin
 
-<h4 align="center">
-  <a href="https://docs.medusajs.com">Documentation</a> |
-  <a href="https://www.medusajs.com">Website</a>
-</h4>
+A [Medusa v2](https://docs.medusajs.com) plugin for real-time dynamic pricing of precious metals (gold, silver, platinum, palladium). Prices update every few seconds via SSE, are computed on the frontend from live spot prices, and are locked at checkout entry.
 
-<p align="center">
-  Building blocks for digital commerce
-</p>
-<p align="center">
-  <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
-  </a>
-    <a href="https://www.producthunt.com/posts/medusa"><img src="https://img.shields.io/badge/Product%20Hunt-%231%20Product%20of%20the%20Day-%23DA552E" alt="Product Hunt"></a>
-  <a href="https://discord.gg/xpCwq3Kfn8">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Discord Chat" />
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=medusajs">
-    <img src="https://img.shields.io/twitter/follow/medusajs.svg?label=Follow%20@medusajs" alt="Follow @medusajs" />
-  </a>
-</p>
+## Features
 
-## Compatibility
+- **Live spot prices** — scheduled job fetches ask/bid/spot prices from a configurable provider on every `fetchIntervalSeconds` interval
+- **Real-time delivery** — Server-Sent Events (SSE) push prices to the storefront and admin panel without polling
+- **Pricing rules** — named rules with spread factor, spread fixed, premium percentage, and premium fixed; assigned per product variant
+- **Per-variant material + weight** — each variant carries a material symbol (XAU, XAG, …) and weight in troy ounces via a module link
+- **Checkout price locks** — prices are locked when the customer enters checkout; the `completeCartWorkflow` validate hook rejects orders with missing or expired locks
+- **Admin panel** — config overview, pricing-rule CRUD, live spot-price dashboard, historical prices, variant/product assignment widgets
+- **Currency conversion** — optional conversion rates stored in DB and applied in the pricing formula
+- **Built-in providers** — `randomProvider` (sinusoidal drift, for dev/testing), `createGoldApiProvider` (goldapi.io)
 
-This starter is compatible with versions >= 2.4.0 of `@medusajs/medusa`. 
+## Installation
 
-## Getting Started
+```bash
+npm install @u11d/dynamic-pricing-plugin
+```
 
-Visit the [Quickstart Guide](https://docs.medusajs.com/learn/installation) to set up a server.
+Register in `medusa-config.ts`:
 
-Visit the [Plugins documentation](https://docs.medusajs.com/learn/fundamentals/plugins) to learn more about plugins and how to create them.
+```ts
+import { randomProvider } from "@u11d/dynamic-pricing-plugin"
 
-Visit the [Docs](https://docs.medusajs.com/learn/installation#get-started) to learn more about our system requirements.
+export default defineConfig({
+  plugins: [
+    {
+      resolve: "@u11d/dynamic-pricing-plugin",
+      options: {
+        materials: ["XAU", "XAG"],
+        fetchIntervalSeconds: 10,
+        priceLockDurationSeconds: 120,
+        provider: randomProvider,
+      },
+    },
+  ],
+})
+```
 
-## What is Medusa
+## Plugin Options
 
-Medusa is a set of commerce modules and tools that allow you to build rich, reliable, and performant commerce applications without reinventing core commerce logic. The modules can be customized and used to build advanced ecommerce stores, marketplaces, or any product that needs foundational commerce primitives. All modules are open-source and freely available on npm.
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `materials` | `string[]` | required | Material symbols to track, e.g. `["XAU", "XAG"]` |
+| `fetchIntervalSeconds` | `number` | `10` | How often to fetch/generate spot prices |
+| `provider` | `PriceProviderFn` | required | Function that returns spot prices for a list of materials |
+| `priceLockDurationSeconds` | `number` | `120` | How long a price lock is valid during checkout |
 
-Learn more about [Medusa’s architecture](https://docs.medusajs.com/learn/introduction/architecture) and [commerce modules](https://docs.medusajs.com/learn/fundamentals/modules/commerce-modules) in the Docs.
+## Pricing Formula
 
-## Community & Contributions
+```
+base  = weight_oz × spot_price × spread_factor × currency_conversion
+after_premium = base × (1 + premium_percentage / 100)
+final = after_premium + spread_fixed + premium_fixed
+```
 
-The community and core team are available in [GitHub Discussions](https://github.com/medusajs/medusa/discussions), where you can ask for support, discuss roadmap, and share ideas.
+Prices are stored and returned as decimal numbers (not cents). The `computeFinalPrice` utility is exported from both the main entry point and the `./client` subpath for use in storefronts.
 
-Join our [Discord server](https://discord.com/invite/medusajs) to meet other community members.
+## Data Models
 
-## Other channels
+| Model | Key fields |
+|---|---|
+| `SpotPrice` | `material`, `ask`, `bid`, `price`, `timestamp` |
+| `PricingRule` | `name`, `spread_factor`, `spread_fixed`, `premium_percentage`, `premium_fixed` |
+| `CartPriceLock` | `cart_id`, `variant_id`, `material`, `weight_oz`, `unit_price`, `spot_price`, `locked_at`, `expires_at` |
 
-- [GitHub Issues](https://github.com/medusajs/medusa/issues)
-- [Twitter](https://twitter.com/medusajs)
-- [LinkedIn](https://www.linkedin.com/company/medusajs)
-- [Medusa Blog](https://medusajs.com/blog/)
+## Store API Routes
+
+All routes are under `/store/dynamic-pricing/`.
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/spot-prices` | Latest spot prices; optional `?material=` filter |
+| GET | `/sse` | SSE stream; sends current prices on connect, then broadcasts updates |
+| POST | `/carts/:id/price-lock` | Lock prices for a cart; `?force=true` always creates fresh locks |
+| GET | `/variant-pricing` | Variant pricing details (rule + material + weight) |
+| GET | `/currency-rates` | Active currency conversion rates |
+| GET | `/plugin` | Plugin info (version, materials) |
+
+## Admin API Routes
+
+All routes are under `/admin/dynamic-pricing/`.
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/config` | Plugin config (read-only) |
+| GET/POST | `/pricing-rules` | List / create pricing rules |
+| GET/DELETE | `/pricing-rules/:id` | Get / delete a pricing rule |
+| GET/POST/DELETE | `/variants/:id/pricing-rule` | Assign / read / remove a pricing rule from a variant |
+| POST | `/products/:id/pricing-rule` | Bulk-assign a rule to all variants in a product |
+| GET | `/spot-prices` | Historical spot prices with pagination |
+| GET | `/sse` | Admin SSE stream |
+| GET/POST | `/currency-rates` | List / upsert currency conversion rates |
+| GET/POST | `/config/reference-currency` | Read / set reference currency |
+| GET | `/seed` | Seed sample products (dev only) |
+
+## Exports
+
+```ts
+import { randomProvider, createGoldApiProvider } from "@u11d/dynamic-pricing-plugin"
+import { computeFinalPrice, PricingFactors } from "@u11d/dynamic-pricing-plugin/client"
+import { lockCartPricesWorkflow } from "@u11d/dynamic-pricing-plugin/workflows"
+import { DYNAMIC_PRICING_MODULE } from "@u11d/dynamic-pricing-plugin"
+```
+
+## Development
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) for local setup, build workflow, and testing instructions.

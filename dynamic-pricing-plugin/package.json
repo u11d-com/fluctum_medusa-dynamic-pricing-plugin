@@ -1,8 +1,8 @@
 {
   "name": "@u11d/dynamic-pricing-plugin",
   "version": "0.0.1",
-  "description": "A starter for Medusa plugins.",
-  "author": "Medusa (https://medusajs.com)",
+  "description": "Dynamic pricing plugin for Medusa v2 — real-time precious metals pricing via SSE, checkout price locks, and admin pricing-rule management.",
+  "author": "u11d",
   "license": "MIT",
   "files": [
     ".medusa/server"
