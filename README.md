@@ -93,6 +93,16 @@ npm run dev
 - Admin panel: `http://localhost:9000/app`
 - Storefront: `http://localhost:8000`
 
+### Resetting your local environment
+
+Once set up, if you need a clean slate (schema changes, corrupted data, reproducing a bug):
+
+```bash
+npm run db:reset
+```
+
+This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `dynamic_pricing` database, runs migrations, creates the admin user, and **syncs the fresh publishable API key into `apps/storefront/.env`**. Restart the storefront afterwards — `NEXT_PUBLIC_*` env vars are baked in at process start, so an already-running storefront will keep using the stale key. See [`AGENTS.md`](AGENTS.md#local-development--fresh-environment-reset) for the full rationale.
+
 ## Environment Variables
 
 ### Backend (`apps/backend/.env`)
@@ -155,6 +165,7 @@ npm run plugin:build   # builds plugin AND pushes to yalc store
 | `npm run test:integration` | Run HTTP integration tests in the backend |
 | `npm run backend:migrate` | Run Medusa DB migrations |
 | `npm run backend:seed` | Run initial data seed |
+| `npm run db:reset` | **Destructive:** drop DB, recreate, migrate, seed, create admin, sync storefront `.env` — see [`AGENTS.md`](AGENTS.md#local-development--fresh-environment-reset) |
 | `npm run storefront:check` | Type-check the storefront |
 
 ## Documentation

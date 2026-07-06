@@ -14,6 +14,7 @@
     "test:integration": "npm -w @dtc/backend run test:integration",
     "backend:migrate": "npm -w @dtc/backend run migrate",
     "backend:seed": "npm -w @dtc/backend run seed",
+    "db:reset": "./reset-db.sh",
     "backend:dev": "npm -w @dtc/backend run dev",
     "backend:create-admin": "npm -w @dtc/backend run create-admin",
     "storefront:dev": "npm -w @dtc/storefront run dev",
@@ -27,6 +28,7 @@
   "workspaces": [
     "apps/**",
     "!apps/backend/.medusa/**",
+    "!apps/backend/.yalc/**",
     "dynamic-pricing-plugin"
   ],
   "overrides": {
