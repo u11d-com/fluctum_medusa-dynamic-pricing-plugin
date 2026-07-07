@@ -1,9 +1,9 @@
 "use client"
 
-import { addToCart } from "@lib/data/cart"
 import { getCountryCodeFromParams } from "@lib/util/route"
+import { useCart } from "@modules/cart/context/cart-context"
 import { useParams } from "next/navigation"
-import { useState } from "react"
+import { useTransition } from "react"
 import { toast } from "sonner"
 import { Button } from "@modules/common/components/ui"
 
@@ -37,40 +37,41 @@ function Spinner() {
 }
 
 export default function AddToCartButton({ variantId }: AddToCartButtonProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const { addToCart } = useCart()
+  const [isPending, startTransition] = useTransition()
   const countryCode = getCountryCodeFromParams(useParams())
 
-  const handleClick = async (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (isLoading) return
+    if (isPending) return
 
-    setIsLoading(true)
-    try {
-      if (!countryCode) {
-        throw new Error("Missing country code")
+    startTransition(async () => {
+      try {
+        if (!countryCode) {
+          throw new Error("Missing country code")
+        }
+        await addToCart({ variantId, quantity: 1, countryCode })
+      } catch (err) {
+        toast.error(
+          err instanceof Error
+            ? err.message
+            : "Could not add to cart. Please try again."
+        )
       }
-
-      await addToCart({ variantId, quantity: 1, countryCode })
-      toast.success("Added to cart")
-    } catch {
-      toast.error("Could not add to cart. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   return (
     <Button
       onClick={handleClick}
-      disabled={isLoading}
+      disabled={isPending}
       variant="primary"
       size="xs"
       className="shrink-0 rounded-lg"
       data-testid="add-to-cart-button"
     >
-      {isLoading ? <Spinner /> : null}
-      {isLoading ? "Adding" : "Add"}
+      {isPending ? <Spinner /> : "Add"}
     </Button>
   )
 }

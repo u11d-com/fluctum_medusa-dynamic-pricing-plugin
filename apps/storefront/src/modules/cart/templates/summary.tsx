@@ -9,6 +9,7 @@ import { getCountryCodeFromParams } from "@lib/util/route"
 import { HttpTypes } from "@medusajs/types"
 import { useRouter, useParams } from "next/navigation"
 import { useState } from "react"
+import { useCart } from "@modules/cart/context/cart-context"
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart
@@ -25,23 +26,25 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 }
 
 const Summary = ({ cart }: SummaryProps) => {
-  const { subtotal: dynamicSubtotal } = useCartPricing(cart)
+  const { cart: contextCart } = useCart()
+  const effectiveCart = contextCart ?? cart
+  const { subtotal: dynamicSubtotal } = useCartPricing(effectiveCart)
   const router = useRouter()
   const params = useParams()
   const countryCode = getCountryCodeFromParams(params)
   const [isLocking, setIsLocking] = useState(false)
-  const step = getCheckoutStep(cart)
+  const step = getCheckoutStep(effectiveCart)
 
   const dynamicTotal = dynamicSubtotal > 0
-    ? dynamicSubtotal + (cart.shipping_subtotal ?? 0) + (cart.tax_total ?? 0)
-    : undefined
+    ? dynamicSubtotal + (effectiveCart.shipping_subtotal ?? 0) + (effectiveCart.tax_total ?? 0)
+    : null
 
   const handleCheckout = async () => {
-    if (!cart.id || !countryCode) return
+    if (!effectiveCart.id || !countryCode) return
     setIsLocking(true)
 
     try {
-      await lockCartPrices(cart.id, true)
+      await lockCartPrices(effectiveCart.id, true)
       router.push(`/${countryCode}/checkout?step=${step}`)
     } catch {
       setIsLocking(false)
@@ -54,7 +57,7 @@ const Summary = ({ cart }: SummaryProps) => {
         Summary
       </Heading>
       <Divider />
-      <CartTotals totals={cart} subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : undefined} totalOverride={dynamicTotal} />
+      <CartTotals totals={effectiveCart} subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : null} totalOverride={dynamicTotal} />
       <Button
         className="w-full h-10"
         onClick={handleCheckout}

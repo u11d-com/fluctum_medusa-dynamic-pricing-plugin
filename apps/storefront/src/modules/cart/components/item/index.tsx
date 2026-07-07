@@ -1,14 +1,14 @@
 "use client"
 
 import { Table, Text, clx } from "@modules/common/components/ui"
-import { updateLineItem } from "@lib/data/cart"
+import { useCart } from "@modules/cart/context/cart-context"
 import { HttpTypes } from "@medusajs/types"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition } from "react"
 import ItemPrice from "./item-price"
 
 type ItemProps = {
@@ -20,31 +20,31 @@ type ItemProps = {
 }
 
 const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProps) => {
-  const [updating, setUpdating] = useState(false)
+  const [updating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState<string>(String(item.quantity))
+  const { updateLineItem } = useCart()
 
   useEffect(() => {
     setInputValue(String(item.quantity))
   }, [item.quantity])
 
-  const changeQuantity = async (quantity: number) => {
+  const changeQuantity = (quantity: number) => {
     const clamped = Math.max(1, quantity)
     setInputValue(String(clamped))
     setError(null)
-    setUpdating(true)
 
-    await updateLineItem({
-      lineId: item.id,
-      quantity: clamped,
-    })
-      .catch((err) => {
-        setError(err.message)
+    startTransition(async () => {
+      try {
+        await updateLineItem({
+          lineId: item.id,
+          quantity: clamped,
+        })
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to update quantity")
         setInputValue(String(item.quantity))
-      })
-      .finally(() => {
-        setUpdating(false)
-      })
+      }
+    })
   }
 
   const commitQuantity = () => {

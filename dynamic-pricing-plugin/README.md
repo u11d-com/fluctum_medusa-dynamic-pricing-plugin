@@ -1,4 +1,4 @@
-# @u11d/dynamic-pricing-plugin
+# @u11d/medusa-dynamic-pricing
 
 A [Medusa v2](https://docs.medusajs.com) plugin for real-time dynamic pricing of precious metals (gold, silver, platinum, palladium). Prices update every few seconds via SSE, are computed on the frontend from live spot prices, and are locked at checkout entry.
 
@@ -16,18 +16,18 @@ A [Medusa v2](https://docs.medusajs.com) plugin for real-time dynamic pricing of
 ## Installation
 
 ```bash
-npm install @u11d/dynamic-pricing-plugin
+npm install @u11d/medusa-dynamic-pricing
 ```
 
 Register in `medusa-config.ts`:
 
 ```ts
-import { randomProvider } from "@u11d/dynamic-pricing-plugin"
+import { randomProvider } from "@u11d/medusa-dynamic-pricing"
 
 export default defineConfig({
   plugins: [
     {
-      resolve: "@u11d/dynamic-pricing-plugin",
+      resolve: "@u11d/medusa-dynamic-pricing",
       options: {
         materials: ["XAU", "XAG"],
         fetchIntervalSeconds: 10,
@@ -99,10 +99,10 @@ All routes are under `/admin/dynamic-pricing/`.
 ## Exports
 
 ```ts
-import { randomProvider, createGoldApiProvider } from "@u11d/dynamic-pricing-plugin"
-import { computeFinalPrice, PricingFactors } from "@u11d/dynamic-pricing-plugin/client"
-import { lockCartPricesWorkflow } from "@u11d/dynamic-pricing-plugin/workflows"
-import { DYNAMIC_PRICING_MODULE } from "@u11d/dynamic-pricing-plugin"
+import { randomProvider, createGoldApiProvider } from "@u11d/medusa-dynamic-pricing"
+import { computeFinalPrice, PricingFactors } from "@u11d/medusa-dynamic-pricing/client"
+import { lockCartPricesWorkflow } from "@u11d/medusa-dynamic-pricing/workflows"
+import { DYNAMIC_PRICING_MODULE } from "@u11d/medusa-dynamic-pricing"
 ```
 
 ## Development

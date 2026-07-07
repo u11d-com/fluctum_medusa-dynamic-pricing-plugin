@@ -83,7 +83,7 @@ npm run plugin:build
 
 This runs `medusa plugin:build` and then `yalc push`, updating the `.yalc/` copy in the backend. Restart the backend to pick up changes.
 
-> **Important:** The plugin must be linked to **both** `apps/backend` and the monorepo root. The root link ensures Medusa CLI can resolve the module from `node_modules`. If the root link is missing: `cd <root> && yalc add @u11d/dynamic-pricing-plugin`.
+> **Important:** The plugin must be linked to **both** `apps/backend` and the monorepo root. The root link ensures Medusa CLI can resolve the module from `node_modules`. If the root link is missing: `cd <root> && yalc add @u11d/medusa-dynamic-pricing`.
 
 ---
 

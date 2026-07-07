@@ -4,6 +4,10 @@
     "@u11d/dynamic-pricing-plugin": {
       "signature": "d05e9489031bb536051a6ffbdd566f47",
       "pure": true
+    },
+    "@u11d/medusa-dynamic-pricing": {
+      "signature": "bf72f4a638a15ed8e1258ebadf0277da",
+      "file": true
     }
   }
 }

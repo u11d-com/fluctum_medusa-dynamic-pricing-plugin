@@ -9,22 +9,24 @@ type LineItemPriceProps = {
 }
 
 const LineItemPrice = ({
-  item,
+  item: _item,
   style = "default",
   currencyCode,
   price,
 }: LineItemPriceProps) => {
-  const currentPrice = price ?? item.total ?? 0
-
   return (
     <div className="flex flex-col gap-x-2 text-ui-fg-subtle items-end">
       <div className="text-left">
-        <span data-testid="product-price">
-          {convertToLocale({
-            amount: currentPrice,
-            currency_code: currencyCode,
-          })}
-        </span>
+        {price !== undefined ? (
+          <span data-testid="product-price" data-value={price}>
+            {convertToLocale({
+              amount: price,
+              currency_code: currencyCode,
+            })}
+          </span>
+        ) : (
+          <span data-testid="product-price">—</span>
+        )}
       </div>
     </div>
   )

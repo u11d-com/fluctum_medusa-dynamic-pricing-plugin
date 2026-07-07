@@ -1,6 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import type { SpotPricePayload, VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { SpotPricePayload, VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 import { computeProductDynamicPrice } from "@lib/util/dynamic-pricing"
 
 const MATERIAL_ORDER: Record<string, number> = {

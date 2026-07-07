@@ -1,8 +1,11 @@
+"use client"
+
+import { useCart } from "@modules/cart/context/cart-context"
 import repeat from "@lib/util/repeat"
 import { sortByCreatedAtDesc } from "@lib/util/line-item"
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Table } from "@modules/common/components/ui"
-
+import EmptyCartMessage from "../components/empty-cart-message"
 import Item from "@modules/cart/components/item"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 
@@ -11,7 +14,15 @@ type ItemsTemplateProps = {
 }
 
 const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
-  const items = cart?.items
+  const { cart: contextCart } = useCart()
+  const effectiveCart = contextCart ?? cart
+  const items = effectiveCart?.items
+  const currencyCode = effectiveCart?.currency_code ?? "usd"
+
+  if (items !== undefined && items.length === 0) {
+    return <EmptyCartMessage />
+  }
+
   return (
     <div>
       <div className="pb-3 flex items-center">
@@ -38,8 +49,8 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
                   <Item
                     key={item.id}
                     item={item}
-                    cart={cart}
-                    currencyCode={cart?.currency_code}
+                    cart={effectiveCart}
+                    currencyCode={currencyCode}
                   />
                 )
               })

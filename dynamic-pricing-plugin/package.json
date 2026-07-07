@@ -1,7 +1,7 @@
 {
-  "name": "@u11d/dynamic-pricing-plugin",
+  "name": "@u11d/medusa-dynamic-pricing",
   "version": "0.0.1",
-  "description": "Dynamic pricing plugin for Medusa v2 — real-time precious metals pricing via SSE, checkout price locks, and admin pricing-rule management.",
+  "description": "Fluctum — dynamic pricing plugin for Medusa v2 — real-time precious metals pricing via SSE, checkout price locks, and admin pricing-rule management.",
   "author": "u11d",
   "license": "MIT",
   "files": [
@@ -39,7 +39,13 @@
     "plugin",
     "medusa-plugin-other",
     "medusa-plugin",
-    "medusa-v2"
+    "medusa-v2",
+    "dynamic-pricing",
+    "precious-metals",
+    "gold",
+    "silver",
+    "sse",
+    "checkout-price-lock"
   ],
   "scripts": {
     "build": "medusa plugin:build",

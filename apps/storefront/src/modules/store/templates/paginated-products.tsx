@@ -5,7 +5,7 @@ import { getVariantPricingData } from "@lib/data/variant-pricing"
 import SortedProductGrid from "@modules/store/components/sorted-product-grid"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { collectVariantIds, computeProductDynamicPrice } from "@lib/util/dynamic-pricing"
-import type { SpotPricePayload, VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { SpotPricePayload, VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 
 export default async function PaginatedProducts({
   sortBy,

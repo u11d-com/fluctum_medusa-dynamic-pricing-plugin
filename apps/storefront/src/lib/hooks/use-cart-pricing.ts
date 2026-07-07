@@ -5,7 +5,7 @@ import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
 import { getVariantPricingData } from "@lib/data/variant-pricing"
 import { collectVariantIds, computeCartItemDynamicPrice } from "@lib/util/dynamic-pricing"
-import type { CartItemPrice, VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { CartItemPrice, VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 
 export function useCartPricing(cart: HttpTypes.StoreCart | null): {
   itemPrices: Record<string, CartItemPrice>

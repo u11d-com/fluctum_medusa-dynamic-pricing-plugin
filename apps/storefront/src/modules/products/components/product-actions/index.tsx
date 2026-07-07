@@ -1,6 +1,5 @@
 "use client"
 
-import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { getCountryCodeFromParams } from "@lib/util/route"
 import { HttpTypes } from "@medusajs/types"
@@ -8,9 +7,10 @@ import { Button, Divider } from "@modules/common/components/ui"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, useTransition } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { useCart } from "@modules/cart/context/cart-context"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -38,7 +38,8 @@ export default function ProductActions({
   const searchParams = useSearchParams()
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
-  const [isAdding, setIsAdding] = useState(false)
+  const [isAdding, startAddTransition] = useTransition()
+  const { addToCart } = useCart()
   const countryCode = getCountryCodeFromParams(useParams())
 
   // If there is only 1 variant, preselect the options
@@ -143,23 +144,22 @@ export default function ProductActions({
   const inView = useIntersection(actionsRef, "0px")
 
   // add the selected variant to the cart
-  const handleAddToCart = async () => {
-    if (!selectedVariant?.id || !countryCode) return null
+  const handleAddToCart = () => {
+    if (!selectedVariant?.id || !countryCode) return
+    const variantId = selectedVariant.id
+    const code = countryCode
 
-    setIsAdding(true)
-
-    try {
-      await addToCart({
-        variantId: selectedVariant.id,
-        quantity: 1,
-        countryCode,
-      })
-      toast.success("Added to cart")
-    } catch {
-      toast.error("Could not add to cart. Please try again.")
-    } finally {
-      setIsAdding(false)
-    }
+    startAddTransition(async () => {
+      try {
+        await addToCart({
+          variantId,
+          quantity: 1,
+          countryCode: code,
+        })
+      } catch {
+        toast.error("Could not add to cart. Please try again.")
+      }
+    })
   }
 
   return (

@@ -110,13 +110,14 @@ const ShippingAddress = ({
         }}
         includePhone={false}
       />
-      <div className="my-8">
+      <div className="my-8 flex justify-center">
         <Checkbox
           label="Billing address same as shipping address"
           name="same_as_billing"
           checked={checked}
           onChange={onChange}
           data-testid="billing-address-checkbox"
+          className="accent-brand-primary"
         />
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">

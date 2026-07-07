@@ -15,7 +15,7 @@ import {
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
-import { seedProductsWorkflow } from "@u11d/dynamic-pricing-plugin";
+import { seedProductsWorkflow } from "@u11d/medusa-dynamic-pricing";
 
 type QueryRecord = Record<string, unknown>
 

@@ -3,8 +3,8 @@ import type {
   LockedPriceMap,
   VariantPricingData,
   SpotPricePayload,
-} from "@u11d/dynamic-pricing-plugin/client"
-import { computeFinalPrice } from "@u11d/dynamic-pricing-plugin/client"
+} from "@u11d/medusa-dynamic-pricing/client"
+import { computeFinalPrice } from "@u11d/medusa-dynamic-pricing/client"
 
 export function getProductDisplayTitle(product: HttpTypes.StoreProduct): string {
   if (product.variants?.length === 1 && product.variants[0]?.title) {
@@ -66,6 +66,25 @@ export function computeCheapestVariantPrice(
 
     if (price !== null && (cheapest === null || price < cheapest)) {
       cheapest = price
+    }
+  }
+
+  return cheapest
+}
+
+export function computeCheapestVariant(
+  variants: HttpTypes.StoreProductVariant[],
+  pricingData: Record<string, VariantPricingData>,
+  spotPrices: SpotPricePayload[]
+): { variant: HttpTypes.StoreProductVariant; price: number } | null {
+  const spotPriceByMaterial = indexSpotPricesByMaterial(spotPrices)
+  let cheapest: { variant: HttpTypes.StoreProductVariant; price: number } | null = null
+
+  for (const variant of variants) {
+    if (!variant.id) continue
+    const price = computeVariantDynamicPrice(variant.id, pricingData, spotPriceByMaterial)
+    if (price !== null && (cheapest === null || price < cheapest.price)) {
+      cheapest = { variant, price }
     }
   }
 

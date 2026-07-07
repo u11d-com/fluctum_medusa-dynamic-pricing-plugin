@@ -1,7 +1,7 @@
 "use server"
 
 import { sdk } from "@lib/config"
-import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 
 export async function getVariantPricingData(
   variantIds: string[]

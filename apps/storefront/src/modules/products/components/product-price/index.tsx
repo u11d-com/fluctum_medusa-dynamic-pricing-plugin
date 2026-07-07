@@ -12,7 +12,7 @@ import {
   indexSpotPricesByMaterial,
 } from "@lib/util/dynamic-pricing"
 import { Text } from "@modules/common/components/ui"
-import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 
 export default function ProductPrice({
   product,

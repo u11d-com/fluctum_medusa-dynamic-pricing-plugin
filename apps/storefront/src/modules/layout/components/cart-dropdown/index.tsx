@@ -8,7 +8,6 @@ import {
 } from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
 import { sortByCreatedAtDesc } from "@lib/util/line-item"
-import { HttpTypes } from "@medusajs/types"
 import { Button, Heading, Surface, Text } from "@modules/common/components/ui"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
@@ -16,14 +15,12 @@ import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { useCartPricing } from "@lib/hooks/use-cart-pricing"
+import { useCart } from "@modules/cart/context/cart-context"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
-const CartDropdown = ({
-  cart: cartState,
-}: {
-  cart?: HttpTypes.StoreCart | null
-}) => {
+const CartDropdown = () => {
+  const { cart: cartState } = useCart()
   const { itemPrices, subtotal: dynamicSubtotal } = useCartPricing(cartState ?? null)
   const [activeTimer, setActiveTimer] = useState<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -38,7 +35,7 @@ const CartDropdown = ({
       return acc + item.quantity
     }, 0) || 0
 
-  const subtotal = dynamicSubtotal > 0 ? dynamicSubtotal : (cartState?.subtotal ?? 0)
+  const subtotal = dynamicSubtotal > 0 ? dynamicSubtotal : null
   const itemRef = useRef<number>(totalItems || 0)
 
   const timedOpen = () => {
@@ -193,12 +190,14 @@ const CartDropdown = ({
                       as="span"
                       className="text-large-semi"
                       data-testid="cart-subtotal"
-                      data-value={subtotal}
+                      data-value={subtotal ?? undefined}
                     >
-                      {convertToLocale({
-                        amount: subtotal,
-                        currency_code: cartState.currency_code,
-                      })}
+                      {subtotal !== null
+                        ? convertToLocale({
+                            amount: subtotal,
+                            currency_code: cartState.currency_code,
+                          })
+                        : "—"}
                     </Text>
                   </div>
                   <LocalizedClientLink href="/cart" passHref>

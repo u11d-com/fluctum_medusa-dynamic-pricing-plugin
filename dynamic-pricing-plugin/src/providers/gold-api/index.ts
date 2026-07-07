@@ -21,7 +21,7 @@ export type GoldApiProviderOptions = {
  *
  * Usage in medusa-config.ts:
  * ```ts
- * import { createGoldApiProvider } from "@u11d/dynamic-pricing-plugin/providers/gold-api"
+ * import { createGoldApiProvider } from "@u11d/medusa-dynamic-pricing/providers/gold-api"
  *
  * options: {
  *   materials: ["XAU", "XAG"],

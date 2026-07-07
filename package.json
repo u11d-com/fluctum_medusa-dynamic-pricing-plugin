@@ -1,25 +1,26 @@
 {
   "name": "dynamic-pricing",
+  "description": "Fluctum — dynamic pricing framework for Medusa",
   "private": true,
   "packageManager": "npm@11.6.2",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "turbo run dev --filter=@dtc/backend --filter=@dtc/storefront --parallel",
+    "dev": "turbo run dev --filter=@u11d/medusa-dynamic-pricing-backend --filter=@u11d/medusa-dynamic-pricing-storefront --parallel",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "npm --workspaces --if-present run test:unit",
-    "test:integration": "npm -w @dtc/backend run test:integration",
-    "backend:migrate": "npm -w @dtc/backend run migrate",
-    "backend:seed": "npm -w @dtc/backend run seed",
+    "test:integration": "npm -w @u11d/medusa-dynamic-pricing-backend run test:integration",
+    "backend:migrate": "npm -w @u11d/medusa-dynamic-pricing-backend run migrate",
+    "backend:seed": "npm -w @u11d/medusa-dynamic-pricing-backend run seed",
     "db:reset": "./reset-db.sh",
-    "backend:dev": "npm -w @dtc/backend run dev",
-    "backend:create-admin": "npm -w @dtc/backend run create-admin",
-    "storefront:dev": "npm -w @dtc/storefront run dev",
-    "storefront:check": "npm -w @dtc/storefront run check",
-    "plugin:build": "npm -w @u11d/dynamic-pricing-plugin run build && npx --yes yalc push"
+    "backend:dev": "npm -w @u11d/medusa-dynamic-pricing-backend run dev",
+    "backend:create-admin": "npm -w @u11d/medusa-dynamic-pricing-backend run create-admin",
+    "storefront:dev": "npm -w @u11d/medusa-dynamic-pricing-storefront run dev",
+    "storefront:check": "npm -w @u11d/medusa-dynamic-pricing-storefront run check",
+    "plugin:build": "npm -w @u11d/medusa-dynamic-pricing run build && cd dynamic-pricing-plugin && npx --yes yalc push"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
@@ -37,6 +38,6 @@
     "ajv": "^8.0.0"
   },
   "dependencies": {
-    "@u11d/dynamic-pricing-plugin": "file:.yalc/@u11d/dynamic-pricing-plugin"
+    "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing"
   }
 }

@@ -1,8 +1,8 @@
-import { HttpTypes } from "@medusajs/types"
-import type { SpotPricePayload, VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { HttpTypes } from "@medusajs/types"
+import type { SpotPricePayload, VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 import { listSpotPrices } from "@lib/data/spot-prices"
 import { getVariantPricingData } from "@lib/data/variant-pricing"
-import { collectVariantIds, computeProductDynamicPrice, getProductDisplayTitle } from "@lib/util/dynamic-pricing"
+import { collectVariantIds, computeCheapestVariant, getProductDisplayTitle } from "@lib/util/dynamic-pricing"
 import PreviewPrice from "./preview-price.client"
 import AddToCartButton from "../add-to-cart-button"
 import ProductCard from "../product-card"
@@ -31,15 +31,18 @@ export default async function ProductPreview({
         ),
       ])
 
-  const cheapestPrice = computeProductDynamicPrice(product, pricingData, spotPrices)
+  const cheapestVariant = computeCheapestVariant(product.variants ?? [], pricingData, spotPrices)
+  const cheapestPrice = cheapestVariant?.price ?? null
+  const cheapestVariantId = cheapestVariant?.variant.id ?? product.variants?.[0]?.id
+  const cheapestVariantTitle = cheapestVariant?.variant.title ?? undefined
 
-  const firstVariantId = product.variants?.[0]?.id
   const displayTitle = getProductDisplayTitle(product)
 
   if (showAddToCart) {
     return (
       <ProductCard
         title={displayTitle}
+        variantLabel={cheapestVariantTitle}
         href={`/products/${product.handle}`}
         imageThumbnail={product.thumbnail}
         images={product.images}
@@ -51,8 +54,9 @@ export default async function ProductPreview({
             variants={product.variants ?? []}
             pricingData={pricingData}
             initialPrice={cheapestPrice}
+            initialVariantLabel={cheapestVariantTitle}
           />
-          {firstVariantId && <AddToCartButton variantId={firstVariantId} />}
+          {cheapestVariantId && <AddToCartButton variantId={cheapestVariantId} />}
         </div>
       </ProductCard>
     )
@@ -61,6 +65,7 @@ export default async function ProductPreview({
   return (
     <ProductCard
       title={displayTitle}
+      variantLabel={cheapestVariantTitle}
       href={`/products/${product.handle}`}
       imageThumbnail={product.thumbnail}
       images={product.images}
@@ -71,6 +76,7 @@ export default async function ProductPreview({
           variants={product.variants ?? []}
           pricingData={pricingData}
           initialPrice={cheapestPrice}
+          initialVariantLabel={cheapestVariantTitle}
         />
       </div>
     </ProductCard>

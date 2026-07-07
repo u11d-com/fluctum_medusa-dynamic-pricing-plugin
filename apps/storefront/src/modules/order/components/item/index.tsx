@@ -48,6 +48,7 @@ const Item = ({ item, currencyCode }: ItemProps) => {
             item={item}
             style="tight"
             currencyCode={currencyCode}
+            price={item.total ?? 0}
           />
         </div>
       </Table.Cell>

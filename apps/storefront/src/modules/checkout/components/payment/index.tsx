@@ -88,12 +88,15 @@ const Payment = ({
       }
 
       if (!shouldInputCard) {
-        return router.push(
-          pathname + "?" + createQueryString("step", "review"),
-          {
-            scroll: false,
-          }
+        // Use hard navigation so the RSC re-fetches a fresh cart with payment_collection.
+        // router.push() hits the Next.js client Router Cache (even after router.refresh()),
+        // producing a stale cart prop in PaymentButton that shows "Select a payment method"
+        // instead of "Place order". window.location.assign forces a full page reload,
+        // guaranteeing the server returns the post-initiatePaymentSession cart.
+        window.location.assign(
+          pathname + "?" + createQueryString("step", "review")
         )
+        return
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))

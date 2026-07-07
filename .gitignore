@@ -65,6 +65,9 @@ Thumbs.db
 # Yalc (plugin build files)
 .yalc
 
+# Agent state / session metadata (Sisyphus, Prometheus, etc.)
+.omo/
+
 # Personal / environment-specific files
 prompt.txt
 reset-db.sh

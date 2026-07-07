@@ -1,4 +1,4 @@
-import { Heading } from "@modules/common/components/ui"
+import { Heading, Surface } from "@modules/common/components/ui"
 
 import CartTotals from "@modules/common/components/cart-totals"
 import Help from "@modules/order/components/help"
@@ -18,8 +18,8 @@ export default async function OrderCompletedTemplate({
   return (
     <div className="py-6 min-h-[calc(100vh-64px)]">
       <div className="content-container flex flex-col justify-center items-center gap-y-10 max-w-4xl h-full w-full">
-        <div
-          className="flex flex-col gap-4 max-w-4xl h-full bg-ui-bg-base w-full py-10"
+        <Surface
+          className="flex flex-col gap-y-6 max-w-4xl h-full w-full p-6"
           data-testid="order-complete-container"
         >
           <Heading
@@ -39,7 +39,7 @@ export default async function OrderCompletedTemplate({
           <ShippingDetails order={order} />
           <PaymentDetails order={order} />
           <Help />
-        </div>
+        </Surface>
       </div>
     </div>
   )

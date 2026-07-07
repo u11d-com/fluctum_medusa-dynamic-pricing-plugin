@@ -113,7 +113,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldEagle,
     weight_oz: 1,
-    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random" }],
+    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random Year" }],
     product_material: "Gold alloy (91.67%)", origin_country: "us", product_type: "Coin",
     dim_length: 33, dim_width: 33, dim_height: 2.9,
   },
@@ -168,7 +168,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldMaple,
     weight_oz: 1,
-    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random" }],
+    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random Year" }],
     product_material: "Fine gold (99.99%)", origin_country: "ca", product_type: "Coin",
     dim_length: 30, dim_width: 30, dim_height: 2.9,
   },
@@ -212,7 +212,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldKrugerrand,
     weight_oz: 1,
-    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random" }],
+    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random Year" }],
     product_material: "Gold alloy (91.67%)", origin_country: "za", product_type: "Coin",
     dim_length: 33, dim_width: 33, dim_height: 2.8,
   },
@@ -256,7 +256,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Gold Coins",
     images: IMAGES.goldBritannia,
     weight_oz: 1,
-    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random" }],
+    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random Year" }],
     product_material: "Fine gold (99.99%)", origin_country: "gb", product_type: "Coin",
     dim_length: 33, dim_width: 33, dim_height: 2.8,
   },
@@ -423,7 +423,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     category: "Silver Coins",
     images: IMAGES.silverKrugerrand,
     weight_oz: 5,
-    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random" }],
+    variants: [{ year: "2024" }, { year: "2025" }, { year: "2026" }, { year: "Random Year" }],
     product_material: "Fine silver (99.9%)", origin_country: "mx", product_type: "Coin",
     dim_length: 65, dim_width: 65, dim_height: 6.0,
   },
@@ -724,7 +724,7 @@ const seedProductsStep = createStep(
       "2024": 1.002,
       "2025": 1.005,
       "2026": 1.01,
-      "Random": 1,
+      "Random Year": 1,
     }
 
     function pickBaseRule(material: string, weightOz: number, category: string): string {
@@ -760,7 +760,7 @@ const seedProductsStep = createStep(
     for (const seed of SEED_PRODUCTS) {
       for (const v of seed.variants) {
         const baseName = pickBaseRule(seed.material, seed.weight_oz, seed.category)
-        const yearKey = v.year === "Random" ? "Random" : v.year
+        const yearKey = v.year === "Random Year" ? "Random Year" : v.year
         const ruleKey = `${baseName} ${yearKey}`
         if (seenRuleKeys.has(ruleKey)) continue
         seenRuleKeys.add(ruleKey)
@@ -785,7 +785,7 @@ const seedProductsStep = createStep(
 
     function pickRule(material: string, weightOz: number, category: string, year: string): string {
       const baseName = pickBaseRule(material, weightOz, category)
-      const yearKey = year === "Random" ? "Random" : year
+      const yearKey = year === "Random Year" ? "Random Year" : year
       return `${baseName} ${yearKey}`
     }
 
@@ -830,7 +830,7 @@ const seedProductsStep = createStep(
       const now = new Date()
       const linkRows = (productWithVariants.variants ?? []).map((variant) => {
         const seedVariant = seed.variants.find((sv) => sv.year === variant.title)
-        const ruleName = pickRule(seed.material, seed.weight_oz, seed.category, seedVariant?.year ?? "Random")
+        const ruleName = pickRule(seed.material, seed.weight_oz, seed.category, seedVariant?.year ?? "Random Year")
         const rule = ruleByName[ruleName]
         return {
           id: generateEntityId("", "link"),

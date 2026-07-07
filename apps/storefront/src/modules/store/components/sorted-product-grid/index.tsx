@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
-import type { VariantPricingData } from "@u11d/dynamic-pricing-plugin/client"
+import type { VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import PreviewPrice from "@modules/products/components/product-preview/preview-price.client"
 import ProductCard from "@modules/products/components/product-card"

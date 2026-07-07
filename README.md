@@ -1,15 +1,20 @@
-# Dynamic Pricing — Medusa v2 Plugin Monorepo
+# Fluctum — Real-Time Dynamic Pricing for Medusa
 
-An open-source dynamic pricing framework for precious metals e-commerce built on [Medusa v2](https://docs.medusajs.com). Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant.
+> **Fluctum** keeps prices live — gold, silver, or any volatile asset. Prices update every second. Checkout locks them at the right moment.
+
+[![npm](https://img.shields.io/npm/v/@u11d/medusa-dynamic-pricing?label=%40u11d%2Fmedusa-dynamic-pricing)](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Fluctum is an open-source dynamic pricing plugin for [Medusa v2](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant.
 
 ## Repository Structure
 
 ```
 dynamic-pricing/
 ├── apps/
-│   ├── backend/          # @dtc/backend — Medusa v2 backend (uses plugin via yalc)
-│   └── storefront/       # Next.js 15 storefront with live price bar + checkout flow
-├── dynamic-pricing-plugin/  # @u11d/dynamic-pricing-plugin — the Medusa plugin
+│   ├── backend/          # @u11d/medusa-dynamic-pricing-backend — Medusa v2 backend (uses plugin via yalc)
+│   ├── storefront/       # Next.js 15 storefront with live price bar + checkout flow
+│   └── landing/          # fluctum.io landing page (Next.js SSG)
+├── dynamic-pricing-plugin/  # @u11d/medusa-dynamic-pricing — the Medusa plugin
 ├── docs/                 # Architecture docs, domain guides, ADRs
 ├── docker-compose.yml    # PostgreSQL 17 + Redis 8 for local dev
 ├── turbo.json
@@ -129,10 +134,10 @@ This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `dynamic_pr
 The plugin is configured in `apps/backend/medusa-config.ts`:
 
 ```ts
-import { randomProvider, createGoldApiProvider } from "@u11d/dynamic-pricing-plugin"
+import { randomProvider, createGoldApiProvider } from "@u11d/medusa-dynamic-pricing"
 
 {
-  resolve: "@u11d/dynamic-pricing-plugin",
+  resolve: "@u11d/medusa-dynamic-pricing",
   options: {
     materials: ["XAU", "XAG", "XPT", "XPD"],
     fetchIntervalSeconds: 10,

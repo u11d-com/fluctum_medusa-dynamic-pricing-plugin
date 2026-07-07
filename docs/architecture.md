@@ -2,7 +2,7 @@
 
 ## Overview
 
-The dynamic pricing framework is a Medusa v2 plugin (`@u11d/dynamic-pricing-plugin`) layered on top of a standard Medusa backend + Next.js storefront stack. Its core responsibility is to make product prices reflect live precious-metal spot prices in real time, while ensuring order integrity at checkout via price locks.
+The dynamic pricing framework is a Medusa v2 plugin (`@u11d/medusa-dynamic-pricing`) layered on top of a standard Medusa backend + Next.js storefront stack. Its core responsibility is to make product prices reflect live precious-metal spot prices in real time, while ensuring order integrity at checkout via price locks.
 
 ## Component Map
 
@@ -12,8 +12,8 @@ The dynamic pricing framework is a Medusa v2 plugin (`@u11d/dynamic-pricing-plug
 │                                                                 │
 │  ┌──────────────────────────┐   ┌───────────────────────────┐  │
 │  │  dynamic-pricing-plugin  │   │  apps/backend             │  │
-│  │  @u11d/dynamic-pricing-  │   │  @dtc/backend             │  │
-│  │  plugin                  │   │  (Medusa v2 backend)      │  │
+│  │  @u11d/medusa-dynamic-  │   │  @u11d/medusa-dynamic-    │  │
+│  │  pricing                 │   │  pricing-backend          │  │
 │  │                          │   │                           │  │
 │  │  • Module + Service      │   │  • medusa-config.ts       │  │
 │  │  • Workflows             │   │  • integration-tests/     │  │

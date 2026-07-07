@@ -75,6 +75,7 @@ const Shipping: React.FC<ShippingProps> = ({
   availableShippingMethods,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [isSettingMethod, setIsSettingMethod] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(true)
 
   const [showPickupOptions, setShowPickupOptions] =
@@ -138,6 +139,7 @@ const Shipping: React.FC<ShippingProps> = ({
   }
 
   const handleSubmit = () => {
+    setIsLoading(true)
     router.push(pathname + "?step=payment", { scroll: false })
   }
 
@@ -154,7 +156,7 @@ const Shipping: React.FC<ShippingProps> = ({
     }
 
     let currentId: string | null = null
-    setIsLoading(true)
+    setIsSettingMethod(true)
     setShippingMethodId((prev) => {
       currentId = prev
       return id
@@ -167,7 +169,7 @@ const Shipping: React.FC<ShippingProps> = ({
         setError(err.message)
       })
       .finally(() => {
-        setIsLoading(false)
+        setIsSettingMethod(false)
       })
   }
 
@@ -219,7 +221,7 @@ const Shipping: React.FC<ShippingProps> = ({
                     <Radio
                       value={PICKUP_OPTION_ON}
                       data-testid="delivery-option-radio"
-                      className="mb-2"
+                      className="mb-3"
                     >
                       <ChoiceCard
                         selected={showPickupOptions === PICKUP_OPTION_ON}
@@ -260,7 +262,7 @@ const Shipping: React.FC<ShippingProps> = ({
                         value={option.id}
                         data-testid="delivery-option-radio"
                         disabled={isDisabled}
-                        className="mb-2"
+                        className="mb-3"
                       >
                         <ChoiceCard
                           selected={option.id === shippingMethodId}
@@ -328,7 +330,7 @@ const Shipping: React.FC<ShippingProps> = ({
                           value={option.id}
                           disabled={option.insufficient_inventory}
                           data-testid="delivery-option-radio"
-                          className="mb-2"
+                          className="mb-3"
                         >
                           <ChoiceCard
                             selected={option.id === shippingMethodId}
@@ -374,7 +376,7 @@ const Shipping: React.FC<ShippingProps> = ({
               className="mt-2"
               onClick={handleSubmit}
               isLoading={isLoading}
-              disabled={!cart.shipping_methods?.[0]}
+              disabled={!shippingMethodId || isSettingMethod}
               data-testid="submit-delivery-option-button"
             >
               Continue to payment

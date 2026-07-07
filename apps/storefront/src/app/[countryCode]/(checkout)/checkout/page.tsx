@@ -10,8 +10,14 @@ export const metadata: Metadata = {
   title: "Checkout",
 }
 
+// Force dynamic rendering so retrieveCart() always fetches fresh data after
+// initiatePaymentSession's revalidateTag, preventing stale payment_collection.
+export const dynamic = "force-dynamic"
+
 export default async function Checkout() {
-  const cart = await retrieveCart()
+  // Use noCache so this page always fetches the latest cart from the server
+  // (e.g. after initiatePaymentSession sets up payment_collection).
+  const cart = await retrieveCart(undefined, undefined, true)
 
   if (!cart) {
     return notFound()

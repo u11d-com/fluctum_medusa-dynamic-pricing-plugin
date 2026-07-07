@@ -12,8 +12,9 @@ type CartTotalsProps = {
     item_subtotal?: number | null
     shipping_subtotal?: number | null
   }
-  subtotalOverride?: number
-  totalOverride?: number
+  // null = show "—" (suppress Medusa fallback); undefined = use Medusa fallback; number = show that value
+  subtotalOverride?: number | null
+  totalOverride?: number | null
 }
 
 const CartTotals: React.FC<CartTotalsProps> = ({ totals, subtotalOverride, totalOverride }) => {
@@ -25,15 +26,21 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals, subtotalOverride, total
     shipping_subtotal,
   } = totals
 
-  const displaySubtotal = subtotalOverride ?? item_subtotal ?? 0
+  const displaySubtotal = subtotalOverride !== undefined ? subtotalOverride : (item_subtotal ?? 0)
+  const displayTotal = totalOverride !== undefined ? totalOverride : (total ?? 0)
 
   return (
     <div>
       <div className="flex flex-col gap-y-2 txt-medium text-ui-fg-subtle ">
         <div className="flex items-center justify-between">
           <span>Subtotal (excl. shipping and taxes)</span>
-          <span data-testid="cart-subtotal" data-value={displaySubtotal}>
-            {convertToLocale({ amount: displaySubtotal, currency_code })}
+          <span
+            data-testid="cart-subtotal"
+            data-value={displaySubtotal ?? undefined}
+          >
+            {displaySubtotal === null
+              ? "—"
+              : convertToLocale({ amount: displaySubtotal, currency_code })}
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -55,9 +62,11 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals, subtotalOverride, total
         <span
           className="txt-xlarge-plus"
           data-testid="cart-total"
-          data-value={(totalOverride ?? total) || 0}
+          data-value={displayTotal ?? undefined}
         >
-          {convertToLocale({ amount: totalOverride ?? total ?? 0, currency_code })}
+          {displayTotal === null
+            ? "—"
+            : convertToLocale({ amount: displayTotal, currency_code })}
         </span>
       </div>
       <div className="h-px w-full border-b border-ui-border-base mt-4" />

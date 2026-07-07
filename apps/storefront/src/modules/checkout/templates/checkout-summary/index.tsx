@@ -10,7 +10,7 @@ import { lockCartPrices } from "@lib/data/cart"
 import { buildLockedPriceMap } from "@lib/util/dynamic-pricing"
 import { useState, useMemo, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
-import type { LockedPriceMap } from "@u11d/dynamic-pricing-plugin/client"
+import type { LockedPriceMap } from "@u11d/medusa-dynamic-pricing/client"
 
 type Props = {
   cart: HttpTypes.StoreCart
@@ -85,7 +85,7 @@ const CheckoutSummary = ({
 
   const lockedTotal = lockedSubtotal > 0
     ? lockedSubtotal + (cart.shipping_subtotal ?? 0) + (cart.tax_total ?? 0)
-    : undefined
+    : null
 
   return (
     <div className="sticky top-0 flex flex-col-reverse small:flex-col gap-y-8 py-8 small:py-0 ">
@@ -105,14 +105,8 @@ const CheckoutSummary = ({
           onRefresh={doLock}
           error={refreshError}
         />
-        <CartTotals totals={cart} subtotalOverride={lockedSubtotal > 0 ? lockedSubtotal : undefined} totalOverride={lockedTotal} />
-        {lockedPrices ? (
-          <ItemsPreviewTemplate cart={cart} lockedPrices={lockedPrices} />
-        ) : (
-            <div className="py-8 text-center text-sm text-ui-fg-muted">
-              {isRefreshing ? "Locking Prices…" : "Loading Cart Items…"}
-            </div>
-          )}
+        <CartTotals totals={cart} subtotalOverride={lockedSubtotal > 0 ? lockedSubtotal : null} totalOverride={lockedTotal} />
+        <ItemsPreviewTemplate cart={cart} lockedPrices={lockedPrices} />
       </Surface>
     </div>
   )

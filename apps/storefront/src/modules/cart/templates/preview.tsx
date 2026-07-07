@@ -4,7 +4,7 @@ import repeat from "@lib/util/repeat"
 import { sortByCreatedAtDesc } from "@lib/util/line-item"
 import { HttpTypes } from "@medusajs/types"
 import { Table, clx } from "@modules/common/components/ui"
-import type { LockedPriceMap } from "@u11d/dynamic-pricing-plugin/client"
+import type { LockedPriceMap } from "@u11d/medusa-dynamic-pricing/client"
 
 import Item from "@modules/cart/components/item"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"

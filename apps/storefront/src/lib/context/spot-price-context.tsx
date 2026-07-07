@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from "react"
-import type { SpotPricePayload } from "@u11d/dynamic-pricing-plugin/client"
+import type { SpotPricePayload } from "@u11d/medusa-dynamic-pricing/client"
 import { sdk } from "@lib/config"
 
 const POLL_FALLBACK_MS = 30_000

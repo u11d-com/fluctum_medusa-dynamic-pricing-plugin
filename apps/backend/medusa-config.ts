@@ -2,7 +2,7 @@ import { loadEnv, defineConfig } from "@medusajs/framework/utils";
 import {
   randomProvider,
   createGoldApiProvider,
-} from "@u11d/dynamic-pricing-plugin";
+} from "@u11d/medusa-dynamic-pricing";
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
@@ -23,7 +23,7 @@ export default defineConfig({
   },
   plugins: [
     {
-      resolve: "@u11d/dynamic-pricing-plugin",
+      resolve: "@u11d/medusa-dynamic-pricing",
       options: {
         materials: ["XAU", "XAG", "XPT", "XPD"],
         fetchIntervalSeconds: 10,

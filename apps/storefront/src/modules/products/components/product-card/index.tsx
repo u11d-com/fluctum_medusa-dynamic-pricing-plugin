@@ -4,6 +4,7 @@ import Thumbnail from "../thumbnail"
 
 type ProductCardProps = {
   title: string
+  variantLabel?: string
   href: string
   imageThumbnail?: string | null
   images?: { url?: string }[] | null
@@ -15,6 +16,7 @@ type ProductCardProps = {
 
 export default function ProductCard({
   title,
+  variantLabel,
   href,
   imageThumbnail,
   images,
@@ -43,12 +45,19 @@ export default function ProductCard({
           />
         </div>
         <div className="pt-3 flex flex-col flex-1">
-          <Text
-            className="text-sm font-medium text-ui-fg-base line-clamp-2"
-            data-testid="product-title"
-          >
-            {title}
-          </Text>
+          <div className="flex items-start justify-between gap-2">
+            <Text
+              className="text-sm font-medium text-ui-fg-base line-clamp-2 flex-1"
+              data-testid="product-title"
+            >
+              {title}
+            </Text>
+            {variantLabel && (
+              <Text variant="muted" className="text-xs shrink-0 pt-0.5">
+                {variantLabel}
+              </Text>
+            )}
+          </div>
           {children}
         </div>
       </Surface>

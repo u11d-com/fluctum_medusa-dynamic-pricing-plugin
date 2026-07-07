@@ -1,8 +1,7 @@
-import { Suspense } from "react"
 import Image from "next/image"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import CartButton from "@modules/layout/components/cart-button"
+import CartDropdown from "@modules/layout/components/cart-dropdown"
 
 export default async function Nav() {
   return (
@@ -52,19 +51,7 @@ export default async function Nav() {
         </div>
 
         <div className="flex items-center h-full">
-          <Suspense
-            fallback={
-              <LocalizedClientLink
-                className="text-white/80 hover:text-white flex gap-2"
-                href="/cart"
-                data-testid="nav-cart-link"
-              >
-                Cart (0)
-              </LocalizedClientLink>
-            }
-          >
-            <CartButton />
-          </Suspense>
+          <CartDropdown />
         </div>
       </nav>
     </header>
