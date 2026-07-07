@@ -1,0 +1,7 @@
+service: fluctum-landing
+plugins:
+  - '@uninterrupted/serverless-plugin-webform'
+custom:
+  pluginWebform:
+    notificationEmail: hello@u11d.com
+    region: us-east-1
