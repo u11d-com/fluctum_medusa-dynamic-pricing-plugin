@@ -104,6 +104,13 @@ export default function HomeClient() {
     { name: "Deployment", href: "#deployment" },
   ];
 
+  const footerLinks = [
+    { name: "GitHub repo", href: "https://github.com/u11d-com" },
+    { name: "u11d", href: "https://u11d.com" },
+    { name: "Medusa", href: "https://medusajs.com" },
+    { name: "Deploy Medusa", href: "https://deploymedusa.com" },
+  ];
+
   return (
     <div className="min-h-screen font-sans bg-[#0a0a0a] text-white">
       <header className="fixed top-0 w-full border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-md z-50">
@@ -149,9 +156,10 @@ export default function HomeClient() {
               href="https://demo.fluctum.io"
               target="_blank"
               rel="noreferrer"
-              className="px-5 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors text-sm"
+              className="px-5 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors text-sm flex items-center gap-2"
             >
               See Demo
+              <ExternalLink className="w-4 h-4" />
             </a>
           </div>
 
@@ -188,10 +196,11 @@ export default function HomeClient() {
                 href="https://demo.fluctum.io"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full px-5 py-3 bg-[#7c3aed] text-white font-semibold rounded-lg text-center"
+                className="w-full px-5 py-3 bg-[#7c3aed] text-white font-semibold rounded-lg text-center flex items-center justify-center gap-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 See Demo
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -272,7 +281,7 @@ export default function HomeClient() {
                 className="w-full sm:w-auto px-8 py-4 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(124,58,237,0.3)]"
               >
                 See Demo
-                <ArrowRight className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -283,7 +292,7 @@ export default function HomeClient() {
           className="py-24 bg-[#111111] px-6 border-t border-white/5"
         >
           <div className="max-w-6xl mx-auto">
-            <div className="mb-16 max-w-4xl">
+            <div className="mb-16">
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
                 What is Fluctum?
               </h2>
@@ -301,9 +310,12 @@ export default function HomeClient() {
                 — the composable commerce platform. It ships as three
                 components:{" "}
                 <strong className="text-white">Medusa{"\u00A0"}plugin</strong>,{" "}
-                <strong className="text-white">backend{"\u00A0"}starter</strong>, and{" "}
-                <strong className="text-white">storefront{"\u00A0"}starter</strong>.
-                It&apos;s designed for merchants who need tailored commerce
+                <strong className="text-white">backend{"\u00A0"}starter</strong>
+                , and{" "}
+                <strong className="text-white">
+                  storefront{"\u00A0"}starter
+                </strong>
+                . It&apos;s designed for merchants who need tailored commerce
                 workflows, not one-size-fits-all templates.
               </p>
               <p className="text-lg text-white/50 leading-relaxed">
@@ -324,8 +336,8 @@ export default function HomeClient() {
                 </h3>
 
                 <p className="text-white/60 leading-relaxed">
-                  Built as a Medusa{"\u00A0"}plugin; drops into any Medusa{"\u00A0"}project
-                  seamlessly.
+                  Built as a Medusa{"\u00A0"}plugin; drops into any Medusa
+                  {"\u00A0"}project seamlessly.
                 </p>
               </div>
               <div className="p-8 border border-white/10 rounded-xl bg-black/50 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
@@ -384,9 +396,9 @@ export default function HomeClient() {
                   <li className="flex items-start gap-3">
                     <Globe className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
                     <span className="text-white/80">
-                      Our demo uses Next.js{"\u00A0"}16 + Tailwind, but you can build a
-                      Vue app, React Native mobile app, or even an in-store
-                      kiosk interface.
+                      Our demo uses Next.js{"\u00A0"}16 + Tailwind, but you can
+                      build a Vue app, React Native mobile app, or even an
+                      in-store kiosk interface.
                     </span>
                   </li>
                 </ul>
@@ -507,7 +519,7 @@ export default function HomeClient() {
             </h2>
 
             <div className="grid md:grid-cols-3 gap-12">
-              <div className="relative p-6 rounded-2xl border border-transparent hover:border-[#7c3aed]/20 transition-colors">
+              <div className="relative p-6 rounded-2xl border border-transparent transition-colors">
                 <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
                   1
                 </div>
@@ -519,7 +531,7 @@ export default function HomeClient() {
                   constantly ingests the latest spot prices.
                 </p>
               </div>
-              <div className="relative p-6 rounded-2xl border border-transparent hover:border-[#7c3aed]/20 transition-colors">
+              <div className="relative p-6 rounded-2xl border border-transparent transition-colors">
                 <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
                   2
                 </div>
@@ -531,7 +543,7 @@ export default function HomeClient() {
                   single persistent Server-Sent Events connection.
                 </p>
               </div>
-              <div className="relative p-6 rounded-2xl border border-transparent hover:border-[#7c3aed]/20 transition-colors">
+              <div className="relative p-6 rounded-2xl border border-transparent transition-colors">
                 <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
                   3
                 </div>
@@ -540,8 +552,8 @@ export default function HomeClient() {
                 </h3>
                 <p className="text-white/60 leading-relaxed">
                   When the buyer proceeds, prices are locked for your configured
-                  window (for example, 2 or 10{"\u00A0"}minutes) and validated at order
-                  completion.
+                  window (for example, 2 or 10{"\u00A0"}minutes) and validated
+                  at order completion.
                 </p>
               </div>
             </div>
@@ -631,7 +643,9 @@ export default function HomeClient() {
                 className="p-10 border border-white/10 rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-white">Medusa Cloud</h3>
+                  <h3 className="text-2xl font-bold text-white">
+                    Medusa Cloud
+                  </h3>
                   <ExternalLink className="w-5 h-5 text-white/60 flex-shrink-0" />
                 </div>
                 <p className="text-white/60 flex-grow">
@@ -668,8 +682,8 @@ export default function HomeClient() {
               Ready to ship live pricing?
             </h2>
             <p className="text-xl text-white/60">
-              Get in touch to discuss end-to-end implementation support or
-              reach out at{" "}
+              Get in touch to discuss end-to-end implementation support or reach
+              out at{" "}
               <a
                 href="mailto:hello@u11d.com"
                 className="text-[#7c3aed] hover:underline"
@@ -768,57 +782,27 @@ export default function HomeClient() {
                 width={100}
                 height={46}
                 alt="Fluctum Logo"
-                className="opacity-50 w-auto h-7"
+                className="w-auto h-7"
               />
-              <a
-                href="https://medusajs.com"
-                target="_blank"
-                rel="noreferrer"
-                className="opacity-60 hover:opacity-100 transition-opacity"
-                aria-label="Medusa"
-              >
-                <Image
-                  src="/medusa-logo-light.svg"
-                  width={82}
-                  height={18}
-                  alt="Medusa Logo"
-                  className="h-5 w-auto"
-                />
-              </a>
             </div>
-            <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/50">
-              <a
-                href="https://u11d.com"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white transition-colors"
-              >
-                u11d.com
-              </a>
-              <a
-                href="https://github.com/u11d-com"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white transition-colors"
-              >
-                GitHub
-              </a>
-              <a
-                href="https://deploymedusa.com"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white transition-colors"
-              >
-                deploymedusa.com
-              </a>
-              <a
-                href="https://medusajs.com"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white transition-colors"
-              >
-                medusajs.com
-              </a>
+            <nav className="flex flex-wrap items-center justify-center text-sm text-white/50">
+              {footerLinks.map((link, index) => (
+                <div key={link.name} className="flex items-center">
+                  {index > 0 && (
+                    <span className="mx-3 text-white/30" aria-hidden="true">
+                      •
+                    </span>
+                  )}
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    {link.name}
+                  </a>
+                </div>
+              ))}
             </nav>
           </div>
           <p className="text-center text-white/30 text-sm">
