@@ -5,6 +5,7 @@ import { HttpTypes } from "@medusajs/types"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import { useCartPricing } from "@lib/hooks/use-cart-pricing"
+import { useCart } from "@modules/cart/context/cart-context"
 import { Table } from "@modules/common/components/ui"
 
 type Props = {
@@ -16,7 +17,8 @@ type Props = {
 }
 
 const ItemPrice = ({ item, type, currencyCode, lockedPrice, cart }: Props) => {
-  const { itemPrices } = useCartPricing(cart ?? null)
+  const { regionCurrencyCode } = useCart()
+  const { itemPrices } = useCartPricing(cart ?? null, regionCurrencyCode)
   const computedPrice = lockedPrice ?? itemPrices[item.id]
 
   if (!computedPrice) {

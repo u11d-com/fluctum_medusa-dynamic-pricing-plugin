@@ -20,8 +20,8 @@ import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
 const CartDropdown = () => {
-  const { cart: cartState } = useCart()
-  const { itemPrices, subtotal: dynamicSubtotal } = useCartPricing(cartState ?? null)
+  const { cart: cartState, regionCurrencyCode } = useCart()
+  const { itemPrices, subtotal: dynamicSubtotal } = useCartPricing(cartState ?? null, regionCurrencyCode)
   const [activeTimer, setActiveTimer] = useState<ReturnType<typeof setTimeout> | undefined>(
     undefined
   )

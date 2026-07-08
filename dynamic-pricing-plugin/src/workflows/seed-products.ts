@@ -621,6 +621,17 @@ const SEED_PRODUCTS: SeedProduct[] = [
   },
 ]
 
+const PLACEHOLDER_PRICE_CURRENCY_CODES = [
+  "usd", "cad", "mxn", "brl", "ars", "eur", "gbp", "dkk", "sek", "pln",
+  "czk", "huf", "ron", "ngn", "zar", "jpy", "krw", "aed", "sar", "qar",
+  "kwd",
+] as const
+
+const PLACEHOLDER_PRICES = PLACEHOLDER_PRICE_CURRENCY_CODES.map((currency_code) => ({
+  amount: 1,
+  currency_code,
+}))
+
 // ── Step: Clean up previous seed data ──────────────────────────────────────────
 
 const cleanupSeedStep = createStep(
@@ -815,7 +826,7 @@ const seedProductsStep = createStep(
           manage_inventory: false,
           weight: Math.round(seed.weight_oz * 31.103 * 100) / 100,
           options: { Year: v.year },
-          prices: [{ amount: 1, currency_code: "usd" }],
+          prices: PLACEHOLDER_PRICES,
         })),
       }])
       createdProductIds.push(product.id)
@@ -865,10 +876,7 @@ const seedProductsStep = createStep(
 
     const priceSets = await pricingModule.createPriceSets(
       allVariants.map(() => ({
-        prices: [
-          { amount: 1, currency_code: "usd" },
-          { amount: 1, currency_code: "eur" },
-        ],
+        prices: PLACEHOLDER_PRICES,
       }))
     )
 

@@ -5,10 +5,17 @@ import type { SpotPricePayload } from "@u11d/medusa-dynamic-pricing/client"
 import { convertToLocale } from "@lib/util/money"
 import { materialName, materialDotClass } from "@lib/util/metal"
 import { useSpotPrices } from "@lib/context/spot-price-context"
+import { useCart } from "@modules/cart/context/cart-context"
 
-export default function SpotPriceBarClient() {
-  const { prices } = useSpotPrices()
+export default function SpotPriceBarClient({ regionCurrencyCode = "USD" }: { regionCurrencyCode?: string }) {
+  const { prices, rates } = useSpotPrices()
+  const { cart } = useCart()
   const cachedRef = useRef<SpotPricePayload[]>([])
+
+  // Use cart currency if available, fall back to region currency (when cart dropped on region switch)
+  const currencyCode = (cart?.currency_code?.toUpperCase() ?? regionCurrencyCode).toUpperCase()
+  const isUsd = currencyCode === "USD"
+  const conversionRate = isUsd ? 1 : (rates[currencyCode] ?? null)
 
   if (prices.length > 0) {
     cachedRef.current = prices
@@ -26,11 +33,11 @@ export default function SpotPriceBarClient() {
               <span className={`w-1.5 h-1.5 rounded-full ${materialDotClass(sp.material)}`} />
               <span className="font-semibold">{materialName(sp.material)}</span>
               <span>
-                {isStale
+                {isStale || conversionRate === null
                   ? "—"
                   : convertToLocale({
-                      amount: sp.price,
-                      currency_code: "USD",
+                      amount: sp.price * conversionRate,
+                      currency_code: currencyCode.toLowerCase(),
                       maximumFractionDigits: 2,
                       minimumFractionDigits: 2,
                     })}

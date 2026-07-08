@@ -61,12 +61,14 @@ export const createCartPriceLocksStep = createStep(
         ) {
           return new StepResponse(
             {
-              locks: existingLocks.map((r) => ({
-                variant_id: r.variant_id,
-                unit_price: r.unit_price,
-                quantity: r.quantity,
-                material: r.material,
-              })),
+          locks: existingLocks.map((r) => ({
+            variant_id: r.variant_id,
+            unit_price: r.unit_price,
+            quantity: r.quantity,
+            material: r.material,
+            currency_code: r.currency_code,
+            conversion_rate: r.conversion_rate,
+          })),
               expires_at: new Date(existingLocks[0].expires_at).toISOString(),
             },
             input.cartId
@@ -103,6 +105,29 @@ export const createCartPriceLocksStep = createStep(
     const now = new Date()
     const expiresAt = new Date(now.getTime() + options.priceLockDurationSeconds * 1000)
 
+    // --- Currency conversion ---
+    // CartDTO doesn't expose currency_code in its type declaration, but Medusa populates it at runtime.
+    // Double-cast via unknown is the safe way to access undeclared runtime properties.
+    const cartCurrency = (cart as unknown as Record<string, unknown>).currency_code as string | undefined ?? "USD"
+    const pricingCurrency = options.pricingCurrency ?? "USD"
+
+    let conversionRate = 1
+    if (cartCurrency.toUpperCase() !== pricingCurrency.toUpperCase()) {
+      const rates = await pricingModule.getLatestRates(pricingCurrency, [cartCurrency.toUpperCase()])
+      const rateRow = rates.find((r) => r.to_currency.toUpperCase() === cartCurrency.toUpperCase())
+      if (rateRow) {
+        conversionRate = rateRow.rate
+      } else if (options.currencyConversion !== null) {
+        // currencyConversion is configured but no rate found for this currency → pricing error
+        throw new Error(
+          `No currency rate found for ${cartCurrency.toUpperCase()} (from ${pricingCurrency}). Ensure FX rates are seeded.`
+        )
+      }
+      // else: currencyConversion is null (backward compat) → silently use rate=1
+    }
+
+    const rawNum = (v: number) => JSON.stringify({ value: String(v), precision: 20 })
+
     const lockRecords: Record<string, unknown>[] = []
     const lineItemUpdates: LineItemUpdate[] = []
 
@@ -121,9 +146,8 @@ export const createCartPriceLocksStep = createStep(
         spreadFixed: Number(pricing.spread_fixed),
         premiumPercentage: Number(pricing.premium_percentage),
         premiumFixed: Number(pricing.premium_fixed),
+        currencyConversion: conversionRate,
       })
-
-      const rawNum = (v: number) => JSON.stringify({ value: String(v), precision: 20 })
 
       lockRecords.push({
         id: generateEntityId(undefined, "cplock"),
@@ -148,6 +172,9 @@ export const createCartPriceLocksStep = createStep(
         raw_premium_fixed: rawNum(Number(pricing.premium_fixed)),
         locked_at: now,
         expires_at: expiresAt,
+        currency_code: cartCurrency.toUpperCase(),
+        conversion_rate: conversionRate,
+        raw_conversion_rate: rawNum(conversionRate),
       })
 
       lineItemUpdates.push({
@@ -174,6 +201,8 @@ export const createCartPriceLocksStep = createStep(
           unit_price: r.unit_price as number,
           quantity: r.quantity as number,
           material: r.material as string,
+          currency_code: r.currency_code as string,
+          conversion_rate: r.conversion_rate as number,
         })),
         expires_at: expiresAt.toISOString(),
       },

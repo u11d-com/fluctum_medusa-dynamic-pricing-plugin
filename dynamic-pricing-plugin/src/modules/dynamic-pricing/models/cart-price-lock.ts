@@ -15,6 +15,8 @@ const CartPriceLock = model.define("cart_price_lock", {
   premium_fixed: model.bigNumber(),
   locked_at: model.dateTime(),
   expires_at: model.dateTime(),
+  currency_code: model.text(),
+  conversion_rate: model.bigNumber(),
 })
 
 export default CartPriceLock

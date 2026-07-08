@@ -1,6 +1,6 @@
 {
   "name": "dynamic-pricing",
-  "description": "Fluctum — dynamic pricing framework for Medusa",
+  "description": "Fluctum — dynamic pricing solution for Medusa",
   "private": true,
   "packageManager": "npm@11.6.2",
   "engines": {

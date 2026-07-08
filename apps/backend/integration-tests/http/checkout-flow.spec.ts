@@ -42,6 +42,10 @@ medusaIntegrationTestRunner({
         body: { email: "checkout-test@admin.com", password: "admin" },
       })
 
+      if (!authIdentity) {
+        throw new Error("Failed to create checkout test auth identity")
+      }
+
       await authService.updateAuthIdentities({
         id: authIdentity.id,
         app_metadata: { user_id: user.id },
@@ -240,6 +244,9 @@ medusaIntegrationTestRunner({
         expect(typeof res.data.locks[0].unit_price).toBe("number")
         expect(res.data.locks[0].unit_price).toBeGreaterThan(0)
         expect(typeof res.data.expires_at).toBe("string")
+        expect(res.data.locks[0].currency_code).toBe("USD")
+        expect(typeof res.data.locks[0].conversion_rate).toBe("number")
+        expect(res.data.locks[0].conversion_rate).toBe(1)
       })
 
       it("recalculates prices on each call (fresh spot prices)", async () => {
@@ -304,6 +311,59 @@ medusaIntegrationTestRunner({
           { validateStatus: () => true }
         )
         expect([400, 401]).toContain(res.status)
+      })
+
+      it("applies currency conversion for non-pricing-currency cart", async () => {
+        // Seed a PLN rate
+        const dpService = getContainer().resolve("dynamicPricing")
+        const knex = dpService.getKnex()
+        const rawNum = (v: number) => JSON.stringify({ value: String(v), precision: 20 })
+        const plnRate = 4.0
+        await knex("currency_rate").insert({
+          id: generateEntityId(undefined, "crate"),
+          from_currency: "USD",
+          to_currency: "PLN",
+          rate: plnRate,
+          raw_rate: rawNum(plnRate),
+          created_at: new Date(),
+          updated_at: new Date(),
+        })
+
+        // Create a PLN cart
+        const ts = Date.now()
+        const plnRegionRes = await api.post(
+          "/admin/regions",
+          { name: `Poland-${ts}`, currency_code: "pln", countries: ["pl"] },
+          { headers: adminHeaders, validateStatus: () => true }
+        )
+        const plnRegionId = plnRegionRes.data.region?.id || plnRegionRes.data.id
+
+        const plnCartRes = await api.post(
+          "/store/carts",
+          { region_id: plnRegionId, sales_channel_id: salesChannelId, currency_code: "pln" },
+          { headers: storeHeaders, validateStatus: () => true }
+        )
+        const plnCartId = plnCartRes.data.cart.id
+
+        await api.post(
+          `/store/carts/${plnCartId}/line-items`,
+          { variant_id: variantId, quantity: 1 },
+          { headers: storeHeaders, validateStatus: () => true }
+        )
+
+        const res = await api.post(
+          `/store/dynamic-pricing/carts/${plnCartId}/price-lock`,
+          {},
+          { headers: storeHeaders, validateStatus: () => true }
+        )
+
+        expect(res.status).toBe(200)
+        expect(res.data.locks.length).toBe(1)
+        const lock = res.data.locks[0]
+        expect(lock.currency_code).toBe("PLN")
+        expect(lock.conversion_rate).toBeCloseTo(plnRate, 3)
+        // unit_price should be spot * spread * conversionRate
+        expect(lock.unit_price).toBeGreaterThan(0)
       })
     })
 

@@ -54,7 +54,6 @@ export default async function ProductPreview({
             variants={product.variants ?? []}
             pricingData={pricingData}
             initialPrice={cheapestPrice}
-            initialVariantLabel={cheapestVariantTitle}
           />
           {cheapestVariantId && <AddToCartButton variantId={cheapestVariantId} />}
         </div>
@@ -76,7 +75,6 @@ export default async function ProductPreview({
           variants={product.variants ?? []}
           pricingData={pricingData}
           initialPrice={cheapestPrice}
-          initialVariantLabel={cheapestVariantTitle}
         />
       </div>
     </ProductCard>

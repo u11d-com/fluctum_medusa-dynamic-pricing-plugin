@@ -14,6 +14,8 @@ export type CartPriceLockRow = {
   expires_at: Date
   locked_at: Date
   weight_oz: number | null
+  currency_code: string
+  conversion_rate: number
   spot_price: number
   spread_factor: number
   spread_fixed: number

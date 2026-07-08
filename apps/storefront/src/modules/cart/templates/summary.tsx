@@ -26,9 +26,9 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 }
 
 const Summary = ({ cart }: SummaryProps) => {
-  const { cart: contextCart } = useCart()
+  const { cart: contextCart, regionCurrencyCode } = useCart()
   const effectiveCart = contextCart ?? cart
-  const { subtotal: dynamicSubtotal } = useCartPricing(effectiveCart)
+  const { subtotal: dynamicSubtotal } = useCartPricing(effectiveCart, regionCurrencyCode)
   const router = useRouter()
   const params = useParams()
   const countryCode = getCountryCodeFromParams(params)

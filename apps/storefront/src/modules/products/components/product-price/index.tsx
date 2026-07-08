@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSpotPrices } from "@lib/context/spot-price-context"
+import { useCart } from "@modules/cart/context/cart-context"
 import { getVariantPricingData } from "@lib/data/variant-pricing"
 import { convertToLocale } from "@lib/util/money"
 import {
@@ -21,7 +22,11 @@ export default function ProductPrice({
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
 }) {
-  const { prices, isLoading: spotLoading } = useSpotPrices()
+  const { prices, rates, isLoading: spotLoading } = useSpotPrices()
+  const { cart, regionCurrencyCode } = useCart()
+  const cartCurrencyCode = (cart?.currency_code ?? regionCurrencyCode).toUpperCase()
+  const isUsd = cartCurrencyCode === "USD"
+  const conversionRate: number | null = isUsd ? 1 : (rates[cartCurrencyCode] ?? null)
   const [pricingData, setPricingData] = useState<Record<string, VariantPricingData>>({})
   const [pricingLoading, setPricingLoading] = useState(true)
 
@@ -58,19 +63,17 @@ export default function ProductPrice({
 
   const spotPriceByMaterial = indexSpotPricesByMaterial(prices)
 
-  function computePrice(v: HttpTypes.StoreProductVariant): number | null {
-    return computeVariantDynamicPrice(v.id, pricingData, spotPriceByMaterial)
-  }
-
-  const ready = !spotLoading && !pricingLoading
-
-  if (!ready) {
+  if (spotLoading || pricingLoading || conversionRate === null) {
     return <div className="block w-32 h-9 bg-gray-100 animate-pulse" />
   }
 
+  function computePrice(v: HttpTypes.StoreProductVariant, rate: number): number | null {
+    return computeVariantDynamicPrice(v.id, pricingData, spotPriceByMaterial, rate)
+  }
+
   const displayPrice = variant
-    ? computePrice(variant)
-    : computeProductDynamicPrice(product, pricingData, prices)
+    ? computePrice(variant, conversionRate)
+    : computeProductDynamicPrice(product, pricingData, prices, conversionRate)
 
   if (displayPrice === null && prices.length === 0) {
     return null
@@ -91,7 +94,7 @@ export default function ProductPrice({
       <Text as="span" className="text-xl-semi">
         {!variant && "From "}
         <Text as="span" data-testid="product-price" data-value={displayPrice}>
-          {convertToLocale({ amount: displayPrice, currency_code: "USD" })}
+          {convertToLocale({ amount: displayPrice, currency_code: cartCurrencyCode.toLowerCase() })}
         </Text>
       </Text>
     </div>

@@ -13,6 +13,7 @@ type StoreCart = HttpTypes.StoreCart
 
 type CartContextValue = {
   cart: StoreCart | null
+  regionCurrencyCode: string
   addToCart: (input: {
     variantId: string
     quantity: number
@@ -29,9 +30,11 @@ const CartContext = createContext<CartContextValue | null>(null)
 
 export function CartProvider({
   initialCart,
+  regionCurrencyCode,
   children,
 }: {
   initialCart: StoreCart | null
+  regionCurrencyCode: string
   children: ReactNode
 }) {
   const [cart, setCart] = useState<StoreCart | null>(initialCart)
@@ -55,7 +58,7 @@ export function CartProvider({
   }
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateLineItem, deleteLineItem }}>
+    <CartContext.Provider value={{ cart, regionCurrencyCode, addToCart, updateLineItem, deleteLineItem }}>
       {children}
     </CartContext.Provider>
   )
@@ -63,6 +66,7 @@ export function CartProvider({
 
 const noopCart: CartContextValue = {
   cart: null,
+  regionCurrencyCode: "USD",
   addToCart: async () => {},
   updateLineItem: async () => {},
   deleteLineItem: async () => {},

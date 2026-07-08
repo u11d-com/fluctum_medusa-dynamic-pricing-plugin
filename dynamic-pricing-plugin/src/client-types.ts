@@ -28,6 +28,15 @@ export type LockPricesResult = {
     unit_price: number
     quantity: number
     material: string
+    currency_code: string
+    conversion_rate: number
   }[]
   expires_at: string
+}
+
+export type CurrencyRatePayload = {
+  /** Map of target currency code → rate relative to the plugin's pricingCurrency (e.g. USD).
+   *  Example: { "PLN": 4.0, "EUR": 0.92 }
+   */
+  rates: Record<string, number>
 }

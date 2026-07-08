@@ -3,6 +3,7 @@ import { randomUUID } from "crypto"
 import sseManager from "../../../../utils/sse-manager"
 import { DYNAMIC_PRICING_MODULE } from "../../../../modules/dynamic-pricing"
 import DynamicPricingModuleService from "../../../../modules/dynamic-pricing/service"
+import { getPluginOptions } from "../../../../modules/dynamic-pricing/options-store"
 
 /**
  * GET /store/dynamic-pricing/sse
@@ -24,6 +25,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const id = randomUUID()
   sseManager.add(id, res)
 
+  const options = getPluginOptions()
+
   // Send current prices immediately so the client doesn't wait for next tick
   try {
     const service = req.scope.resolve<DynamicPricingModuleService>(
@@ -40,8 +43,17 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       }))
       res.write(`event: spot-prices\ndata: ${JSON.stringify(payload)}\n\n`)
     }
-  } catch {
-    // non-fatal — client will receive prices on the next broadcast
+
+    // Send current currency rates so the client can apply conversion immediately
+    const rates = await service.getLatestRates(options.pricingCurrency)
+    const ratesPayload: Record<string, number> = {}
+    for (const row of rates) {
+      ratesPayload[row.to_currency.toUpperCase()] = row.rate
+    }
+    res.write(`event: currency-rates\ndata: ${JSON.stringify({ rates: ratesPayload })}\n\n`)
+  } catch (err) {
+    const logger = req.scope.resolve("logger") as { warn: (msg: string, extra?: unknown) => void }
+    logger.warn("[SSE] Failed to send initial spot prices or currency rates", err)
   }
 
   // Keep-alive ping every 30 s

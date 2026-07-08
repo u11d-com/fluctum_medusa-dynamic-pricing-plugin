@@ -400,9 +400,7 @@ export async function updateRegion(countryCode: string, currentPath: string) {
   }
 
   if (cartId) {
-    await updateCart({ region_id: region.id })
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag, "max")
+    await removeCartId()
   }
 
   const regionCacheTag = await getCacheTag("regions")

@@ -7,9 +7,9 @@ import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
-  title: "fluctum — Dynamic Pricing for Precious Metals",
+  title: "Fluctum Demo — Dynamic Pricing for Precious Metals",
   description:
-    "An open-source dynamic pricing framework for precious metals (gold, silver, platinum, palladium) built on Medusa. Real-time spot prices, fair market value, and transparent pricing.",
+    "An open-source dynamic pricing solution for precious metals (gold, silver, platinum, palladium) built on Medusa. Real-time spot prices, fair market value, and transparent pricing.",
 }
 
 export default async function Home(props: {

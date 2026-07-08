@@ -31,6 +31,10 @@ medusaIntegrationTestRunner({
         body: { email: "sse-test@admin.com", password: "admin" },
       })
 
+      if (!authIdentity) {
+        throw new Error("Failed to create SSE test auth identity")
+      }
+
       await authService.updateAuthIdentities({
         id: authIdentity.id,
         app_metadata: { user_id: user.id },

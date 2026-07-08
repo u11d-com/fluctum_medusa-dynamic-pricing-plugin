@@ -2,12 +2,12 @@
   "version": "v1",
   "packages": {
     "@u11d/dynamic-pricing-plugin": {
-      "signature": "d05e9489031bb536051a6ffbdd566f47",
+      "signature": "1bde4aed4bb32a9a0fbb4cacdf20faa4",
       "pure": true
     },
     "@u11d/medusa-dynamic-pricing": {
-      "signature": "bf72f4a638a15ed8e1258ebadf0277da",
-      "file": true
+      "signature": "1d4f04f677716a5b2682066e09c97dac",
+      "pure": true
     }
   }
 }

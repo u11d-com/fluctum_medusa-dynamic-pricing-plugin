@@ -6,4 +6,5 @@ export type {
   CartItemPrice,
   LockedPriceMap,
   LockPricesResult,
+  CurrencyRatePayload,
 } from "./client-types"

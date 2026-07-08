@@ -29,7 +29,8 @@ export function indexSpotPricesByMaterial(
 export function computeVariantDynamicPrice(
   variantId: string,
   pricingData: Record<string, VariantPricingData>,
-  spotPriceByMaterial: Map<string, number>
+  spotPriceByMaterial: Map<string, number>,
+  conversionRate: number = 1
 ): number | null {
   const data = pricingData[variantId]
 
@@ -50,19 +51,21 @@ export function computeVariantDynamicPrice(
     spreadFixed: data.spread_fixed,
     premiumPercentage: data.premium_percentage,
     premiumFixed: data.premium_fixed,
+    currencyConversion: conversionRate,
   })
 }
 
 export function computeCheapestVariantPrice(
   variants: HttpTypes.StoreProductVariant[],
   pricingData: Record<string, VariantPricingData>,
-  spotPrices: SpotPricePayload[]
+  spotPrices: SpotPricePayload[],
+  conversionRate: number = 1
 ): number | null {
   const spotPriceByMaterial = indexSpotPricesByMaterial(spotPrices)
   let cheapest: number | null = null
 
   for (const variant of variants) {
-    const price = computeVariantDynamicPrice(variant.id, pricingData, spotPriceByMaterial)
+    const price = computeVariantDynamicPrice(variant.id, pricingData, spotPriceByMaterial, conversionRate)
 
     if (price !== null && (cheapest === null || price < cheapest)) {
       cheapest = price
@@ -75,14 +78,15 @@ export function computeCheapestVariantPrice(
 export function computeCheapestVariant(
   variants: HttpTypes.StoreProductVariant[],
   pricingData: Record<string, VariantPricingData>,
-  spotPrices: SpotPricePayload[]
+  spotPrices: SpotPricePayload[],
+  conversionRate: number = 1
 ): { variant: HttpTypes.StoreProductVariant; price: number } | null {
   const spotPriceByMaterial = indexSpotPricesByMaterial(spotPrices)
   let cheapest: { variant: HttpTypes.StoreProductVariant; price: number } | null = null
 
   for (const variant of variants) {
     if (!variant.id) continue
-    const price = computeVariantDynamicPrice(variant.id, pricingData, spotPriceByMaterial)
+    const price = computeVariantDynamicPrice(variant.id, pricingData, spotPriceByMaterial, conversionRate)
     if (price !== null && (cheapest === null || price < cheapest.price)) {
       cheapest = { variant, price }
     }
@@ -94,9 +98,10 @@ export function computeCheapestVariant(
 export function computeProductDynamicPrice(
   product: HttpTypes.StoreProduct,
   pricingData: Record<string, VariantPricingData>,
-  spotPrices: SpotPricePayload[]
+  spotPrices: SpotPricePayload[],
+  conversionRate: number = 1
 ): number | null {
-  return computeCheapestVariantPrice(product.variants ?? [], pricingData, spotPrices)
+  return computeCheapestVariantPrice(product.variants ?? [], pricingData, spotPrices, conversionRate)
 }
 
 type CartLikeItem = {
@@ -108,14 +113,15 @@ type CartLikeItem = {
 export function computeCartItemDynamicPrice(
   item: CartLikeItem,
   pricingData: Record<string, VariantPricingData>,
-  spotPrices: SpotPricePayload[]
+  spotPrices: SpotPricePayload[],
+  conversionRate: number = 1
 ): { unit_price: number; total: number } | null {
   if (!item.variant_id) {
     return null
   }
 
   const spotPriceByMaterial = indexSpotPricesByMaterial(spotPrices)
-  const unitPrice = computeVariantDynamicPrice(item.variant_id, pricingData, spotPriceByMaterial)
+  const unitPrice = computeVariantDynamicPrice(item.variant_id, pricingData, spotPriceByMaterial, conversionRate)
 
   if (unitPrice === null) {
     return null

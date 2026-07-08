@@ -4,6 +4,8 @@ export { resolvePluginOptions, ConfigValidationError } from "./modules/dynamic-p
 export { randomProvider } from "./providers/random/index"
 export { createGoldApiProvider } from "./providers/gold-api/index"
 export type { GoldApiProviderOptions } from "./providers/gold-api/index"
+export { createStaticRatesProvider } from "./providers/currency-rates/static"
+export { exchangeRateHostProvider } from "./providers/currency-rates/exchange-rate-host"
 export { seedProductsWorkflow } from "./workflows/seed-products"
 export { computeFinalPrice } from "./utils/price-formula"
 export type { PricingFactors } from "./utils/price-formula"

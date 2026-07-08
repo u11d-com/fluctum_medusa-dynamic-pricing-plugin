@@ -7,18 +7,22 @@ import { getVariantPricingData } from "@lib/data/variant-pricing"
 import { collectVariantIds, computeCartItemDynamicPrice } from "@lib/util/dynamic-pricing"
 import type { CartItemPrice, VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
 
-export function useCartPricing(cart: HttpTypes.StoreCart | null): {
+export function useCartPricing(cart: HttpTypes.StoreCart | null, regionCurrencyCode: string = "USD"): {
   itemPrices: Record<string, CartItemPrice>
   isLoading: boolean
   subtotal: number
 } {
-  const { prices, isLoading: spotLoading } = useSpotPrices()
+  const { prices, rates, isLoading: spotLoading } = useSpotPrices()
   const [pricingData, setPricingData] = useState<Record<string, VariantPricingData>>({})
   const [pricingLoading, setPricingLoading] = useState(true)
 
   const variantIds = useMemo(() => {
     return collectVariantIds((cart?.items ?? []).map((item) => ({ id: item.variant_id })))
   }, [cart?.items])
+
+  const cartCurrencyCode = (cart?.currency_code ?? regionCurrencyCode).toUpperCase()
+  const isUsd = cartCurrencyCode === "USD"
+  const conversionRate = isUsd ? 1 : (rates[cartCurrencyCode] ?? null)
 
   useEffect(() => {
     let cancelled = false
@@ -54,10 +58,16 @@ export function useCartPricing(cart: HttpTypes.StoreCart | null): {
   }, [variantIds])
 
   const itemPrices = useMemo(() => {
+    // If the cart uses a non-USD currency but FX rates haven't loaded yet,
+    // return an empty map so UI shows "—" instead of USD-denominated values
+    if (conversionRate === null) {
+      return {} as Record<string, CartItemPrice>
+    }
+
     const map: Record<string, CartItemPrice> = {}
 
     for (const item of cart?.items ?? []) {
-      const computed = computeCartItemDynamicPrice(item, pricingData, prices)
+      const computed = computeCartItemDynamicPrice(item, pricingData, prices, conversionRate)
 
       if (computed) {
         map[item.id] = computed
@@ -65,7 +75,7 @@ export function useCartPricing(cart: HttpTypes.StoreCart | null): {
     }
 
     return map
-  }, [pricingData, prices, cart?.items])
+  }, [pricingData, prices, cart?.items, conversionRate])
 
   const subtotal = useMemo(() => {
     let total = 0

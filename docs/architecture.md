@@ -2,7 +2,7 @@
 
 ## Overview
 
-The dynamic pricing framework is a Medusa v2 plugin (`@u11d/medusa-dynamic-pricing`) layered on top of a standard Medusa backend + Next.js storefront stack. Its core responsibility is to make product prices reflect live precious-metal spot prices in real time, while ensuring order integrity at checkout via price locks.
+The dynamic pricing solution is a Medusa v2 plugin (`@u11d/medusa-dynamic-pricing`) layered on top of a standard Medusa backend + Next.js storefront stack. Its core responsibility is to make product prices reflect live precious-metal spot prices in real time, while ensuring order integrity at checkout via price locks.
 
 ## Component Map
 
@@ -164,15 +164,15 @@ The storefront proxies the SSE stream through a Next.js route handler (`/api/sse
 
 ## Technology Stack
 
-| Layer | Technology |
-|---|---|
-| Backend framework | Medusa v2 (2.15.2) |
-| Language | TypeScript |
-| Database | PostgreSQL 17 |
-| ORM | MikroORM (via Medusa) + raw Knex for write-heavy ops |
-| Cache / messaging | Redis 8 (event bus + distributed locking) |
-| Storefront | Next.js 15 (App Router, RSC) |
-| Admin UI | Medusa Admin SDK (`@medusajs/ui`, `@medusajs/icons`) |
-| Monorepo | Turborepo + npm workspaces |
-| Local plugin linking | yalc |
-| Testing | Jest + `@medusajs/test-utils` |
+| Layer                | Technology                                           |
+| -------------------- | ---------------------------------------------------- |
+| Backend framework    | Medusa v2 (2.15.2)                                   |
+| Language             | TypeScript                                           |
+| Database             | PostgreSQL 17                                        |
+| ORM                  | MikroORM (via Medusa) + raw Knex for write-heavy ops |
+| Cache / messaging    | Redis 8 (event bus + distributed locking)            |
+| Storefront           | Next.js 15 (App Router, RSC)                         |
+| Admin UI             | Medusa Admin SDK (`@medusajs/ui`, `@medusajs/icons`) |
+| Monorepo             | Turborepo + npm workspaces                           |
+| Local plugin linking | yalc                                                 |
+| Testing              | Jest + `@medusajs/test-utils`                        |

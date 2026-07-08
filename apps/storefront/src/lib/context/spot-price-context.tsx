@@ -1,13 +1,14 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from "react"
-import type { SpotPricePayload } from "@u11d/medusa-dynamic-pricing/client"
+import type { SpotPricePayload, CurrencyRatePayload } from "@u11d/medusa-dynamic-pricing/client"
 import { sdk } from "@lib/config"
 
 const POLL_FALLBACK_MS = 30_000
 
 type SpotPriceContextValue = {
   prices: SpotPricePayload[]
+  rates: Record<string, number>  // currency_code.toUpperCase() → rate from pricingCurrency
   isLoading: boolean
   error: boolean
 }
@@ -38,8 +39,15 @@ function parseSpotPriceArray(value: unknown): SpotPricePayload[] {
   return value.filter(isSpotPricePayload)
 }
 
+function isCurrencyRatePayload(value: unknown): value is CurrencyRatePayload {
+  if (!value || typeof value !== "object") return false
+  const record = value as Record<string, unknown>
+  return typeof record.rates === "object" && record.rates !== null
+}
+
 export function SpotPriceProvider({ children }: { children: ReactNode }) {
   const [prices, setPrices] = useState<SpotPricePayload[]>([])
+  const [rates, setRates] = useState<Record<string, number>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
   const esRef = useRef<EventSource | null>(null)
@@ -81,6 +89,17 @@ export function SpotPriceProvider({ children }: { children: ReactNode }) {
         }
       })
 
+      es.addEventListener("currency-rates", (event) => {
+        try {
+          const data = JSON.parse(event.data) as unknown
+          if (!cancelled && isCurrencyRatePayload(data)) {
+            setRates(data.rates)
+          }
+        } catch {
+          // ignore malformed events
+        }
+      })
+
       es.onerror = () => {
         es.close()
         esRef.current = null
@@ -94,6 +113,21 @@ export function SpotPriceProvider({ children }: { children: ReactNode }) {
 
     function startFallback() {
       if (cancelled) return
+
+      const fetchRates = async () => {
+        try {
+          const data = await sdk.client.fetch<{ rates: Record<string, number> }>(
+            "/store/dynamic-pricing/currency-rates",
+            { method: "GET", cache: "no-store" }
+          )
+          if (!cancelled) {
+            setRates(data.rates)
+          }
+        } catch {
+          // non-fatal — rates stay as last known value
+        }
+      }
+      fetchRates() // fire once, not on interval (rates change hourly)
 
       const fetchPrices = async () => {
         try {
@@ -129,7 +163,7 @@ export function SpotPriceProvider({ children }: { children: ReactNode }) {
   }, [onPrices])
 
   return (
-    <SpotPriceContext.Provider value={{ prices, isLoading, error }}>
+    <SpotPriceContext.Provider value={{ prices, rates, isLoading, error }}>
       {children}
     </SpotPriceContext.Provider>
   )

@@ -2,6 +2,7 @@ import { Metadata } from "next"
 
 import { listCartOptions, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
+import { getRegion } from "@lib/data/regions"
 import { getBaseURL } from "@lib/util/env"
 import { StoreCartShippingOption } from "@medusajs/types"
 import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
@@ -15,7 +16,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
 
-export default async function PageLayout(props: { children: React.ReactNode }) {
+export default async function PageLayout(props: { children: React.ReactNode; params: Promise<{ countryCode: string }> }) {
+  const { countryCode } = await props.params
+  const region = await getRegion(countryCode)
+  const regionCurrencyCode = region?.currency_code?.toUpperCase() ?? "USD"
+
   const customer = await retrieveCustomer()
   const cart = await retrieveCart()
   let shippingOptions: StoreCartShippingOption[] = []
@@ -27,8 +32,8 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   }
 
   return (
-    <CartProvider initialCart={cart}>
-      <SpotPriceBarClient />
+    <CartProvider initialCart={cart} regionCurrencyCode={regionCurrencyCode}>
+      <SpotPriceBarClient regionCurrencyCode={regionCurrencyCode} />
       <Nav />
       {customer && cart && (
         <CartMismatchBanner customer={customer} cart={cart} />
