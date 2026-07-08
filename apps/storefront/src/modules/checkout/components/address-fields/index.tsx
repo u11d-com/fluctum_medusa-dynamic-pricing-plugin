@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from 'next-intl'
 import { HttpTypes } from "@medusajs/types"
 import { Input } from "@modules/common/components/ui"
 import React from "react"
@@ -94,10 +97,12 @@ const AddressFields = ({
   requiredCity = true,
   includePhone = true,
 }: AddressFieldsProps) => {
+  const t = useTranslations('checkout')
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <Input
-        label="First name"
+        label={t('firstName')}
         name={fieldName(prefix, "first_name")}
         autoComplete="given-name"
         value={formData[fieldName(prefix, "first_name")]}
@@ -106,7 +111,7 @@ const AddressFields = ({
         data-testid={testIdFor("first_name")}
       />
       <Input
-        label="Last name"
+        label={t('lastName')}
         name={fieldName(prefix, "last_name")}
         autoComplete="family-name"
         value={formData[fieldName(prefix, "last_name")]}
@@ -115,7 +120,7 @@ const AddressFields = ({
         data-testid={testIdFor("last_name")}
       />
       <Input
-        label="Address"
+        label={t('address')}
         name={fieldName(prefix, "address_1")}
         autoComplete="address-line1"
         value={formData[fieldName(prefix, "address_1")]}
@@ -124,7 +129,7 @@ const AddressFields = ({
         data-testid={testIdFor("address_1")}
       />
       <Input
-        label="Company"
+        label={t('company')}
         name={fieldName(prefix, "company")}
         value={formData[fieldName(prefix, "company")]}
         onChange={onChange}
@@ -132,7 +137,7 @@ const AddressFields = ({
         data-testid={testIdFor("company")}
       />
       <Input
-        label="Postal code"
+        label={t('postalCode')}
         name={fieldName(prefix, "postal_code")}
         autoComplete="postal-code"
         value={formData[fieldName(prefix, "postal_code")]}
@@ -141,7 +146,7 @@ const AddressFields = ({
         data-testid={testIdFor("postal_code")}
       />
       <Input
-        label="City"
+        label={t('city')}
         name={fieldName(prefix, "city")}
         autoComplete="address-level2"
         value={formData[fieldName(prefix, "city")]}
@@ -159,7 +164,7 @@ const AddressFields = ({
         data-testid={testIdFor("country_code")}
       />
       <Input
-        label="State / Province"
+        label={t('state')}
         name={fieldName(prefix, "province")}
         autoComplete="address-level1"
         value={formData[fieldName(prefix, "province")]}
@@ -168,7 +173,7 @@ const AddressFields = ({
       />
       {includePhone && (
         <Input
-          label="Phone"
+          label={t('phone')}
           name={fieldName(prefix, "phone")}
           autoComplete="tel"
           value={formData[fieldName(prefix, "phone")]}

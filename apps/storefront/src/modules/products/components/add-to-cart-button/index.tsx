@@ -6,6 +6,7 @@ import { useParams } from "next/navigation"
 import { useTransition } from "react"
 import { toast } from "sonner"
 import { Button } from "@modules/common/components/ui"
+import { useTranslations } from "next-intl"
 
 type AddToCartButtonProps = {
   variantId: string
@@ -40,6 +41,7 @@ export default function AddToCartButton({ variantId }: AddToCartButtonProps) {
   const { addToCart } = useCart()
   const [isPending, startTransition] = useTransition()
   const countryCode = getCountryCodeFromParams(useParams())
+  const t = useTranslations('product')
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -56,7 +58,7 @@ export default function AddToCartButton({ variantId }: AddToCartButtonProps) {
         toast.error(
           err instanceof Error
             ? err.message
-            : "Could not add to cart. Please try again."
+            : t('addToCartError')
         )
       }
     })
@@ -71,7 +73,7 @@ export default function AddToCartButton({ variantId }: AddToCartButtonProps) {
       className="shrink-0 rounded-lg"
       data-testid="add-to-cart-button"
     >
-      {isPending ? <Spinner /> : "Add"}
+      {isPending ? <Spinner /> : t('addToCart')}
     </Button>
   )
 }

@@ -6,6 +6,7 @@ import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
+import { getLocale } from "next-intl/server"
 
 export const listProducts = async ({
   pageParam = 1,
@@ -53,6 +54,8 @@ export const listProducts = async ({
     ...(await getCacheOptions("products")),
   }
 
+  const locale = await getLocale()
+
   return sdk.client
     .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(
       `/store/products`,
@@ -62,6 +65,7 @@ export const listProducts = async ({
           limit,
           offset,
           region_id: region?.id,
+          locale,
           fields:
             "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+categories,+metadata,+tags,",
           ...queryParams,

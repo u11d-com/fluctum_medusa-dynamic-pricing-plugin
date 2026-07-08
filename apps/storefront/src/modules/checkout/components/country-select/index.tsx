@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from 'next-intl'
 import { forwardRef, useImperativeHandle, useMemo, useRef } from "react"
 
 import { NativeSelect, NativeSelectProps } from "@modules/common/components/ui"
@@ -8,7 +11,9 @@ const CountrySelect = forwardRef<
   NativeSelectProps & {
     region?: HttpTypes.StoreRegion
   }
->(({ placeholder = "Country", region, defaultValue, ...props }, ref) => {
+>(({ placeholder: placeholderProp, region, defaultValue, ...props }, ref) => {
+  const t = useTranslations('checkout')
+  const placeholder = placeholderProp ?? t('country')
   const innerRef = useRef<HTMLSelectElement>(null)
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(

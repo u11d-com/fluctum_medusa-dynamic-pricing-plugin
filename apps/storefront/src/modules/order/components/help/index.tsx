@@ -1,20 +1,22 @@
 import { Heading, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import React from "react"
+import { getTranslations } from "next-intl/server"
 
-const Help = () => {
+const Help = async () => {
+  const t = await getTranslations('order')
   return (
     <div className="mt-6">
-      <Heading size="sm" className="text-base-semi">Need help?</Heading>
+      <Heading size="sm" className="text-base-semi">{t('help')}</Heading>
       <div className="my-2">
         <ul className="gap-y-2 flex flex-col">
           <li>
-            <Text><LocalizedClientLink href="/contact">Contact</LocalizedClientLink></Text>
+            <Text><LocalizedClientLink href="/contact">{t('contact')}</LocalizedClientLink></Text>
           </li>
           <li>
             <Text>
               <LocalizedClientLink href="/contact">
-                Returns & Exchanges
+                {t('returns')}
               </LocalizedClientLink>
             </Text>
           </li>

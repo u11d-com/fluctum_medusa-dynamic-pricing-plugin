@@ -6,6 +6,7 @@ import {
   updateLineItem as updateLineItemAction,
 } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
+import { useTranslations } from "next-intl"
 import { createContext, ReactNode, useContext, useState } from "react"
 import { toast } from "sonner"
 
@@ -38,23 +39,24 @@ export function CartProvider({
   children: ReactNode
 }) {
   const [cart, setCart] = useState<StoreCart | null>(initialCart)
+  const t = useTranslations("cart")
 
   const addToCart: CartContextValue["addToCart"] = async (input) => {
     const updated = await addToCartAction(input)
     if (updated) setCart(updated)
-    toast.success("Added to cart")
+    toast.success(t("addedToCart"))
   }
 
   const updateLineItem: CartContextValue["updateLineItem"] = async (input) => {
     const updated = await updateLineItemAction(input)
     if (updated) setCart(updated)
-    toast.success("Cart updated")
+    toast.success(t("cartUpdated"))
   }
 
   const deleteLineItem: CartContextValue["deleteLineItem"] = async (lineId) => {
     const updated = await deleteLineItemAction(lineId)
     if (updated) setCart(updated)
-    toast.success("Item removed from cart")
+    toast.success(t("itemRemoved"))
   }
 
   return (

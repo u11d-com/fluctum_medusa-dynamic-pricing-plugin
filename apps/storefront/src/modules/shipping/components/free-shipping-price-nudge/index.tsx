@@ -11,6 +11,7 @@ import {
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Button, clx } from "@modules/common/components/ui"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 
 type StoreFreeShippingPrice = StorePrice & {
   target_reached: boolean
@@ -146,6 +147,7 @@ function FreeShippingInline({
     remaining_percentage: number
   }
 }) {
+  const t = useTranslations('shipping')
   return (
     <div className="bg-neutral-100 p-2 rounded-lg border">
       <div className="space-y-1.5">
@@ -155,10 +157,10 @@ function FreeShippingInline({
               <div className="flex items-center gap-1.5">
                 {" "}
                 <CheckCircleSolid className="text-green-500 inline-block" />{" "}
-                Free Shipping unlocked!
+                {t('freeShippingQualified')}
               </div>
             ) : (
-              `Unlock Free Shipping`
+              t('unlockFreeShipping')
             )}
           </div>
 
@@ -167,14 +169,14 @@ function FreeShippingInline({
               "opacity-0 invisible": price.target_reached,
             })}
           >
-            Only{" "}
+            {t('only')}{" "}
             <span className="text-neutral-950">
               {convertToLocale({
                 amount: price.target_remaining,
                 currency_code: cart.currency_code,
               })}
             </span>{" "}
-            away
+            {t('away')}
           </div>
         </div>
         <div className="flex justify-between gap-1">
@@ -202,6 +204,7 @@ function FreeShippingPopup({
   price: StoreFreeShippingPrice
 }) {
   const [isClosed, setIsClosed] = useState(false)
+  const t = useTranslations('shipping')
 
   return (
     <div
@@ -219,7 +222,7 @@ function FreeShippingPopup({
           className="rounded-full bg-neutral-900 shadow-none border-none text-[15px] p-2"
           variant="icon"
           size="xs"
-          aria-label="Dismiss free shipping message"
+          aria-label={t('dismissFreeShipping')}
           onClick={() => setIsClosed(true)}
         >
           <XMark />
@@ -234,10 +237,10 @@ function FreeShippingPopup({
                 {price.target_reached ? (
                   <div className="flex items-center gap-1.5">
                     <CheckCircleSolid className="text-green-500 inline-block" />{" "}
-                    Free Shipping unlocked!
+                    {t('freeShippingQualified')}
                   </div>
                 ) : (
-                  `Unlock Free Shipping`
+                  t('unlockFreeShipping')
                 )}
               </div>
 
@@ -246,14 +249,14 @@ function FreeShippingPopup({
                   "opacity-0 invisible": price.target_reached,
                 })}
               >
-                Only{" "}
+                {t('only')}{" "}
                 <span className="text-white">
                   {convertToLocale({
                     amount: price.target_remaining,
                     currency_code: cart.currency_code,
                   })}
                 </span>{" "}
-                away
+                {t('away')}
               </div>
             </div>
             <div className="flex justify-between gap-1">
@@ -276,14 +279,14 @@ function FreeShippingPopup({
             className="rounded-2xl bg-transparent shadow-none border-[1px] border-white text-[15px] py-2.5 px-4"
             href="/cart"
           >
-            View cart
+            {t('viewCart')}
           </LocalizedClientLink>
 
           <LocalizedClientLink
             className="flex-grow rounded-2xl bg-white text-neutral-950 shadow-none border-[1px] border-white text-[15px] py-2.5 px-4 text-center"
             href="/store"
           >
-            View products
+            {t('viewProducts')}
           </LocalizedClientLink>
         </div>
       </div>

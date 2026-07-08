@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { Text } from "@modules/common/components/ui"
+import { getTranslations } from "next-intl/server"
 import { listRegions } from "@lib/data/regions"
 import CountrySelect from "@modules/layout/components/country-select"
 
@@ -7,6 +8,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 
 export default async function Footer() {
   const regions = await listRegions()
+  const t = await getTranslations("footer")
 
   return (
     <footer className="border-t border-white/10 w-full bg-black">
@@ -26,14 +28,13 @@ export default async function Footer() {
               </span>
             </LocalizedClientLink>
             <Text as="p" className="text-xs text-white/40 leading-relaxed">
-              Open-source dynamic pricing solution for precious metals.
-              Real-time spot prices, transparent fair-market value.
+              {t("tagline")}
             </Text>
           </div>
 
           <div className="flex flex-col gap-y-3">
             <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
-              Powered by
+              {t("poweredBy")}
             </span>
             <a
               href="https://medusajs.com"
@@ -47,7 +48,7 @@ export default async function Footer() {
 
           <div className="flex flex-col gap-y-3">
             <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
-              Open Source
+              {t("openSource")}
             </span>
             <a
               href="https://github.com/anomalyco/dynamic-pricing"
@@ -55,13 +56,13 @@ export default async function Footer() {
               rel="noreferrer"
               className="text-white/50 hover:text-white transition-colors text-sm"
             >
-              GitHub Repository
+              {t("githubRepository")}
             </a>
           </div>
 
           <div className="flex flex-col gap-y-3">
             <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
-              Region
+              {t("region")}
             </span>
             <CountrySelect regions={regions ?? []} />
           </div>
@@ -69,16 +70,18 @@ export default async function Footer() {
 
         <div className="flex w-full mb-10 justify-center items-center border-t border-white/10 pt-6">
           <Text className="txt-compact-small text-white/20 text-[11px]">
-            Made with passion by{" "}
-            <a
-              href="https://u11d.com"
-              target="_blank"
-              rel="noreferrer"
-              className="underline hover:text-white/50"
-            >
-              u11d
-            </a>{" "}
-            in Szczecin, Poland
+            {t.rich('madeBy', {
+              link: () => (
+                <a
+                  href="https://u11d.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-white/50"
+                >
+                  u11d
+                </a>
+              ),
+            }) as JSX.Element}
           </Text>
         </div>
       </div>

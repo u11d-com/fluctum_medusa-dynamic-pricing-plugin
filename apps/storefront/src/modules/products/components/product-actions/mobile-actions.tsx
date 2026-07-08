@@ -1,6 +1,9 @@
+"use client"
+
 import { Dialog, Transition } from "@headlessui/react"
 import { Button, IconButton, Text, clx } from "@modules/common/components/ui"
 import React, { Fragment, useMemo } from "react"
+import { useTranslations } from "next-intl"
 
 import useToggleState from "@lib/hooks/use-toggle-state"
 import ChevronDown from "@modules/common/icons/chevron-down"
@@ -35,6 +38,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   optionsDisabled,
 }) => {
   const { state, open, close } = useToggleState()
+  const t = useTranslations('product')
 
   const price = getProductPrice({
     product: product,
@@ -131,8 +135,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div className="flex items-center justify-between w-full">
                   <span>
                     {variant
-                      ? Object.values(options).join(" / ")
-                      : "Select Options"}
+                      ? Object.values(options).join(" / ")
+                      : t('selectOptions')}
                   </span>
                   <ChevronDown />
                 </div>
@@ -145,10 +149,10 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 data-testid="mobile-cart-button"
               >
                 {!variant
-                  ? "Select variant"
+                  ? t('selectVariant')
                   : !inStock
-                  ? "Out of stock"
-                  : "Add to cart"}
+                  ? t('outOfStock')
+                  : t('addToCart')}
               </Button>
             </div>
           </div>
@@ -187,7 +191,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                     <IconButton
                       type="button"
                       onClick={close}
-                      aria-label="Close product options"
+                      aria-label={t('closeOptions')}
                       className="bg-ui-bg-base w-12 h-12 rounded-full text-ui-fg-base flex justify-center items-center"
                       data-testid="close-modal-button"
                     >

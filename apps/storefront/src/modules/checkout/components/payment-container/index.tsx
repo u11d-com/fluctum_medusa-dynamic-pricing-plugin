@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from 'next-intl'
 import { Radio as RadioGroupOption } from "@headlessui/react"
 import { ChoiceCard, Radio, Text } from "@modules/common/components/ui"
 import React, { useContext, useMemo, type JSX } from "react"
@@ -76,6 +79,7 @@ export const StripeCardContainer = ({
   setError: (error: string | null) => void
   setCardComplete: (complete: boolean) => void
 }) => {
+  const t = useTranslations('checkout')
   const stripeReady = useContext(StripeContext)
 
   const useOptions: StripeCardElementOptions = useMemo(() => {
@@ -106,7 +110,7 @@ export const StripeCardContainer = ({
         (stripeReady ? (
           <div className="my-4 transition-all duration-150 ease-in-out">
             <Text as="span" variant="label" className="mb-1">
-              Enter your card details:
+              {t('enterCardDetails')}
             </Text>
             <CardElement
               options={useOptions}

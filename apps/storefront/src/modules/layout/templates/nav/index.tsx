@@ -1,9 +1,12 @@
 import Image from "next/image"
+import { getTranslations } from "next-intl/server"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartDropdown from "@modules/layout/components/cart-dropdown"
 
 export default async function Nav() {
+  const t = await getTranslations("nav")
+
   return (
     <header className="sticky top-0 inset-x-0 z-50 h-16 mx-auto border-b duration-200 bg-black border-white/10">
       <nav className="content-container flex items-center justify-between w-full h-full text-small-regular">
@@ -32,21 +35,21 @@ export default async function Nav() {
             className="text-white/80 hover:text-white transition-colors txt-compact-plus"
             data-testid="nav-home-link"
           >
-            Home
+            {t("home")}
           </LocalizedClientLink>
           <LocalizedClientLink
             href="/store"
             className="text-white/80 hover:text-white transition-colors txt-compact-plus"
             data-testid="nav-store-link"
           >
-            Store
+            {t("store")}
           </LocalizedClientLink>
           <LocalizedClientLink
             className="text-white/80 hover:text-white transition-colors txt-compact-plus"
             href="/account"
             data-testid="nav-account-link"
           >
-            Account
+            {t("account")}
           </LocalizedClientLink>
         </div>
 

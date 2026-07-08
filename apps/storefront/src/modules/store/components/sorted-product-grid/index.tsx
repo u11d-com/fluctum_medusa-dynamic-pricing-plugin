@@ -10,6 +10,7 @@ import ProductCard from "@modules/products/components/product-card"
 import { getProductDisplayTitle } from "@lib/util/dynamic-pricing"
 import { sortProducts } from "@lib/util/sort-products"
 import { Text } from "@modules/common/components/ui"
+import { useTranslations } from 'next-intl'
 
 // ── Product card ─────────────────────────────────────────────────────────────
 
@@ -55,6 +56,7 @@ type Props = {
 
 export default function SortedProductGrid({ products, pricingData, sortBy, initialPrices }: Props) {
   const { prices: spotPrices } = useSpotPrices()
+  const t = useTranslations('store')
 
   const sorted = useMemo(
     () => sortProducts(products, sortBy, pricingData, spotPrices),
@@ -63,7 +65,7 @@ export default function SortedProductGrid({ products, pricingData, sortBy, initi
 
   if (sorted.length === 0) {
     return (
-      <Text className="py-8">No products found.</Text>
+      <Text className="py-8">{t('noProducts')}</Text>
     )
   }
 

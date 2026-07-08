@@ -1,4 +1,5 @@
 "use client"
+import { useTranslations } from 'next-intl'
 import { Radio, RadioGroup } from "@headlessui/react"
 import { setShippingMethod } from "@lib/data/cart"
 import { calculatePriceForShippingOption } from "@lib/data/fulfillment"
@@ -74,6 +75,7 @@ const Shipping: React.FC<ShippingProps> = ({
   cart,
   availableShippingMethods,
 }) => {
+  const t = useTranslations('checkout')
   const [isLoading, setIsLoading] = useState(false)
   const [isSettingMethod, setIsSettingMethod] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(true)
@@ -179,7 +181,7 @@ const Shipping: React.FC<ShippingProps> = ({
 
   return (
     <CheckoutStepCard
-      title="Delivery"
+      title={t('delivery')}
       isOpen={isOpen}
       isComplete={!isOpen && (cart.shipping_methods?.length ?? 0) > 0}
       disabled={!isOpen && cart.shipping_methods?.length === 0}
@@ -197,10 +199,10 @@ const Shipping: React.FC<ShippingProps> = ({
           <div className="grid">
             <div className="flex flex-col">
               <Text as="span" variant="label">
-                Shipping method
+                {t('shippingMethod')}
               </Text>
               <Text as="span" variant="muted" className="mb-4">
-                How would you like you order delivered
+                {t('howDeliver')}
               </Text>
             </div>
             <div data-testid="delivery-options-container">
@@ -232,7 +234,7 @@ const Shipping: React.FC<ShippingProps> = ({
                               checked={showPickupOptions === PICKUP_OPTION_ON}
                             />
                           <Text as="span">
-                            Pick up your order
+                            {t('pickUpOrder')}
                           </Text>
                         </div>
                         <Text as="span" className="justify-self-end">
@@ -307,10 +309,10 @@ const Shipping: React.FC<ShippingProps> = ({
             <div className="grid">
               <div className="flex flex-col">
                 <Text as="span" variant="label">
-                  Store
+                  {t('storePickup')}
                 </Text>
                 <Text as="span" variant="muted" className="mb-4">
-                  Choose a store near you
+                  {t('chooseStore')}
                 </Text>
               </div>
               <div data-testid="delivery-options-container">
@@ -379,7 +381,7 @@ const Shipping: React.FC<ShippingProps> = ({
               disabled={!shippingMethodId || isSettingMethod}
               data-testid="submit-delivery-option-button"
             >
-              Continue to payment
+              {t('continueToPayment')}
             </Button>
           </div>
         </>
@@ -389,7 +391,7 @@ const Shipping: React.FC<ShippingProps> = ({
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
               <div className="flex flex-col w-1/3">
                 <Text as="span" variant="label" className="mb-1">
-                  Method
+                  {t('method')}
                 </Text>
                 <Text variant="muted">
                   {cart.shipping_methods!.at(-1)!.name}{" "}

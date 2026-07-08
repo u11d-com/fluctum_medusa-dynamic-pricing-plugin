@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from 'next-intl'
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
 import { ChoiceCard, Radio, Text, clx } from "@modules/common/components/ui"
@@ -51,6 +54,8 @@ const AddressSelect = ({
   addressInput,
   onSelect,
 }: AddressSelectProps) => {
+  const t = useTranslations('checkout')
+
   const handleSelect = (id: string) => {
     const savedAddress = addresses.find((a) => a.id === id)
     if (savedAddress) {
@@ -72,9 +77,9 @@ const AddressSelect = ({
           {({ open }) => (
             <>
               <Text as="span" className="block truncate">
-                {selectedAddress
-                  ? selectedAddress.address_1
-                  : "Choose an address"}
+                  {selectedAddress
+                    ? selectedAddress.address_1
+                    : t('chooseAddress')}
               </Text>
               <ChevronUpDown
                 className={clx("transition-rotate duration-200", {

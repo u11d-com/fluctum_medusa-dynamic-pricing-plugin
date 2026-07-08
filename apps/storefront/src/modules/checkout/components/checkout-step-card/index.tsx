@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { CheckCircleSolid } from "@medusajs/icons"
 import { Heading, Surface, Text, clx } from "@modules/common/components/ui"
 
@@ -24,6 +25,8 @@ export default function CheckoutStepCard({
   children,
   dataTestId,
 }: CheckoutStepCardProps) {
+  const t = useTranslations('checkout')
+
   return (
     <Surface className="p-6" data-testid={dataTestId}>
       <div className="flex flex-row items-center justify-between mb-6">
@@ -44,7 +47,7 @@ export default function CheckoutStepCard({
               onClick={onEdit}
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
             >
-              Edit
+              {t('edit')}
             </button>
           </Text>
         )}

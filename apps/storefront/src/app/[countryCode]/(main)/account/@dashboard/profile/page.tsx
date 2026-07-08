@@ -7,6 +7,7 @@ import { notFound } from "next/navigation"
 import { listRegions } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
 import { Divider, Heading, Text } from "@modules/common/components/ui"
+import { getTranslations } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -21,14 +22,14 @@ export default async function Profile() {
     notFound()
   }
 
+  const t = await getTranslations('account')
+
   return (
     <div className="w-full" data-testid="profile-page-wrapper">
       <div className="mb-8 flex flex-col gap-y-4">
-        <Heading level="h1" size="lg">Profile</Heading>
+        <Heading level="h1" size="lg">{t('profileTitle')}</Heading>
         <Text>
-          View and update your profile information, including your name, email,
-          and phone number. You can also update your billing address, or change
-          your password.
+          {t('profileDescription')}
         </Text>
       </div>
       <div className="flex flex-col gap-y-8 w-full">

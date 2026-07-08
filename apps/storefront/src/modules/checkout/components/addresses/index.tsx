@@ -1,4 +1,5 @@
 "use client"
+import { useTranslations } from 'next-intl'
 import { setAddresses } from "@lib/data/cart"
 import useToggleState from "@lib/hooks/use-toggle-state"
 import compareAddresses from "@lib/util/compare-addresses"
@@ -43,6 +44,7 @@ const Addresses = ({
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
 }) => {
+  const t = useTranslations('checkout')
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -63,7 +65,7 @@ const Addresses = ({
 
   return (
     <CheckoutStepCard
-      title="Shipping Address"
+      title={t('shippingAddress')}
       isOpen={isOpen}
       isComplete={!isOpen}
       canEdit={!isOpen && !!cart?.shipping_address}
@@ -87,14 +89,14 @@ const Addresses = ({
                   size="2xl"
                   className="gap-x-4 pb-6 pt-8"
                 >
-                  Billing address
+                  {t('billingAddress')}
                 </Heading>
 
                 <BillingAddress cart={cart} />
               </div>
             )}
             <SubmitButton className="mt-6" data-testid="submit-address-button">
-              Continue to delivery
+              {t('continueToDelivery')}
             </SubmitButton>
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>
@@ -106,7 +108,7 @@ const Addresses = ({
               <div className="flex items-start gap-x-8">
                 <div className="flex items-start gap-x-1 w-full">
                   <AddressSummaryBlock
-                    title="Shipping Address"
+                    title={t('shippingAddress')}
                     dataTestId="shipping-address-summary"
                     lines={[
                       formatAddressLine(
@@ -126,17 +128,17 @@ const Addresses = ({
                   />
 
                   <AddressSummaryBlock
-                    title="Contact"
+                    title={t('contact')}
                     dataTestId="shipping-contact-summary"
                     lines={[cart.shipping_address.phone, cart.email]}
                   />
 
                   <AddressSummaryBlock
-                    title="Billing Address"
+                    title={t('billingAddress')}
                     dataTestId="billing-address-summary"
                     lines={
                       sameAsBilling
-                        ? ["Billing and delivery address are the same."]
+                        ? [t('sameAsBilling')]
                         : [
                             formatAddressLine(
                               cart.billing_address?.first_name,
@@ -159,7 +161,7 @@ const Addresses = ({
             ) : (
               <div>
                 <Spinner />
-                <Text className="sr-only">Loading address data</Text>
+                <Text className="sr-only">{t('loadingAddressData')}</Text>
               </div>
             )}
           </div>

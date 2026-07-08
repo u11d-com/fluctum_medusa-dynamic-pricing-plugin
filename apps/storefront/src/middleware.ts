@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
+import { getLocaleFromCountry } from "@lib/util/locale-map"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
@@ -102,7 +103,10 @@ async function getCountryCode(
  */
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.includes(".")) {
-    return NextResponse.next()
+    const requestHeaders = new Headers(request.headers)
+    const earlyCountry = request.nextUrl.pathname.split("/")[1]?.toLowerCase() || DEFAULT_REGION
+    requestHeaders.set("x-locale", getLocaleFromCountry(earlyCountry))
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   const cacheIdCookie = request.cookies.get("_medusa_cache_id")
@@ -113,18 +117,25 @@ export async function middleware(request: NextRequest) {
 
   // if the country code is available, use it, otherwise use the default region
   const country = countryCode || DEFAULT_REGION
+  const locale = getLocaleFromCountry(country)
   const firstPathSegment = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
   const urlHasCountry = firstPathSegment === country.toLowerCase()
 
   if (urlHasCountry) {
     if (!cacheIdCookie) {
-      const response = NextResponse.next()
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set("x-locale", locale)
+      const response = NextResponse.next({
+        request: { headers: requestHeaders },
+      })
       response.cookies.set("_medusa_cache_id", cacheId, {
         maxAge: 60 * 60 * 24,
       })
       return response
     }
-    return NextResponse.next()
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set("x-locale", locale)
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   // if the url doesn't have the country, redirect to it

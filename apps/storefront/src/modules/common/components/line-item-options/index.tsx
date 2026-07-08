@@ -1,5 +1,8 @@
+"use client"
+
 import { HttpTypes } from "@medusajs/types"
 import { Text, clx } from "@modules/common/components/ui"
+import { useTranslations } from "next-intl"
 
 type LineItemOptionsProps = {
   variant: HttpTypes.StoreProductVariant | undefined
@@ -14,6 +17,7 @@ const LineItemOptions = ({
   "data-value": dataValue,
   className,
 }: LineItemOptionsProps) => {
+  const t = useTranslations('common')
   return (
     <Text
       data-testid={dataTestid}
@@ -23,7 +27,7 @@ const LineItemOptions = ({
         className
       )}
     >
-      Variant: {variant?.title}
+      {t('variant', { title: variant?.title ?? '' })}
     </Text>
   )
 }

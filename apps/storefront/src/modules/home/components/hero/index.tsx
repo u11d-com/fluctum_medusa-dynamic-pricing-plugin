@@ -1,8 +1,10 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Button, Heading, Surface, Text } from "@modules/common/components/ui"
 import { buttonClassName } from "@modules/common/components/ui/button"
+import { getTranslations } from "next-intl/server"
 
-const Hero = () => {
+const Hero = async () => {
+  const t = await getTranslations('home')
   return (
     <div className="w-full">
       <div className="relative h-[70vh] min-h-[480px] flex items-center overflow-hidden bg-black">
@@ -52,22 +54,17 @@ const Hero = () => {
               size="2xl"
               className="text-white md:text-[3.5rem]"
             >
-              Precious metals at{" "}
-              <span className="text-brand-primary font-medium">
-                true market value
-              </span>
+              {t('heroTitle')}
             </Heading>
             <Text className="text-base md:text-lg text-white/60 mt-5 max-w-xl leading-relaxed">
-              Live spot prices from global markets, updated every 10 seconds. No
-              markups, no stale quotes — just transparent pricing for gold,
-              silver, platinum, and palladium.
+              {t('heroSubtitle')}
             </Text>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             <LocalizedClientLink href="/store">
               <Button variant="primary" size="lg" className="rounded-lg">
-                Browse Products
+                {t('browseProducts')}
                 <svg
                   width="16"
                   height="16"
@@ -92,7 +89,7 @@ const Hero = () => {
                   "rounded-lg border-white/20 text-white/60 hover:text-white hover:bg-white/10",
               })}
             >
-              How It Works
+              {t('howItWorks')}
             </a>
           </div>
         </div>
@@ -102,10 +99,10 @@ const Hero = () => {
           <div className="content-container px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 overflow-hidden rounded-t-xl">
               {[
-                { label: "Live Spot Prices", value: "XAU · XAG · XPT · XPD" },
-                { label: "Refresh Rate", value: "Every 10 seconds" },
-                { label: "Pricing Model", value: "Fully transparent" },
-                { label: "Checkout", value: "Price locked at order" },
+                { label: t('liveSpotPrices'), value: "XAU · XAG · XPT · XPD" },
+                { label: t('refreshRate'), value: t('refreshRateValue') },
+                { label: t('pricingModel'), value: t('pricingModelValue') },
+                { label: t('checkoutLabel'), value: t('checkoutValue') },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -129,21 +126,18 @@ const Hero = () => {
             level="h2"
             className="text-2xl md:text-3xl font-light text-white tracking-tight"
           >
-            Built on{" "}
-            <span className="text-brand-primary font-medium">fairness</span> and{" "}
-            <span className="text-brand-primary font-medium">transparency</span>
+            {t('builtOnFairness')}
           </Heading>
           <Text className="text-white/50 mt-3 mx-auto font-light">
-            Every price is calculated the same way — no special treatment, no
-            hidden formulas.
+            {t('builtOnFairnessDesc')}
           </Text>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {[
             {
-              title: "Live Spot Data",
-              body: "Live prices stream directly from global precious metals markets. What you see is what the market says — refreshed every 10 seconds.",
+              title: t('liveSpotData'),
+              body: t('liveSpotDataDesc'),
               icon: (
                 <svg
                   width="24"
@@ -161,8 +155,8 @@ const Hero = () => {
               ),
             },
             {
-              title: "Simple Formula",
-              body: "final price = weight × spot price × spread × currency rate. That's it — no tiers, no tricks, no surprise fees.",
+              title: t('simpleFormula'),
+              body: t('simpleFormulaDesc'),
               icon: (
                 <svg
                   width="24"
@@ -182,8 +176,8 @@ const Hero = () => {
               ),
             },
             {
-              title: "Locked at Checkout",
-              body: "Your price is locked the moment you place an order. Even if spot prices fluctuate, the price you agreed to pay is guaranteed.",
+              title: t('lockedAtCheckout'),
+              body: t('lockedAtCheckoutDesc'),
               icon: (
                 <svg
                   width="24"

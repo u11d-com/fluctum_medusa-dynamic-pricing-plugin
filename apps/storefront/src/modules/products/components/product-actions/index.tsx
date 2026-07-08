@@ -4,6 +4,7 @@ import { useIntersection } from "@lib/hooks/use-in-view"
 import { getCountryCodeFromParams } from "@lib/util/route"
 import { HttpTypes } from "@medusajs/types"
 import { Button, Divider } from "@modules/common/components/ui"
+import { useTranslations } from "next-intl"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
@@ -41,6 +42,7 @@ export default function ProductActions({
   const [isAdding, startAddTransition] = useTransition()
   const { addToCart } = useCart()
   const countryCode = getCountryCodeFromParams(useParams())
+  const t = useTranslations('product')
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function ProductActions({
           countryCode: code,
         })
       } catch {
-        toast.error("Could not add to cart. Please try again.")
+        toast.error(t('addToCartError'))
       }
     })
   }
@@ -193,9 +195,9 @@ export default function ProductActions({
           <div className="text-small-regular text-ui-fg-muted">
             {selectedVariant.manage_inventory && selectedVariant.inventory_quantity != null
               ? (selectedVariant.inventory_quantity > 0
-                  ? `${selectedVariant.inventory_quantity} in stock`
-                  : "Out of stock")
-              : "In stock"}
+                  ? t('inStockQuantity', { quantity: selectedVariant.inventory_quantity })
+                  : t('outOfStock'))
+              : t('inStock')}
           </div>
         )}
 
@@ -214,10 +216,10 @@ export default function ProductActions({
           data-testid="add-product-button"
         >
           {!selectedVariant && !options
-            ? "Select variant"
+            ? t('selectVariant')
             : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
+            ? t('outOfStock')
+            : t('addToCart')}
         </Button>
         <MobileActions
           product={product}

@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { Text } from "@modules/common/components/ui"
 
 import PaymentButton from "../payment-button"
@@ -9,6 +10,7 @@ import CheckoutStepCard from "../checkout-step-card"
 import { useCart } from "@modules/cart/context/cart-context"
 
 const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
+  const t = useTranslations('checkout')
   const searchParams = useSearchParams()
   const { cart: contextCart } = useCart()
   const effectiveCart = contextCart ?? cart
@@ -28,7 +30,7 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
 
   return (
     <CheckoutStepCard
-      title="Review"
+      title={t('review')}
       isOpen={isOpen}
       disabled={!isOpen}
       dataTestId="checkout-review-step"
@@ -38,8 +40,7 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
             <div className="flex items-start gap-x-1 w-full mb-6">
               <div className="w-full">
               <Text as="span" variant="label" className="mb-1">
-                  By placing your order, you agree to our Terms of Sale and
-                  Returns Policy and acknowledge our Privacy Policy.
+                {t('orderAgreement')}
               </Text>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { useCartPricing } from "@lib/hooks/use-cart-pricing"
 import { lockCartPrices } from "@lib/data/cart"
 import { getCountryCodeFromParams } from "@lib/util/route"
 import { HttpTypes } from "@medusajs/types"
+import { useTranslations } from "next-intl"
 import { useRouter, useParams } from "next/navigation"
 import { useState } from "react"
 import { useCart } from "@modules/cart/context/cart-context"
@@ -34,6 +35,8 @@ const Summary = ({ cart }: SummaryProps) => {
   const countryCode = getCountryCodeFromParams(params)
   const [isLocking, setIsLocking] = useState(false)
   const step = getCheckoutStep(effectiveCart)
+  const t = useTranslations("cart")
+  const tCheckout = useTranslations("checkout")
 
   const dynamicTotal = dynamicSubtotal > 0
     ? dynamicSubtotal + (effectiveCart.shipping_subtotal ?? 0) + (effectiveCart.tax_total ?? 0)
@@ -54,7 +57,7 @@ const Summary = ({ cart }: SummaryProps) => {
   return (
     <div className="flex flex-col gap-y-4">
       <Heading level="h2" size="2xl">
-        Summary
+        {t('summaryTitle')}
       </Heading>
       <Divider />
       <CartTotals totals={effectiveCart} subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : null} totalOverride={dynamicTotal} />
@@ -64,7 +67,7 @@ const Summary = ({ cart }: SummaryProps) => {
         disabled={isLocking}
         data-testid="checkout-button"
       >
-        {isLocking ? "Locking Prices…" : "Go To Checkout"}
+        {isLocking ? tCheckout('lockingPricesShort') : t("checkout")}
       </Button>
     </div>
   )

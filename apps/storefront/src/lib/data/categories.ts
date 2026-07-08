@@ -1,6 +1,7 @@
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import { getCacheOptions } from "./cookies"
+import { getLocale } from "next-intl/server"
 
 export const listCategories = async (query?: Record<string, unknown>) => {
   const next = {
@@ -8,6 +9,7 @@ export const listCategories = async (query?: Record<string, unknown>) => {
   }
 
   const limit = query?.limit || 100
+  const locale = await getLocale()
 
   return sdk.client
     .fetch<{ product_categories: HttpTypes.StoreProductCategory[] }>(
@@ -17,6 +19,7 @@ export const listCategories = async (query?: Record<string, unknown>) => {
           fields:
             "*category_children, *products, *parent_category, *parent_category.parent_category",
           limit,
+          locale,
           ...query,
         },
         next,
@@ -33,6 +36,8 @@ export const getCategoryByHandle = async (categoryHandle: string[]) => {
     ...(await getCacheOptions("categories")),
   }
 
+  const locale = await getLocale()
+
   return sdk.client
     .fetch<HttpTypes.StoreProductCategoryListResponse>(
       `/store/product-categories`,
@@ -40,6 +45,7 @@ export const getCategoryByHandle = async (categoryHandle: string[]) => {
         query: {
           fields: "*category_children, *products",
           handle,
+          locale,
         },
         next,
         cache: "force-cache",

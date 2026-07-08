@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { useState, useEffect } from "react"
 import { Button, StatusNotice, Text } from "@modules/common/components/ui"
 
@@ -11,6 +12,7 @@ type Props = {
 }
 
 export default function PriceLockCountdown({ expiresAt, isRefreshing, onRefresh, error }: Props) {
+  const t = useTranslations('checkout')
   const [remaining, setRemaining] = useState(0)
 
   useEffect(() => {
@@ -39,20 +41,20 @@ export default function PriceLockCountdown({ expiresAt, isRefreshing, onRefresh,
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           {isRefreshing ? (
-            <Text as="span" variant="muted">Locking Prices...</Text>
+            <Text as="span" variant="muted">{t('lockingPrices')}</Text>
           ) : remaining > 0 ? (
             <Text as="span">
-              Prices locked for{" "}
+              {t('pricesLockedFor')}{" "}
               <Text as="span" className="font-mono font-semibold text-ui-fg-base tabular-nums">
                 {minutes}:{seconds.toString().padStart(2, "0")}
               </Text>
             </Text>
           ) : expiresAt ? (
             <Text as="span" className="text-tag-orange-text font-medium">
-              Prices expired
+              {t('pricesExpired')}
             </Text>
           ) : (
-            <Text as="span" variant="muted">Initializing...</Text>
+            <Text as="span" variant="muted">{t('initializing')}</Text>
           )}
           <Button
             type="button"
@@ -62,7 +64,7 @@ export default function PriceLockCountdown({ expiresAt, isRefreshing, onRefresh,
             size="xs"
             className="text-xs"
           >
-            {isRefreshing ? "Locking…" : "Refresh Prices"}
+            {isRefreshing ? t('lockingPricesShort') : t('refreshPrices')}
           </Button>
         </div>
         {expiresAt && (

@@ -6,6 +6,7 @@ import { Heading, Text } from "@modules/common/components/ui"
 
 import { getRegion } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
+import { getTranslations } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: "Addresses",
@@ -24,13 +25,14 @@ export default async function Addresses(props: {
     notFound()
   }
 
+  const t = await getTranslations('account')
+
   return (
     <div className="w-full" data-testid="addresses-page-wrapper">
       <div className="mb-8 flex flex-col gap-y-4">
-        <Heading level="h1" size="lg">Shipping Addresses</Heading>
+        <Heading level="h1" size="lg">{t('addressesTitle')}</Heading>
         <Text>
-          View and update your shipping addresses, you can add as many as you
-          like. Saving your addresses will make them available during checkout.
+          {t('addressesDescription')}
         </Text>
       </div>
       <AddressBook customer={customer} region={region} />

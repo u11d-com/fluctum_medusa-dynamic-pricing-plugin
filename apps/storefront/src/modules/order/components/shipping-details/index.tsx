@@ -1,16 +1,19 @@
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { Divider, Heading, Text } from "@modules/common/components/ui"
+import { getTranslations } from "next-intl/server"
 
 type ShippingDetailsProps = {
   order: HttpTypes.StoreOrder
 }
 
-const ShippingDetails = ({ order }: ShippingDetailsProps) => {
+const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
+  const t = await getTranslations('order')
+  const tCheckout = await getTranslations('checkout')
   return (
     <div>
       <Heading level="h2" size="2xl" className="flex flex-row my-6">
-        Delivery
+        {t('shipping')}
       </Heading>
       <div className="flex items-start gap-x-8">
         <div
@@ -18,7 +21,7 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
           data-testid="shipping-address-summary"
         >
           <Text as="span" variant="label" className="mb-1">
-            Shipping Address
+            {t('shippingTo')}
           </Text>
           <Text variant="muted">
             {order.shipping_address?.first_name}{" "}
@@ -41,7 +44,9 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
           className="flex flex-col w-1/3 "
           data-testid="shipping-contact-summary"
         >
-          <Text as="span" variant="label" className="mb-1">Contact</Text>
+          <Text as="span" variant="label" className="mb-1">
+            {tCheckout('contact')}
+          </Text>
           <Text variant="muted">
             {order.shipping_address?.phone}
           </Text>
@@ -52,7 +57,9 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
           className="flex flex-col w-1/3"
           data-testid="shipping-method-summary"
         >
-          <Text as="span" variant="label" className="mb-1">Method</Text>
+          <Text as="span" variant="label" className="mb-1">
+            {tCheckout('method')}
+          </Text>
           <Text variant="muted">
             {(order.shipping_methods?.[0] as { name?: string })?.name} (
             {convertToLocale({

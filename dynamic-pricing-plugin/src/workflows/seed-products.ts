@@ -69,6 +69,7 @@ type SeedProduct = {
   dim_length?: number         // mm (diameter for coins, length for bars)
   dim_width?: number          // mm (diameter for coins, width for bars)
   dim_height?: number         // mm (thickness for coins, height for bars)
+  translations?: Record<string, { title?: string; subtitle?: string }>
 }
 
 const SEED_PRODUCTS: SeedProduct[] = [
@@ -621,6 +622,277 @@ const SEED_PRODUCTS: SeedProduct[] = [
   },
 ]
 
+// ── Translation data ──────────────────────────────────────────────────────────
+
+const CATEGORY_TRANSLATIONS: Record<string, Record<string, { title: string }>> = {
+  "Gold Coins":      { pl: { title: "Monety Złote" },      es: { title: "Monedas de Oro" },      de: { title: "Goldmünzen" } },
+  "Gold Bars":       { pl: { title: "Sztabki Złota" },     es: { title: "Lingotes de Oro" },     de: { title: "Goldbarren" } },
+  "Silver Coins":    { pl: { title: "Monety Srebrne" },    es: { title: "Monedas de Plata" },    de: { title: "Silbermünzen" } },
+  "Silver Bars":     { pl: { title: "Sztabki Srebra" },    es: { title: "Lingotes de Plata" },   de: { title: "Silberbarren" } },
+  "Platinum Coins":  { pl: { title: "Monety Platynowe" },  es: { title: "Monedas de Platino" },  de: { title: "Platinmünzen" } },
+  "Platinum Bars":   { pl: { title: "Sztabki Platyny" },   es: { title: "Lingotes de Platino" }, de: { title: "Platinbarren" } },
+  "Palladium Coins": { pl: { title: "Monety Palladowe" },  es: { title: "Monedas de Paladio" },  de: { title: "Palladiummünzen" } },
+  "Palladium Bars":  { pl: { title: "Sztabki Palladu" },   es: { title: "Lingotes de Paladio" }, de: { title: "Palladiumbarren" } },
+}
+
+type ProductTranslationLocale = { title: string; subtitle: string }
+
+const PRODUCT_TRANSLATIONS: Record<string, Record<string, ProductTranslationLocale>> = {
+  // ── Gold Coins ──
+  "American Gold Eagle 1/10 oz": {
+    pl: { title: "Amerykański Złoty Orzeł 1/10 oz", subtitle: "Moneta bulionowa US Mint, stop złota 91,67%" },
+    es: { title: "Águila de Oro Americana 1/10 oz", subtitle: "Moneda de bullion US Mint, aleación de oro 91,67%" },
+    de: { title: "Amerikanischer Gold Eagle 1/10 oz", subtitle: "US Mint Bullionmünze, 91,67% Goldlegierung" },
+  },
+  "American Gold Eagle 1/4 oz": {
+    pl: { title: "Amerykański Złoty Orzeł 1/4 oz", subtitle: "Moneta bulionowa US Mint, stop złota 91,67%" },
+    es: { title: "Águila de Oro Americana 1/4 oz", subtitle: "Moneda de bullion US Mint, aleación de oro 91,67%" },
+    de: { title: "Amerikanischer Gold Eagle 1/4 oz", subtitle: "US Mint Bullionmünze, 91,67% Goldlegierung" },
+  },
+  "American Gold Eagle 1/2 oz": {
+    pl: { title: "Amerykański Złoty Orzeł 1/2 oz", subtitle: "Moneta bulionowa US Mint, stop złota 91,67%" },
+    es: { title: "Águila de Oro Americana 1/2 oz", subtitle: "Moneda de bullion US Mint, aleación de oro 91,67%" },
+    de: { title: "Amerikanischer Gold Eagle 1/2 oz", subtitle: "US Mint Bullionmünze, 91,67% Goldlegierung" },
+  },
+  "American Gold Eagle 1 oz": {
+    pl: { title: "Amerykański Złoty Orzeł 1 oz", subtitle: "Moneta bulionowa US Mint, stop złota 91,67%" },
+    es: { title: "Águila de Oro Americana 1 oz", subtitle: "Moneda de bullion US Mint, aleación de oro 91,67%" },
+    de: { title: "Amerikanischer Gold Eagle 1 oz", subtitle: "US Mint Bullionmünze, 91,67% Goldlegierung" },
+  },
+  "American Gold Buffalo 1 oz": {
+    pl: { title: "Amerykański Złoty Bizon 1 oz", subtitle: "US Mint, 99,99% czystego złota" },
+    es: { title: "Bisonte de Oro Americano 1 oz", subtitle: "US Mint, oro puro 99,99%" },
+    de: { title: "Amerikanischer Gold Buffalo 1 oz", subtitle: "US Mint, 99,99% reines Gold" },
+  },
+  "Canadian Gold Maple Leaf 1/10 oz": {
+    pl: { title: "Kanadyjski Złoty Liść Klonu 1/10 oz", subtitle: "Royal Canadian Mint, 99,99% czystego złota" },
+    es: { title: "Hoja de Arce de Oro Canadiense 1/10 oz", subtitle: "Royal Canadian Mint, oro puro 99,99%" },
+    de: { title: "Kanadisches Gold Maple Leaf 1/10 oz", subtitle: "Royal Canadian Mint, 99,99% reines Gold" },
+  },
+  "Canadian Gold Maple Leaf 1/4 oz": {
+    pl: { title: "Kanadyjski Złoty Liść Klonu 1/4 oz", subtitle: "Royal Canadian Mint, 99,99% czystego złota" },
+    es: { title: "Hoja de Arce de Oro Canadiense 1/4 oz", subtitle: "Royal Canadian Mint, oro puro 99,99%" },
+    de: { title: "Kanadisches Gold Maple Leaf 1/4 oz", subtitle: "Royal Canadian Mint, 99,99% reines Gold" },
+  },
+  "Canadian Gold Maple Leaf 1/2 oz": {
+    pl: { title: "Kanadyjski Złoty Liść Klonu 1/2 oz", subtitle: "Royal Canadian Mint, 99,99% czystego złota" },
+    es: { title: "Hoja de Arce de Oro Canadiense 1/2 oz", subtitle: "Royal Canadian Mint, oro puro 99,99%" },
+    de: { title: "Kanadisches Gold Maple Leaf 1/2 oz", subtitle: "Royal Canadian Mint, 99,99% reines Gold" },
+  },
+  "Canadian Gold Maple Leaf 1 oz": {
+    pl: { title: "Kanadyjski Złoty Liść Klonu 1 oz", subtitle: "Royal Canadian Mint, 99,99% czystego złota" },
+    es: { title: "Hoja de Arce de Oro Canadiense 1 oz", subtitle: "Royal Canadian Mint, oro puro 99,99%" },
+    de: { title: "Kanadisches Gold Maple Leaf 1 oz", subtitle: "Royal Canadian Mint, 99,99% reines Gold" },
+  },
+  "South African Gold Krugerrand 1/10 oz": {
+    pl: { title: "Południowoafrykański Złoty Krugerrand 1/10 oz", subtitle: "Mennica Południowej Afryki, stop złota 91,67%" },
+    es: { title: "Krugerrand de Oro Sudafricano 1/10 oz", subtitle: "Casa de Moneda de Sudáfrica, aleación de oro 91,67%" },
+    de: { title: "Südafrikanischer Gold Krugerrand 1/10 oz", subtitle: "Südafrikanische Münze, 91,67% Goldlegierung" },
+  },
+  "South African Gold Krugerrand 1/4 oz": {
+    pl: { title: "Południowoafrykański Złoty Krugerrand 1/4 oz", subtitle: "Mennica Południowej Afryki, stop złota 91,67%" },
+    es: { title: "Krugerrand de Oro Sudafricano 1/4 oz", subtitle: "Casa de Moneda de Sudáfrica, aleación de oro 91,67%" },
+    de: { title: "Südafrikanischer Gold Krugerrand 1/4 oz", subtitle: "Südafrikanische Münze, 91,67% Goldlegierung" },
+  },
+  "South African Gold Krugerrand 1/2 oz": {
+    pl: { title: "Południowoafrykański Złoty Krugerrand 1/2 oz", subtitle: "Mennica Południowej Afryki, stop złota 91,67%" },
+    es: { title: "Krugerrand de Oro Sudafricano 1/2 oz", subtitle: "Casa de Moneda de Sudáfrica, aleación de oro 91,67%" },
+    de: { title: "Südafrikanischer Gold Krugerrand 1/2 oz", subtitle: "Südafrikanische Münze, 91,67% Goldlegierung" },
+  },
+  "South African Gold Krugerrand 1 oz": {
+    pl: { title: "Południowoafrykański Złoty Krugerrand 1 oz", subtitle: "Mennica Południowej Afryki, stop złota 91,67%" },
+    es: { title: "Krugerrand de Oro Sudafricano 1 oz", subtitle: "Casa de Moneda de Sudáfrica, aleación de oro 91,67%" },
+    de: { title: "Südafrikanischer Gold Krugerrand 1 oz", subtitle: "Südafrikanische Münze, 91,67% Goldlegierung" },
+  },
+  "Gold Britannia 1/10 oz": {
+    pl: { title: "Złota Britannia 1/10 oz", subtitle: "The Royal Mint Wielka Brytania, 99,99% czystego złota" },
+    es: { title: "Britannia de Oro 1/10 oz", subtitle: "The Royal Mint Reino Unido, oro puro 99,99%" },
+    de: { title: "Gold Britannia 1/10 oz", subtitle: "The Royal Mint Großbritannien, 99,99% reines Gold" },
+  },
+  "Gold Britannia 1/4 oz": {
+    pl: { title: "Złota Britannia 1/4 oz", subtitle: "The Royal Mint Wielka Brytania, 99,99% czystego złota" },
+    es: { title: "Britannia de Oro 1/4 oz", subtitle: "The Royal Mint Reino Unido, oro puro 99,99%" },
+    de: { title: "Gold Britannia 1/4 oz", subtitle: "The Royal Mint Großbritannien, 99,99% reines Gold" },
+  },
+  "Gold Britannia 1/2 oz": {
+    pl: { title: "Złota Britannia 1/2 oz", subtitle: "The Royal Mint Wielka Brytania, 99,99% czystego złota" },
+    es: { title: "Britannia de Oro 1/2 oz", subtitle: "The Royal Mint Reino Unido, oro puro 99,99%" },
+    de: { title: "Gold Britannia 1/2 oz", subtitle: "The Royal Mint Großbritannien, 99,99% reines Gold" },
+  },
+  "Gold Britannia 1 oz": {
+    pl: { title: "Złota Britannia 1 oz", subtitle: "The Royal Mint Wielka Brytania, 99,99% czystego złota" },
+    es: { title: "Britannia de Oro 1 oz", subtitle: "The Royal Mint Reino Unido, oro puro 99,99%" },
+    de: { title: "Gold Britannia 1 oz", subtitle: "The Royal Mint Großbritannien, 99,99% reines Gold" },
+  },
+  // ── Gold Bars ──
+  "PAMP Suisse Gold Bar 1 g": {
+    pl: { title: "Sztabka Złota PAMP Suisse 1 g", subtitle: "Szwajcarska rafineria, 99,99% czystego złota, bite" },
+    es: { title: "Lingote de Oro PAMP Suisse 1 g", subtitle: "Refinería suiza, oro puro 99,99%, acuñado" },
+    de: { title: "PAMP Suisse Goldbarren 1 g", subtitle: "Schweizer Raffinerie, 99,99% reines Gold, geprägt" },
+  },
+  "PAMP Suisse Gold Bar 5 g": {
+    pl: { title: "Sztabka Złota PAMP Suisse 5 g", subtitle: "Szwajcarska rafineria, 99,99% czystego złota, bite" },
+    es: { title: "Lingote de Oro PAMP Suisse 5 g", subtitle: "Refinería suiza, oro puro 99,99%, acuñado" },
+    de: { title: "PAMP Suisse Goldbarren 5 g", subtitle: "Schweizer Raffinerie, 99,99% reines Gold, geprägt" },
+  },
+  "PAMP Suisse Gold Bar 10 g": {
+    pl: { title: "Sztabka Złota PAMP Suisse 10 g", subtitle: "Szwajcarska rafineria, 99,99% czystego złota, bite" },
+    es: { title: "Lingote de Oro PAMP Suisse 10 g", subtitle: "Refinería suiza, oro puro 99,99%, acuñado" },
+    de: { title: "PAMP Suisse Goldbarren 10 g", subtitle: "Schweizer Raffinerie, 99,99% reines Gold, geprägt" },
+  },
+  "PAMP Suisse Gold Bar 1 oz": {
+    pl: { title: "Sztabka Złota PAMP Suisse 1 oz", subtitle: "Szwajcarska rafineria, 99,99% czystego złota, bite" },
+    es: { title: "Lingote de Oro PAMP Suisse 1 oz", subtitle: "Refinería suiza, oro puro 99,99%, acuñado" },
+    de: { title: "PAMP Suisse Goldbarren 1 oz", subtitle: "Schweizer Raffinerie, 99,99% reines Gold, geprägt" },
+  },
+  "PAMP Suisse Gold Bar 100 g": {
+    pl: { title: "Sztabka Złota PAMP Suisse 100 g", subtitle: "Szwajcarska rafineria, 99,99% czystego złota, bite" },
+    es: { title: "Lingote de Oro PAMP Suisse 100 g", subtitle: "Refinería suiza, oro puro 99,99%, acuñado" },
+    de: { title: "PAMP Suisse Goldbarren 100 g", subtitle: "Schweizer Raffinerie, 99,99% reines Gold, geprägt" },
+  },
+  "Royal Canadian Mint Gold Bar 1 oz": {
+    pl: { title: "Sztabka Złota Royal Canadian Mint 1 oz", subtitle: "Royal Canadian Mint, 99,99% czystego złota" },
+    es: { title: "Lingote de Oro Royal Canadian Mint 1 oz", subtitle: "Royal Canadian Mint, oro puro 99,99%" },
+    de: { title: "Royal Canadian Mint Goldbarren 1 oz", subtitle: "Royal Canadian Mint, 99,99% reines Gold" },
+  },
+  "Royal Canadian Mint Gold Bar 10 oz": {
+    pl: { title: "Sztabka Złota Royal Canadian Mint 10 oz", subtitle: "Royal Canadian Mint, 99,99% czystego złota" },
+    es: { title: "Lingote de Oro Royal Canadian Mint 10 oz", subtitle: "Royal Canadian Mint, oro puro 99,99%" },
+    de: { title: "Royal Canadian Mint Goldbarren 10 oz", subtitle: "Royal Canadian Mint, 99,99% reines Gold" },
+  },
+  // ── Silver Coins ──
+  "American Silver Eagle 1 oz": {
+    pl: { title: "Amerykański Srebrny Orzeł 1 oz", subtitle: "Moneta bulionowa US Mint, 99,9% czystego srebra" },
+    es: { title: "Águila de Plata Americana 1 oz", subtitle: "Moneda de bullion US Mint, plata pura 99,9%" },
+    de: { title: "Amerikanischer Silber Eagle 1 oz", subtitle: "US Mint Bullionmünze, 99,9% reines Silber" },
+  },
+  "Canadian Silver Maple Leaf 1 oz": {
+    pl: { title: "Kanadyjski Srebrny Liść Klonu 1 oz", subtitle: "Royal Canadian Mint, 99,99% czystego srebra" },
+    es: { title: "Hoja de Arce de Plata Canadiense 1 oz", subtitle: "Royal Canadian Mint, plata pura 99,99%" },
+    de: { title: "Kanadisches Silber Maple Leaf 1 oz", subtitle: "Royal Canadian Mint, 99,99% reines Silber" },
+  },
+  "Austrian Silver Philharmonic 1 oz": {
+    pl: { title: "Austriacki Srebrny Filharmonik 1 oz", subtitle: "Mennica Austriacka, 99,9% czystego srebra" },
+    es: { title: "Filarmónica de Plata Austriaca 1 oz", subtitle: "Casa de Moneda de Austria, plata pura 99,9%" },
+    de: { title: "Österreichische Silber Philharmoniker 1 oz", subtitle: "Österreichische Münze, 99,9% reines Silber" },
+  },
+  "Silver Britannia 1 oz": {
+    pl: { title: "Srebrna Britannia 1 oz", subtitle: "The Royal Mint Wielka Brytania, 99,9% czystego srebra" },
+    es: { title: "Britannia de Plata 1 oz", subtitle: "The Royal Mint Reino Unido, plata pura 99,9%" },
+    de: { title: "Silber Britannia 1 oz", subtitle: "The Royal Mint Großbritannien, 99,9% reines Silber" },
+  },
+  "Mexican Silver Libertad 1/2 oz": {
+    pl: { title: "Meksykańska Srebrna Libertad 1/2 oz", subtitle: "Casa de Moneda de México, 99,9% czystego srebra" },
+    es: { title: "Libertad de Plata Mexicana 1/2 oz", subtitle: "Casa de Moneda de México, plata pura 99,9%" },
+    de: { title: "Mexikanische Silber Libertad 1/2 oz", subtitle: "Casa de Moneda de México, 99,9% reines Silber" },
+  },
+  "Mexican Silver Libertad 1 oz": {
+    pl: { title: "Meksykańska Srebrna Libertad 1 oz", subtitle: "Casa de Moneda de México, 99,9% czystego srebra" },
+    es: { title: "Libertad de Plata Mexicana 1 oz", subtitle: "Casa de Moneda de México, plata pura 99,9%" },
+    de: { title: "Mexikanische Silber Libertad 1 oz", subtitle: "Casa de Moneda de México, 99,9% reines Silber" },
+  },
+  "Mexican Silver Libertad 2 oz": {
+    pl: { title: "Meksykańska Srebrna Libertad 2 oz", subtitle: "Casa de Moneda de México, 99,9% czystego srebra" },
+    es: { title: "Libertad de Plata Mexicana 2 oz", subtitle: "Casa de Moneda de México, plata pura 99,9%" },
+    de: { title: "Mexikanische Silber Libertad 2 oz", subtitle: "Casa de Moneda de México, 99,9% reines Silber" },
+  },
+  "Mexican Silver Libertad 5 oz": {
+    pl: { title: "Meksykańska Srebrna Libertad 5 oz", subtitle: "Casa de Moneda de México, 99,9% czystego srebra" },
+    es: { title: "Libertad de Plata Mexicana 5 oz", subtitle: "Casa de Moneda de México, plata pura 99,9%" },
+    de: { title: "Mexikanische Silber Libertad 5 oz", subtitle: "Casa de Moneda de México, 99,9% reines Silber" },
+  },
+  // ── Silver Bars ──
+  "PAMP Suisse Silver Bar 1 oz": {
+    pl: { title: "Sztabka Srebra PAMP Suisse 1 oz", subtitle: "Szwajcarska rafineria, 99,9% czystego srebra, bite" },
+    es: { title: "Lingote de Plata PAMP Suisse 1 oz", subtitle: "Refinería suiza, plata pura 99,9%, acuñado" },
+    de: { title: "PAMP Suisse Silberbarren 1 oz", subtitle: "Schweizer Raffinerie, 99,9% reines Silber, geprägt" },
+  },
+  "PAMP Suisse Silver Bar 5 oz": {
+    pl: { title: "Sztabka Srebra PAMP Suisse 5 oz", subtitle: "Szwajcarska rafineria, 99,9% czystego srebra, bite" },
+    es: { title: "Lingote de Plata PAMP Suisse 5 oz", subtitle: "Refinería suiza, plata pura 99,9%, acuñado" },
+    de: { title: "PAMP Suisse Silberbarren 5 oz", subtitle: "Schweizer Raffinerie, 99,9% reines Silber, geprägt" },
+  },
+  "PAMP Suisse Silver Bar 10 oz": {
+    pl: { title: "Sztabka Srebra PAMP Suisse 10 oz", subtitle: "Szwajcarska rafineria, 99,9% czystego srebra, bite" },
+    es: { title: "Lingote de Plata PAMP Suisse 10 oz", subtitle: "Refinería suiza, plata pura 99,9%, acuñado" },
+    de: { title: "PAMP Suisse Silberbarren 10 oz", subtitle: "Schweizer Raffinerie, 99,9% reines Silber, geprägt" },
+  },
+  "Valcambi Silver Bar 1 oz": {
+    pl: { title: "Sztabka Srebra Valcambi 1 oz", subtitle: "Valcambi Suisse, 99,9% czystego srebra" },
+    es: { title: "Lingote de Plata Valcambi 1 oz", subtitle: "Valcambi Suisse, plata pura 99,9%" },
+    de: { title: "Valcambi Silberbarren 1 oz", subtitle: "Valcambi Suisse, 99,9% reines Silber" },
+  },
+  "Valcambi Silver Bar 10 oz": {
+    pl: { title: "Sztabka Srebra Valcambi 10 oz", subtitle: "Valcambi Suisse, 99,9% czystego srebra" },
+    es: { title: "Lingote de Plata Valcambi 10 oz", subtitle: "Valcambi Suisse, plata pura 99,9%" },
+    de: { title: "Valcambi Silberbarren 10 oz", subtitle: "Valcambi Suisse, 99,9% reines Silber" },
+  },
+  "Valcambi Silver Bar 100 oz": {
+    pl: { title: "Sztabka Srebra Valcambi 100 oz", subtitle: "Valcambi Suisse, 99,9% czystego srebra" },
+    es: { title: "Lingote de Plata Valcambi 100 oz", subtitle: "Valcambi Suisse, plata pura 99,9%" },
+    de: { title: "Valcambi Silberbarren 100 oz", subtitle: "Valcambi Suisse, 99,9% reines Silber" },
+  },
+  // ── Platinum Coins ──
+  "American Platinum Eagle 1/10 oz": {
+    pl: { title: "Amerykański Platynowy Orzeł 1/10 oz", subtitle: "Moneta bulionowa US Mint, 99,95% czystej platyny" },
+    es: { title: "Águila de Platino Americana 1/10 oz", subtitle: "Moneda de bullion US Mint, platino puro 99,95%" },
+    de: { title: "Amerikanischer Platin Eagle 1/10 oz", subtitle: "US Mint Bullionmünze, 99,95% reines Platin" },
+  },
+  "American Platinum Eagle 1/4 oz": {
+    pl: { title: "Amerykański Platynowy Orzeł 1/4 oz", subtitle: "Moneta bulionowa US Mint, 99,95% czystej platyny" },
+    es: { title: "Águila de Platino Americana 1/4 oz", subtitle: "Moneda de bullion US Mint, platino puro 99,95%" },
+    de: { title: "Amerikanischer Platin Eagle 1/4 oz", subtitle: "US Mint Bullionmünze, 99,95% reines Platin" },
+  },
+  "American Platinum Eagle 1/2 oz": {
+    pl: { title: "Amerykański Platynowy Orzeł 1/2 oz", subtitle: "Moneta bulionowa US Mint, 99,95% czystej platyny" },
+    es: { title: "Águila de Platino Americana 1/2 oz", subtitle: "Moneda de bullion US Mint, platino puro 99,95%" },
+    de: { title: "Amerikanischer Platin Eagle 1/2 oz", subtitle: "US Mint Bullionmünze, 99,95% reines Platin" },
+  },
+  "American Platinum Eagle 1 oz": {
+    pl: { title: "Amerykański Platynowy Orzeł 1 oz", subtitle: "Moneta bulionowa US Mint, 99,95% czystej platyny" },
+    es: { title: "Águila de Platino Americana 1 oz", subtitle: "Moneda de bullion US Mint, platino puro 99,95%" },
+    de: { title: "Amerikanischer Platin Eagle 1 oz", subtitle: "US Mint Bullionmünze, 99,95% reines Platin" },
+  },
+  "Canadian Platinum Maple Leaf 1 oz": {
+    pl: { title: "Kanadyjski Platynowy Liść Klonu 1 oz", subtitle: "Royal Canadian Mint, 99,95% czystej platyny" },
+    es: { title: "Hoja de Arce de Platino Canadiense 1 oz", subtitle: "Royal Canadian Mint, platino puro 99,95%" },
+    de: { title: "Kanadisches Platin Maple Leaf 1 oz", subtitle: "Royal Canadian Mint, 99,95% reines Platin" },
+  },
+  // ── Platinum Bars ──
+  "PAMP Suisse Platinum Bar 1 oz": {
+    pl: { title: "Sztabka Platyny PAMP Suisse 1 oz", subtitle: "Szwajcarska rafineria, 99,95% czystej platyny, bite" },
+    es: { title: "Lingote de Platino PAMP Suisse 1 oz", subtitle: "Refinería suiza, platino puro 99,95%, acuñado" },
+    de: { title: "PAMP Suisse Platinbarren 1 oz", subtitle: "Schweizer Raffinerie, 99,95% reines Platin, geprägt" },
+  },
+  "PAMP Suisse Platinum Bar 10 oz": {
+    pl: { title: "Sztabka Platyny PAMP Suisse 10 oz", subtitle: "Szwajcarska rafineria, 99,95% czystej platyny, bite" },
+    es: { title: "Lingote de Platino PAMP Suisse 10 oz", subtitle: "Refinería suiza, platino puro 99,95%, acuñado" },
+    de: { title: "PAMP Suisse Platinbarren 10 oz", subtitle: "Schweizer Raffinerie, 99,95% reines Platin, geprägt" },
+  },
+  // ── Palladium Coins ──
+  "Canadian Palladium Maple Leaf 1 oz": {
+    pl: { title: "Kanadyjski Palladowy Liść Klonu 1 oz", subtitle: "Royal Canadian Mint, 99,95% czystego palladu" },
+    es: { title: "Hoja de Arce de Paladio Canadiense 1 oz", subtitle: "Royal Canadian Mint, paladio puro 99,95%" },
+    de: { title: "Kanadisches Palladium Maple Leaf 1 oz", subtitle: "Royal Canadian Mint, 99,95% reines Palladium" },
+  },
+  "Russian Palladium Ballerina 1 oz": {
+    pl: { title: "Rosyjska Palladowa Baletnica 1 oz", subtitle: "Mennica Moskiewska, 99,9% czystego palladu" },
+    es: { title: "Bailarina de Paladio Rusa 1 oz", subtitle: "Casa de Moneda de Moscú, paladio puro 99,9%" },
+    de: { title: "Russische Palladium Ballerina 1 oz", subtitle: "Moskauer Münze, 99,9% reines Palladium" },
+  },
+  // ── Palladium Bars ──
+  "PAMP Suisse Palladium Bar 1 oz": {
+    pl: { title: "Sztabka Palladu PAMP Suisse 1 oz", subtitle: "Szwajcarska rafineria, 99,95% czystego palladu, bite" },
+    es: { title: "Lingote de Paladio PAMP Suisse 1 oz", subtitle: "Refinería suiza, paladio puro 99,95%, acuñado" },
+    de: { title: "PAMP Suisse Palladiumbarren 1 oz", subtitle: "Schweizer Raffinerie, 99,95% reines Palladium, geprägt" },
+  },
+  "PAMP Suisse Palladium Bar 10 oz": {
+    pl: { title: "Sztabka Palladu PAMP Suisse 10 oz", subtitle: "Szwajcarska rafineria, 99,95% czystego palladu, bite" },
+    es: { title: "Lingote de Paladio PAMP Suisse 10 oz", subtitle: "Refinería suiza, paladio puro 99,95%, acuñado" },
+    de: { title: "PAMP Suisse Palladiumbarren 10 oz", subtitle: "Schweizer Raffinerie, 99,95% reines Palladium, geprägt" },
+  },
+}
+
 const PLACEHOLDER_PRICE_CURRENCY_CODES = [
   "usd", "cad", "mxn", "brl", "ars", "eur", "gbp", "dkk", "sek", "pln",
   "czk", "huf", "ron", "ngn", "zar", "jpy", "krw", "aed", "sar", "qar",
@@ -886,6 +1158,43 @@ const seedProductsStep = createStep(
         [Modules.PRICING]: { price_set_id: priceSets[i].id },
       }))
     )
+
+    // ── Create translations ──────────────────────────────────────────────────
+    try {
+      const translationModule = container.resolve(Modules.TRANSLATION)
+      const translationEntries: Array<{
+        reference: string
+        reference_id: string
+        locale_code: string
+        translations: Record<string, string>
+      }> = []
+
+      // Category translations (8 categories × 3 locales = 24 entries)
+      for (const [catName, catId] of Object.entries(categoryByName)) {
+        const catTrans = CATEGORY_TRANSLATIONS[catName]
+        if (!catTrans) continue
+        for (const [localeCode, data] of Object.entries(catTrans)) {
+          translationEntries.push({ reference: "product_category", reference_id: catId, locale_code: localeCode, translations: data })
+        }
+      }
+
+      // Product translations (49 products × 3 locales = 147 entries)
+      for (let i = 0; i < SEED_PRODUCTS.length; i++) {
+        const seed = SEED_PRODUCTS[i]
+        const productId = createdProductIds[i]
+        const productTrans = PRODUCT_TRANSLATIONS[seed.title]
+        if (!productTrans || !productId) continue
+        for (const [localeCode, data] of Object.entries(productTrans)) {
+          translationEntries.push({ reference: "product", reference_id: productId, locale_code: localeCode, translations: data })
+        }
+      }
+
+      if (translationEntries.length > 0) {
+        await translationModule.createTranslations(translationEntries)
+      }
+    } catch (e) {
+      console.warn("[seed] Translation module not available — skipping translations:", (e as Error).message)
+    }
 
     return new StepResponse({
       success: true,

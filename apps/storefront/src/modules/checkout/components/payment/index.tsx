@@ -1,4 +1,5 @@
 "use client"
+import { useTranslations } from 'next-intl'
 import { RadioGroup } from "@headlessui/react"
 import { isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
@@ -25,6 +26,7 @@ const Payment = ({
   cart: HttpTypes.StoreCart
   availablePaymentMethods: { id: string }[]
 }) => {
+  const t = useTranslations('checkout')
   const activeSession = cart.payment_collection?.payment_sessions?.find(
     (paymentSession) => paymentSession.status === "pending"
   )
@@ -111,7 +113,7 @@ const Payment = ({
 
   return (
     <CheckoutStepCard
-      title="Payment"
+      title={t('payment')}
       isOpen={isOpen}
       isComplete={!isOpen && !!paymentReady}
       disabled={!isOpen && !paymentReady}
@@ -168,8 +170,8 @@ const Payment = ({
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeLike(selectedPaymentMethod)
-              ? " Enter card details"
-              : "Continue to review"}
+              ? t('enterCardDetails')
+              : t('continueToReview')}
           </Button>
         </div>
 
@@ -178,7 +180,7 @@ const Payment = ({
             <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text as="span" variant="label" className="mb-1">
-                  Payment method
+                  {t('paymentMethod')}
                 </Text>
                 <Text
                   variant="muted"
@@ -190,7 +192,7 @@ const Payment = ({
               </div>
               <div className="flex flex-col w-1/3">
                 <Text as="span" variant="label" className="mb-1">
-                  Payment details
+                  {t('paymentDetails')}
                 </Text>
                 <div
                   className="flex gap-2 items-center"
@@ -202,9 +204,9 @@ const Payment = ({
                     )}
                   </Container>
                   <Text variant="muted">
-                    {isStripeLike(selectedPaymentMethod) && cardBrand
-                      ? cardBrand
-                      : "Another step will appear"}
+                  {isStripeLike(selectedPaymentMethod) && cardBrand
+                    ? cardBrand
+                    : t('anotherStep')}
                   </Text>
                 </div>
               </div>

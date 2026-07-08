@@ -4,12 +4,14 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import { Button, Heading, Input, Text } from "@modules/common/components/ui"
 import { useActionState } from "react"
+import { useTranslations } from "next-intl"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
 }
 
 const Login = ({ setCurrentView }: Props) => {
+  const t = useTranslations("account")
   const [message, formAction] = useActionState(login, null)
 
   return (
@@ -17,14 +19,14 @@ const Login = ({ setCurrentView }: Props) => {
       className="max-w-sm w-full flex flex-col items-center"
       data-testid="login-page"
     >
-      <Heading level="h1" size="md" className="uppercase mb-6">Welcome back</Heading>
+      <Heading level="h1" size="md" className="uppercase mb-6">{t('welcomeBack')}</Heading>
       <Text className="text-center mb-8">
-        Sign in to access an enhanced shopping experience.
+        {t('loginSubtitle')}
       </Text>
       <form className="w-full" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="Email"
+            label={t('email')}
             name="email"
             type="email"
             title="Enter a valid email address."
@@ -33,7 +35,7 @@ const Login = ({ setCurrentView }: Props) => {
             data-testid="email-input"
           />
           <Input
-            label="Password"
+            label={t('password')}
             name="password"
             type="password"
             autoComplete="current-password"
@@ -43,11 +45,11 @@ const Login = ({ setCurrentView }: Props) => {
         </div>
         <ErrorMessage error={message} data-testid="login-error-message" />
         <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
-          Sign in
+          {t('signIn')}
         </SubmitButton>
       </form>
       <Text as="span" variant="muted" className="text-center mt-6">
-        Not a member?{" "}
+        {t('newMember')}{" "}
         <Button
           variant="link"
           size="small"
@@ -56,7 +58,7 @@ const Login = ({ setCurrentView }: Props) => {
           className="underline px-0 h-auto"
           data-testid="register-button"
         >
-          Join us
+          {t('joinUs')}
         </Button>
         .
       </Text>

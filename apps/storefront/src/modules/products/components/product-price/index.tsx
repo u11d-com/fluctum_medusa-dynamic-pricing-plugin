@@ -14,6 +14,7 @@ import {
 } from "@lib/util/dynamic-pricing"
 import { Text } from "@modules/common/components/ui"
 import type { VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
+import { useTranslations } from "next-intl"
 
 export default function ProductPrice({
   product,
@@ -29,6 +30,7 @@ export default function ProductPrice({
   const conversionRate: number | null = isUsd ? 1 : (rates[cartCurrencyCode] ?? null)
   const [pricingData, setPricingData] = useState<Record<string, VariantPricingData>>({})
   const [pricingLoading, setPricingLoading] = useState(true)
+  const t = useTranslations('product')
 
   useEffect(() => {
     let cancelled = false
@@ -83,7 +85,7 @@ export default function ProductPrice({
     return (
       <div className="flex flex-col">
         <Text as="span" variant="muted" data-testid="product-price-unavailable">
-          Price unavailable
+          {t('priceUnavailable')}
         </Text>
       </div>
     )
@@ -92,7 +94,7 @@ export default function ProductPrice({
   return (
     <div className="flex flex-col">
       <Text as="span" className="text-xl-semi">
-        {!variant && "From "}
+        {!variant && t('from') + ' '}
         <Text as="span" data-testid="product-price" data-value={displayPrice}>
           {convertToLocale({ amount: displayPrice, currency_code: cartCurrencyCode.toLowerCase() })}
         </Text>

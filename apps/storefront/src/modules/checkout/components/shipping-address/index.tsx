@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from 'next-intl'
 import { HttpTypes } from "@medusajs/types"
 import { Checkbox, Container, Input, Text } from "@modules/common/components/ui"
 import React, { useEffect, useMemo, useState } from "react"
@@ -18,6 +21,7 @@ const ShippingAddress = ({
   checked: boolean
   onChange: () => void
 }) => {
+  const t = useTranslations('checkout')
   const [formData, setFormData] = useState<Record<string, string>>({
     ...createAddressFormData("shipping_address", cart?.shipping_address),
     email: cart?.email || "",
@@ -112,7 +116,7 @@ const ShippingAddress = ({
       />
       <div className="my-8 flex justify-center">
         <Checkbox
-          label="Billing address same as shipping address"
+          label={t('sameAsBilling')}
           name="same_as_billing"
           checked={checked}
           onChange={onChange}
@@ -122,7 +126,7 @@ const ShippingAddress = ({
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <Input
-          label="Email"
+          label={t('email')}
           name="email"
           type="email"
           title="Enter a valid email address."
@@ -133,7 +137,7 @@ const ShippingAddress = ({
           data-testid="shipping-email-input"
         />
         <Input
-          label="Phone"
+          label={t('phone')}
           name="shipping_address.phone"
           autoComplete="tel"
           value={formData["shipping_address.phone"]}

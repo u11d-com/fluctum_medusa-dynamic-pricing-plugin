@@ -9,6 +9,7 @@ import LineItemOptions from "@modules/common/components/line-item-options"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { useState, useEffect, useTransition } from "react"
+import { useTranslations } from "next-intl"
 import ItemPrice from "./item-price"
 
 type ItemProps = {
@@ -20,6 +21,7 @@ type ItemProps = {
 }
 
 const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProps) => {
+  const t = useTranslations("cart")
   const [updating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState<string>(String(item.quantity))
@@ -37,11 +39,11 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
     startTransition(async () => {
       try {
         await updateLineItem({
-          lineId: item.id,
-          quantity: clamped,
-        })
+            lineId: item.id,
+            quantity: clamped,
+          })
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update quantity")
+        setError(err instanceof Error ? err.message : t('failedToUpdateQuantity'))
         setInputValue(String(item.quantity))
       }
     })
@@ -99,9 +101,10 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <div className="flex items-center border border-ui-border-base rounded">
+              {/* TODO i18n: aria-labels "Decrease quantity" / "Increase quantity" — no matching key in cart/common */}
               <button
                 type="button"
-                aria-label="Decrease quantity"
+                aria-label={t('decreaseQuantity')}
                 className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30"
                 disabled={updating || parseInt(inputValue, 10) <= 1}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) - 1)}
@@ -122,7 +125,7 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
               />
               <button
                 type="button"
-                aria-label="Increase quantity"
+                aria-label={t('increaseQuantity')}
                 className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
                 disabled={updating}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) + 1)}

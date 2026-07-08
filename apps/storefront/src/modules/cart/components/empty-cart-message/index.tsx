@@ -1,13 +1,16 @@
-import { EmptyState } from "@modules/common/components/ui"
+import { getTranslations } from "next-intl/server"
 
+import { EmptyState } from "@modules/common/components/ui"
 import InteractiveLink from "@modules/common/components/interactive-link"
 
-const EmptyCartMessage = () => {
+const EmptyCartMessage = async () => {
+  const t = await getTranslations("cart")
+
   return (
     <EmptyState
-      title="Cart"
-      description="You don't have anything in your cart. Let's change that, use the link below to start browsing our products."
-      action={<InteractiveLink href="/store">Explore products</InteractiveLink>}
+      title={t("emptyTitle")}
+      description={t("emptyDescription")}
+      action={<InteractiveLink href="/store">{t("exploreProducts")}</InteractiveLink>}
       data-testid="empty-cart-message"
     />
   )

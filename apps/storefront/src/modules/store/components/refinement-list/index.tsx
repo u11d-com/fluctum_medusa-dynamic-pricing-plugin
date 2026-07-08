@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
+import { useTranslations } from "next-intl"
 
 import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 import SortProducts, { SortOptions } from "./sort-products"
@@ -29,6 +30,7 @@ const RefinementList = ({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const t = useTranslations('store')
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -55,7 +57,7 @@ const RefinementList = ({
   }
 
   const catItems = [
-    { value: "all", label: "All" },
+    { value: "all", label: t('allCategories') },
     ...categories.map((c) => ({ value: c.handle, label: c.name })),
   ]
 
@@ -64,7 +66,7 @@ const RefinementList = ({
       <SortProducts sortBy={sortBy} setQueryParams={setQueryParams} data-testid={dataTestId} />
       {categories.length > 0 && (
         <FilterRadioGroup
-          title="Category"
+          title={t('category')}
           items={catItems}
           value={selectedCat ?? "all"}
           handleChange={setCatParam}

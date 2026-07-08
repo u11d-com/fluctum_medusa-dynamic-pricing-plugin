@@ -7,12 +7,14 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { signup } from "@lib/data/customer"
+import { useTranslations } from "next-intl"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
 }
 
 const Register = ({ setCurrentView }: Props) => {
+  const t = useTranslations("account")
   const [message, formAction] = useActionState(signup as (state: string | null, formData: FormData) => Promise<string | null>, null as string | null)
 
   return (
@@ -21,30 +23,29 @@ const Register = ({ setCurrentView }: Props) => {
       data-testid="register-page"
     >
       <Heading level="h1" size="md" className="uppercase mb-6">
-        Become a fluctum Member
+        {t('registerTitle')}
       </Heading>
       <Text className="text-center mb-4">
-        Create your fluctum profile, and get access to an enhanced
-        shopping experience.
+        {t('registerSubtitle')}
       </Text>
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="First name"
+            label={t('firstName')}
             name="first_name"
             required
             autoComplete="given-name"
             data-testid="first-name-input"
           />
           <Input
-            label="Last name"
+            label={t('lastName')}
             name="last_name"
             required
             autoComplete="family-name"
             data-testid="last-name-input"
           />
           <Input
-            label="Email"
+            label={t('email')}
             name="email"
             required
             type="email"
@@ -52,14 +53,14 @@ const Register = ({ setCurrentView }: Props) => {
             data-testid="email-input"
           />
           <Input
-            label="Phone"
+            label={t('phone')}
             name="phone"
             type="tel"
             autoComplete="tel"
             data-testid="phone-input"
           />
           <Input
-            label="Password"
+            label={t('password')}
             name="password"
             required
             type="password"
@@ -69,28 +70,28 @@ const Register = ({ setCurrentView }: Props) => {
         </div>
         <ErrorMessage error={message} data-testid="register-error" />
         <Text as="span" variant="muted" className="text-center mt-6">
-          By creating an account, you agree to fluctum&apos;s{" "}
+          {t('privacyPrefix')}{" "}
           <LocalizedClientLink
             href="/content/privacy-policy"
             className="underline"
           >
-            Privacy Policy
+            {t('privacyPolicy')}
           </LocalizedClientLink>{" "}
-          and{" "}
+          {t('and')}{" "}
           <LocalizedClientLink
             href="/content/terms-of-use"
             className="underline"
           >
-            Terms of Use
+            {t('termsOfUse')}
           </LocalizedClientLink>
           .
         </Text>
         <SubmitButton className="w-full mt-6" data-testid="register-button">
-          Join
+          {t('join')}
         </SubmitButton>
       </form>
       <Text as="span" variant="muted" className="text-center mt-6">
-        Already a member?{" "}
+        {t('alreadyMember')}{" "}
         <Button
           variant="link"
           size="small"
@@ -98,7 +99,7 @@ const Register = ({ setCurrentView }: Props) => {
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
           className="underline px-0 h-auto"
         >
-          Sign in
+          {t('signIn')}
         </Button>
         .
       </Text>

@@ -7,6 +7,7 @@ import OrderDetails from "@modules/order/components/order-details"
 import ShippingDetails from "@modules/order/components/shipping-details"
 import PaymentDetails from "@modules/order/components/payment-details"
 import { HttpTypes } from "@medusajs/types"
+import { getTranslations } from "next-intl/server"
 
 type OrderCompletedTemplateProps = {
   order: HttpTypes.StoreOrder
@@ -15,6 +16,7 @@ type OrderCompletedTemplateProps = {
 export default async function OrderCompletedTemplate({
   order,
 }: OrderCompletedTemplateProps) {
+  const t = await getTranslations('order')
   return (
     <div className="py-6 min-h-[calc(100vh-64px)]">
       <div className="content-container flex flex-col justify-center items-center gap-y-10 max-w-4xl h-full w-full">
@@ -27,12 +29,12 @@ export default async function OrderCompletedTemplate({
             size="xl"
             className="flex flex-col gap-y-3 text-ui-fg-base mb-4"
           >
-            <span>Thank you!</span>
-            <span>Your order was placed successfully.</span>
+            <span>{t('thankYou')}</span>
+            <span>{t('orderPlaced')}</span>
           </Heading>
           <OrderDetails order={order} />
           <Heading level="h2" size="2xl" className="flex flex-row">
-            Summary
+            {t('summary')}
           </Heading>
           <Items order={order} />
           <CartTotals totals={order} />

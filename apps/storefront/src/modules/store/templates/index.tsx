@@ -5,6 +5,7 @@ import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-g
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { Heading } from "@modules/common/components/ui"
+import { getTranslations } from "next-intl/server"
 
 import PaginatedProducts from "./paginated-products"
 
@@ -22,13 +23,14 @@ const StoreTemplate = async ({
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "category"
 
+  const t = await getTranslations('store')
   const categories = await listCategories({ fields: "id,name,handle", limit: 100 }).catch(() => [])
 
   // Resolve cat handle → category id for product filtering
   const selectedCategory = cat ? categories.find((c) => c.handle === cat) : undefined
   const categoryId = selectedCategory?.id
 
-  const title = selectedCategory?.name ?? "All products"
+  const title = selectedCategory?.name ?? t('allProducts')
 
   return (
     <div

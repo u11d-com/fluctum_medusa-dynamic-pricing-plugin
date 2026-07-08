@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { Heading, Surface } from "@modules/common/components/ui"
 
 import ItemsPreviewTemplate from "@modules/cart/templates/preview"
@@ -19,6 +20,7 @@ type Props = {
 const CheckoutSummary = ({
   cart,
 }: Props) => {
+  const t = useTranslations('checkout')
   const [refreshResult, setRefreshResult] = useState<{
     lockedPrices: LockedPriceMap
     expiresAt: string
@@ -39,7 +41,7 @@ const CheckoutSummary = ({
       const prices = buildLockedPriceMap(result.locks, cart.items ?? [])
       setRefreshResult({ lockedPrices: prices, expiresAt: result.expires_at })
     } catch (e) {
-      setRefreshError(e instanceof Error ? e.message : "Failed to lock prices")
+      setRefreshError(e instanceof Error ? e.message : t('failedToLockPrices'))
     } finally {
       setIsRefreshing(false)
     }
@@ -64,7 +66,7 @@ const CheckoutSummary = ({
         }
       } catch (e) {
         if (!cancelled) {
-          setRefreshError(e instanceof Error ? e.message : "Failed to lock prices")
+          setRefreshError(e instanceof Error ? e.message : t('failedToLockPrices'))
         }
       }
     }
@@ -96,7 +98,7 @@ const CheckoutSummary = ({
           size="2xl"
           className="flex flex-row items-baseline"
         >
-          In your Cart
+          {t('inYourCart')}
         </Heading>
         <Divider className="my-6" />
         <PriceLockCountdown

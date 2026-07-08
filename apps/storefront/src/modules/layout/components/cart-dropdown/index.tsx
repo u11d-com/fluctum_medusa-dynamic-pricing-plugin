@@ -16,6 +16,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "@modules/products/components/thumbnail"
 import { useCartPricing } from "@lib/hooks/use-cart-pricing"
 import { useCart } from "@modules/cart/context/cart-context"
+import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
@@ -26,6 +27,8 @@ const CartDropdown = () => {
     undefined
   )
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
+  const t = useTranslations("cart")
+  const tNav = useTranslations("nav")
 
   const open = () => setCartDropdownOpen(true)
   const close = () => setCartDropdownOpen(false)
@@ -86,7 +89,7 @@ const CartDropdown = () => {
             href="/cart"
             data-testid="nav-cart-link"
           >
-            Cart (<span aria-live="polite">{totalItems}</span>)
+            <span aria-live="polite">{tNav("cart", { count: totalItems })}</span>
           </LocalizedClientLink>
         </PopoverButton>
         <Transition
@@ -106,8 +109,8 @@ const CartDropdown = () => {
           >
             <Surface variant="floating" className="overflow-hidden">
               <div className="px-5 py-4 flex items-center justify-between border-b border-ui-border-base">
-                <Heading level="h3" className="text-base text-ui-fg-base">Your cart</Heading>
-                <Text variant="caption">{totalItems} item{totalItems !== 1 ? "s" : ""}</Text>
+                <Heading level="h3" className="text-base text-ui-fg-base">{t("yourCart")}</Heading>
+                <Text variant="caption">{t("itemCount", { count: totalItems })}</Text>
               </div>
               {cartState && cartState.items?.length ? (
                 <>
@@ -156,7 +159,7 @@ const CartDropdown = () => {
                                      data-testid="cart-item-quantity"
                                      data-value={item.quantity}
                                    >
-                                    Qty: {item.quantity}
+                                     {t("quantity", { quantity: item.quantity })}
                                   </Text>
                               </div>
                                <div className="flex justify-end shrink-0">
@@ -169,23 +172,22 @@ const CartDropdown = () => {
                               </div>
                             </div>
                           </div>
-                           <DeleteButton
-                             id={item.id}
-                             className="mt-2"
-                             data-testid="cart-item-remove-button"
-                           >
-                             Remove
-                          </DeleteButton>
+                            <DeleteButton
+                              id={item.id}
+                              className="mt-2"
+                              data-testid="cart-item-remove-button"
+                            >
+                              {t("remove")}
+                           </DeleteButton>
                         </div>
                       </div>
                     ))}
                 </div>
                 <div className="p-4 flex flex-col gap-y-4 border-t border-ui-border-base">
-                  <div className="flex items-center justify-between">
-                    <Text as="span" className="font-semibold">
-                      Subtotal{" "}
-                      <Text as="span" className="font-normal">(excl. taxes)</Text>
-                    </Text>
+                   <div className="flex items-center justify-between">
+                     <Text as="span" className="font-semibold">
+                       {t("subtotalExclTaxes")}
+                     </Text>
                     <Text
                       as="span"
                       className="text-large-semi"
@@ -206,7 +208,7 @@ const CartDropdown = () => {
                       size="large"
                       data-testid="go-to-cart-button"
                     >
-                      Go to cart
+                      {t("goToCart")}
                     </Button>
                   </LocalizedClientLink>
                 </div>
@@ -217,14 +219,14 @@ const CartDropdown = () => {
                     <div className="bg-ui-fg-base flex items-center justify-center w-6 h-6 rounded-full text-white">
                       <Text as="span" className="text-small-regular text-white">0</Text>
                     </div>
-                    <Text variant="muted">Your shopping bag is empty.</Text>
-                    <div>
-                      <LocalizedClientLink href="/store">
-                        <>
-                          <span className="sr-only">Go to all products page</span>
-                          <Button onClick={close}>Explore products</Button>
-                        </>
-                      </LocalizedClientLink>
+                     <Text variant="muted">{t("shoppingBagEmpty")}</Text>
+                     <div>
+                       <LocalizedClientLink href="/store">
+                         <>
+                           <span className="sr-only">{tNav('allProducts')}</span>
+                           <Button onClick={close}>{t("exploreProducts")}</Button>
+                         </>
+                       </LocalizedClientLink>
                     </div>
                   </div>
                 </div>
