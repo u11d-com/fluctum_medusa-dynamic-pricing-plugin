@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  Sun,
+  Moon,
   ArrowRight,
   BarChart3,
   Database,
@@ -30,6 +32,31 @@ export default function HomeClient() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("hero");
+
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  useEffect(() => {
+    let cancelled = false;
+    const syncTheme = () => {
+      if (!cancelled) {
+        setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      }
+    };
+    syncTheme();
+    return () => { cancelled = true; };
+  }, []);
+
+  const toggleTheme = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setTheme('dark');
+    }
+  };
 
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -112,8 +139,8 @@ export default function HomeClient() {
   ];
 
   return (
-    <div className="min-h-screen font-sans bg-[#0a0a0a] text-white">
-      <header className="fixed top-0 w-full border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-md z-50">
+    <div className="min-h-screen font-sans bg-theme-base text-theme-base">
+      <header className="fixed top-0 w-full border-b border-theme-base bg-theme-header backdrop-blur-md z-50">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link
             href="#hero"
@@ -137,7 +164,7 @@ export default function HomeClient() {
                 className={`text-sm font-medium transition-colors ${
                   activeSection === link.href.slice(1)
                     ? "text-[#7c3aed] drop-shadow-[0_0_8px_rgba(124,58,237,0.8)]"
-                    : "text-white/60 hover:text-white"
+                    : "text-theme-muted hover:text-theme-base"
                 }`}
               >
                 {link.name}
@@ -145,10 +172,18 @@ export default function HomeClient() {
             ))}
           </nav>
 
+          
           <div className="hidden lg:flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg border border-theme-base text-theme-muted hover:text-theme-base transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
             <Link
               href="#contact"
-              className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-lg transition-colors text-sm"
+              className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors text-sm"
             >
               Contact us
             </Link>
@@ -164,7 +199,7 @@ export default function HomeClient() {
           </div>
 
           <button
-            className="lg:hidden p-2 text-white/80 hover:text-white"
+            className="lg:hidden p-2 text-theme-base opacity-80 hover:text-theme-base"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
@@ -176,7 +211,7 @@ export default function HomeClient() {
         </div>
 
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 w-full bg-[#0a0a0a] border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl">
+          <div className="lg:hidden absolute top-full left-0 w-full bg-theme-base border-b border-theme-base p-6 flex flex-col gap-4 shadow-2xl">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -184,14 +219,22 @@ export default function HomeClient() {
                 className={`text-lg font-medium ${
                   activeSection === link.href.slice(1)
                     ? "text-[#7c3aed]"
-                    : "text-white/80"
+                    : "text-theme-base opacity-80"
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+            
+            <div className="pt-4 border-t border-theme-base flex flex-col gap-3">
+              <button
+                onClick={toggleTheme}
+                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base flex items-center justify-center gap-2 transition-colors"
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                Toggle Theme
+              </button>
               <a
                 href="https://demo.fluctum.io"
                 target="_blank"
@@ -261,16 +304,16 @@ export default function HomeClient() {
           </div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#7c3aed]/15 rounded-full blur-[100px] pointer-events-none z-0"></div>
           <div className="relative z-10 max-w-4xl mx-auto text-center">
-            <h1 className="text-7xl md:text-8xl font-extrabold text-white tracking-tight mb-4 leading-none">
+            <h1 className="text-7xl md:text-8xl font-extrabold text-theme-base tracking-tight mb-4 leading-none">
               Fluctum
             </h1>
-            <p className="text-2xl md:text-3xl font-light text-white/70 mb-12 tracking-wide">
+            <p className="text-2xl md:text-3xl font-light text-theme-base opacity-70 mb-12 tracking-wide">
               Real-Time Dynamic Pricing for Medusa
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="#contact"
-                className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-lg transition-colors flex items-center justify-center"
+                className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors flex items-center justify-center"
               >
                 Contact Us
               </Link>
@@ -289,14 +332,14 @@ export default function HomeClient() {
 
         <section
           id="fluctum"
-          className="py-24 bg-[#111111] px-6 border-t border-white/5"
+          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
         >
           <div className="max-w-6xl mx-auto">
             <div className="mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+              <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
                 What is Fluctum?
               </h2>
-              <p className="text-xl text-white/60 leading-relaxed mb-6">
+              <p className="text-xl text-theme-muted leading-relaxed mb-6">
                 Fluctum is an open-source dynamic pricing solution built on top
                 of{" "}
                 <a
@@ -309,16 +352,16 @@ export default function HomeClient() {
                 </a>{" "}
                 — the composable commerce platform. It ships as three
                 components:{" "}
-                <strong className="text-white">Medusa{"\u00A0"}plugin</strong>,{" "}
-                <strong className="text-white">backend{"\u00A0"}starter</strong>
+                <strong className="text-theme-base">Medusa{"\u00A0"}plugin</strong>,{" "}
+                <strong className="text-theme-base">backend{"\u00A0"}starter</strong>
                 , and{" "}
-                <strong className="text-white">
+                <strong className="text-theme-base">
                   storefront{"\u00A0"}starter
                 </strong>
                 . It&apos;s designed for merchants who need tailored commerce
                 workflows, not one-size-fits-all templates.
               </p>
-              <p className="text-lg text-white/50 leading-relaxed">
+              <p className="text-lg text-theme-faint leading-relaxed">
                 Because it&apos;s Medusa-based, you inherit everything Medusa
                 offers — multi-region, multi-currency, promotions, and customer
                 management — including localized taxes, shipping, and payment
@@ -329,33 +372,33 @@ export default function HomeClient() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-8 border border-white/10 rounded-xl bg-black/50 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <Box className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-white mb-3">
+                <h3 className="text-xl font-bold text-theme-base mb-3">
                   Medusa-native
                 </h3>
 
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-theme-muted leading-relaxed">
                   Built as a Medusa{"\u00A0"}plugin; drops into any Medusa
                   {"\u00A0"}project seamlessly.
                 </p>
               </div>
-              <div className="p-8 border border-white/10 rounded-xl bg-black/50 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <Code2 className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-white mb-3">
+                <h3 className="text-xl font-bold text-theme-base mb-3">
                   Open source
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-theme-muted leading-relaxed">
                   MIT license, community-first; fork and extend freely to fit
                   your business.
                 </p>
               </div>
-              <div className="p-8 border border-white/10 rounded-xl bg-black/50 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <ShieldCheck className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-white mb-3">
+                <h3 className="text-xl font-bold text-theme-base mb-3">
                   Production-ready
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-theme-muted leading-relaxed">
                   SSE streams, price locking, and checkout validation — all
                   built in and battle-tested.
                 </p>
@@ -371,31 +414,31 @@ export default function HomeClient() {
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
               <div>
-                <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
                   Make It Your Own
                 </h2>
-                <p className="text-xl text-white/60 leading-relaxed mb-6">
+                <p className="text-xl text-theme-muted leading-relaxed mb-6">
                   Medusa separates backend from frontend — your storefront can
                   look exactly the way you want.
                 </p>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-start gap-3">
                     <Paintbrush className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
-                    <span className="text-white/80">
+                    <span className="text-theme-base opacity-80">
                       Use any framework: Next.js, SvelteKit, Remix, or plain
                       HTML.
                     </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Database className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
-                    <span className="text-white/80">
+                    <span className="text-theme-base opacity-80">
                       The plugin provides the data and logic; your design team
                       provides the UI.
                     </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Globe className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
-                    <span className="text-white/80">
+                    <span className="text-theme-base opacity-80">
                       Our demo uses Next.js{"\u00A0"}16 + Tailwind, but you can
                       build a Vue app, React Native mobile app, or even an
                       in-store kiosk interface.
@@ -404,24 +447,24 @@ export default function HomeClient() {
                 </ul>
               </div>
 
-              <div className="p-8 border w-128 border-white/10 rounded-2xl bg-[#050505] shadow-2xl relative overflow-hidden">
+              <div className="p-8 border w-128 border-theme-base rounded-2xl bg-theme-code shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#7c3aed] to-transparent opacity-50"></div>
-                <h4 className="text-white/50 text-sm font-mono mb-4 border-b border-white/10 pb-4">
+                <h4 className="text-theme-faint text-sm font-mono mb-4 border-b border-theme-base pb-4">
                   Formula Engine
                 </h4>
-                <pre className="text-sm font-mono text-white/80 overflow-x-auto whitespace-pre-wrap">
+                <pre className="text-sm font-mono text-theme-base opacity-80 overflow-x-auto whitespace-pre-wrap">
                   <code className="block mb-2">
                     <span className="text-[#7c3aed]">const</span>{" "}
                     <span className="text-blue-300">final_price</span> ={" "}
                   </code>
                   <code className="block pl-4 mb-1">
-                    weight <span className="text-white/40">×</span>
+                    weight <span className="text-theme-base/40">×</span>
                   </code>
                   <code className="block pl-4 mb-1">
-                    spot_price <span className="text-white/40">×</span>
+                    spot_price <span className="text-theme-base/40">×</span>
                   </code>
                   <code className="block pl-4 mb-1">
-                    factor <span className="text-white/40">×</span>
+                    factor <span className="text-theme-base/40">×</span>
                   </code>
                   <code className="block pl-4">fx_rate;</code>
                 </pre>
@@ -432,14 +475,14 @@ export default function HomeClient() {
 
         <section
           id="integrations"
-          className="py-24 bg-[#111111] px-6 border-t border-white/5"
+          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
         >
           <div className="max-w-6xl mx-auto">
             <div className="mb-16 text-center max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+              <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
                 Integrations
               </h2>
-              <p className="text-xl text-white/60 leading-relaxed">
+              <p className="text-xl text-theme-muted leading-relaxed">
                 Since Fluctum is built on Medusa, you inherit the entire Medusa
                 ecosystem out of the box.
               </p>
@@ -480,16 +523,16 @@ export default function HomeClient() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="p-6 border border-white/10 rounded-xl bg-black/50 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all flex items-start gap-4"
+                  className="p-6 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all flex items-start gap-4"
                 >
                   <div className="w-12 h-12 rounded-lg bg-[#7c3aed]/10 flex items-center justify-center flex-shrink-0">
                     <item.icon className="w-6 h-6 text-[#7c3aed]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-1">
+                    <h3 className="text-lg font-bold text-theme-base mb-1">
                       {item.name}
                     </h3>
-                    <p className="text-sm text-white/50">{item.desc}</p>
+                    <p className="text-sm text-theme-faint">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -500,7 +543,7 @@ export default function HomeClient() {
                 href="https://medusajs.com/plugins/"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-theme-muted hover:text-theme-base transition-colors"
               >
                 ...and hundreds more via Medusa Plugins{" "}
                 <ArrowRight className="w-4 h-4" />
@@ -514,7 +557,7 @@ export default function HomeClient() {
           className="py-24 px-6 border-t border-white/5"
         >
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-16 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
               Built for real-time commerce
             </h2>
 
@@ -523,10 +566,10 @@ export default function HomeClient() {
                 <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
                   1
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">
+                <h3 className="text-2xl font-bold text-theme-base mb-4 relative z-10">
                   Connect a provider
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-theme-muted leading-relaxed">
                   Plug in GoldAPI.io, your ERP, or a custom feed. Fluctum
                   constantly ingests the latest spot prices.
                 </p>
@@ -535,10 +578,10 @@ export default function HomeClient() {
                 <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
                   2
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">
+                <h3 className="text-2xl font-bold text-theme-base mb-4 relative z-10">
                   Prices flow via SSE
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-theme-muted leading-relaxed">
                   Every storefront client receives live spot prices over a
                   single persistent Server-Sent Events connection.
                 </p>
@@ -547,10 +590,10 @@ export default function HomeClient() {
                 <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
                   3
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">
+                <h3 className="text-2xl font-bold text-theme-base mb-4 relative z-10">
                   Checkout locks the price
                 </h3>
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-theme-muted leading-relaxed">
                   When the buyer proceeds, prices are locked for your configured
                   window (for example, 2 or 10{"\u00A0"}minutes) and validated
                   at order completion.
@@ -562,64 +605,64 @@ export default function HomeClient() {
 
         <section
           id="use-cases"
-          className="py-24 bg-[#111111] px-6 border-t border-white/5"
+          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
         >
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16">
               Where Fluctum fits
             </h2>
 
             <div className="grid sm:grid-cols-2 gap-6">
-              <div className="p-8 bg-black/50 border border-white/10 rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <div className="mt-1">
                   <Database className="text-[#7c3aed]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-theme-base mb-2">
                     Precious Metals
                   </h3>
-                  <p className="text-white/60">
+                  <p className="text-theme-muted">
                     Gold and silver bullion dealers needing sub-second spot
                     accuracy.
                   </p>
                 </div>
               </div>
-              <div className="p-8 bg-black/50 border border-white/10 rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <div className="mt-1">
                   <BarChart3 className="text-[#7c3aed]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-theme-base mb-2">
                     Industrial Metals
                   </h3>
-                  <p className="text-white/60">
+                  <p className="text-theme-muted">
                     Copper, platinum, and palladium wholesale operations.
                   </p>
                 </div>
               </div>
-              <div className="p-8 bg-black/50 border border-white/10 rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <div className="mt-1">
                   <Server className="text-[#7c3aed]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-theme-base mb-2">
                     B2B & ERP-driven
                   </h3>
-                  <p className="text-white/60">
+                  <p className="text-theme-muted">
                     Live catalog pricing synced directly with internal inventory
                     systems.
                   </p>
                 </div>
               </div>
-              <div className="p-8 bg-black/50 border border-white/10 rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
                 <div className="mt-1">
                   <Globe className="text-[#7c3aed]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-theme-base mb-2">
                     FX-Sensitive Goods
                   </h3>
-                  <p className="text-white/60">
+                  <p className="text-theme-muted">
                     High-value items that require constant currency conversion
                     adjustments.
                   </p>
@@ -631,7 +674,7 @@ export default function HomeClient() {
 
         <section id="deployment" className="py-24 px-6 border-t border-white/5">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-16 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
               Deploy your way
             </h2>
 
@@ -640,15 +683,15 @@ export default function HomeClient() {
                 href="https://cloud.medusajs.com"
                 target="_blank"
                 rel="noreferrer"
-                className="p-10 border border-white/10 rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
+                className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-white">
+                  <h3 className="text-2xl font-bold text-theme-base">
                     Medusa Cloud
                   </h3>
-                  <ExternalLink className="w-5 h-5 text-white/60 flex-shrink-0" />
+                  <ExternalLink className="w-5 h-5 text-theme-muted flex-shrink-0" />
                 </div>
-                <p className="text-white/60 flex-grow">
+                <p className="text-theme-muted flex-grow">
                   One-click deployment on Medusa&apos;s official managed
                   infrastructure. Optimized for scale.
                 </p>
@@ -658,13 +701,13 @@ export default function HomeClient() {
                 href="https://deploymedusa.com"
                 target="_blank"
                 rel="noreferrer"
-                className="p-10 border border-white/10 rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
+                className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-white">Self-Hosted</h3>
-                  <ExternalLink className="w-5 h-5 text-white/60 flex-shrink-0" />
+                  <h3 className="text-2xl font-bold text-theme-base">Self-Hosted</h3>
+                  <ExternalLink className="w-5 h-5 text-theme-muted flex-shrink-0" />
                 </div>
-                <p className="text-white/60 flex-grow">
+                <p className="text-theme-muted flex-grow">
                   Full control on your own AWS, GCP, or bare metal
                   infrastructure.
                 </p>
@@ -675,13 +718,13 @@ export default function HomeClient() {
 
         <section
           id="contact"
-          className="py-24 bg-[#0a0a0a] px-6 border-t border-white/5"
+          className="py-24 bg-theme-base px-6 border-t border-white/5"
         >
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
               Ready to ship live pricing?
             </h2>
-            <p className="text-xl text-white/60">
+            <p className="text-xl text-theme-muted">
               Get in touch to discuss end-to-end implementation support or reach
               out at{" "}
               <a
@@ -697,10 +740,10 @@ export default function HomeClient() {
           <div className="max-w-xl mx-auto">
             {formStatus === "success" ? (
               <div className="p-8 border border-green-500/30 bg-green-500/10 rounded-xl text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">
+                <h3 className="text-2xl font-bold text-theme-base mb-2">
                   Message Received
                 </h3>
-                <p className="text-white/70">
+                <p className="text-theme-base opacity-70">
                   We&apos;ll get back to you shortly.
                 </p>
               </div>
@@ -709,7 +752,7 @@ export default function HomeClient() {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-sm font-medium text-white/80 mb-2"
+                    className="block text-sm font-medium text-theme-base opacity-80 mb-2"
                   >
                     Name *
                   </label>
@@ -718,14 +761,14 @@ export default function HomeClient() {
                     id="name"
                     name="name"
                     required
-                    className="w-full px-4 py-3 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all"
+                    className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-white/80 mb-2"
+                    className="block text-sm font-medium text-theme-base opacity-80 mb-2"
                   >
                     Email *
                   </label>
@@ -734,14 +777,14 @@ export default function HomeClient() {
                     id="email"
                     name="email"
                     required
-                    className="w-full px-4 py-3 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all"
+                    className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-white/80 mb-2"
+                    className="block text-sm font-medium text-theme-base opacity-80 mb-2"
                   >
                     Message *
                   </label>
@@ -750,7 +793,7 @@ export default function HomeClient() {
                     name="message"
                     rows={5}
                     required
-                    className="w-full px-4 py-3 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all resize-none"
+                    className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all resize-none"
                   ></textarea>
                 </div>
 
@@ -773,7 +816,7 @@ export default function HomeClient() {
         </section>
       </main>
 
-      <footer className="py-12 border-t border-white/10">
+      <footer className="py-12 border-t border-theme-base">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
             <div className="flex items-center gap-6">
@@ -785,11 +828,11 @@ export default function HomeClient() {
                 className="w-auto h-7"
               />
             </div>
-            <nav className="flex flex-wrap items-center justify-center text-sm text-white/50">
+            <nav className="flex flex-wrap items-center justify-center text-sm text-theme-faint">
               {footerLinks.map((link, index) => (
                 <div key={link.name} className="flex items-center">
                   {index > 0 && (
-                    <span className="mx-3 text-white/30" aria-hidden="true">
+                    <span className="mx-3 text-theme-dimmer" aria-hidden="true">
                       •
                     </span>
                   )}
@@ -797,7 +840,7 @@ export default function HomeClient() {
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-theme-base transition-colors"
                   >
                     {link.name}
                   </a>
@@ -805,7 +848,7 @@ export default function HomeClient() {
               ))}
             </nav>
           </div>
-          <p className="text-center text-white/30 text-sm">
+          <p className="text-center text-theme-dimmer text-sm">
             © {new Date().getFullYear()} Fluctum by u11d. All rights reserved.
           </p>
         </div>
