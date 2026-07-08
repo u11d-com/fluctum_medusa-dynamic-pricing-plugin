@@ -1,0 +1,10 @@
+Dear {{ firstName }},
+
+Thank you for contacting us! We received your message and will get back to you as soon as possible.
+
+Our team typically responds within 24 hours during business days.
+
+Best regards,
+The Fluctum Team
+
+This is an automated confirmation email.

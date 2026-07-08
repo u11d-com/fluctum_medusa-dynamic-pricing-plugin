@@ -1,0 +1,13 @@
+{
+  "name": "fluctum-form-handler",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy:dev": "serverless deploy --stage dev",
+    "deploy:prod": "serverless deploy --stage prod"
+  },
+  "author": "u11d.com",
+  "dependencies": {
+    "@uninterrupted/serverless-plugin-webform": "^2.0.0",
+    "serverless": "^3.40.0"
+  }
+}

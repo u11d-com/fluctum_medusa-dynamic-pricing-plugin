@@ -1,0 +1,6 @@
+*New Contact Form Submission*
+
+*From:* {{ name }}
+*Email:* {{ email }}
+*Message:*
+{{ message }}

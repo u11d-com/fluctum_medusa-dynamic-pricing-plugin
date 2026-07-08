@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #000000;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+      .content {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ddd;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img
+          alt="Fluctum Logo"
+          height="60"
+          src="https://fluctum.io/fluctum-logo-full.svg"
+        />
+      </div>
+      <div class="content">
+        <p>Dear {{ firstName }},</p>
+        <p>
+          Thank you for contacting us! We received your message and will get
+          back to you as soon as possible.
+        </p>
+        <p>Our team typically responds within 24 hours during business days.</p>
+        <p>Best regards,<br />The Fluctum Team</p>
+      </div>
+      <div class="footer">This is an automated confirmation email.</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+service: fluctum-form-handler
+
+frameworkVersion: "3.40.0"
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-west-1
+  stage: ${opt:stage, 'dev'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3000
+        - https://fluctum.io
+        - https://www.fluctum.io
+
+plugins:
+  - "@uninterrupted/serverless-plugin-webform"
+
+custom:
+  pluginWebform:
+    allowOrigin: "*"
+
+    properties:
+      email:
+        name: email
+      name:
+        name: name
+      message:
+        name: message
+      captchaToken:
+        name: captchaToken
+
+    captcha:
+      projectId: ${env:CAPTCHA_PROJECT_ID}
+      siteKey: ${env:CAPTCHA_SITE_KEY}
+      clientEmail: ${env:CAPTCHA_CLIENT_EMAIL}
+      privateKey: ${env:CAPTCHA_PRIVATE_KEY}
+      action: contact_form
+      threshold: 0.5
+
+    ses:
+      sourceAddress: ${env:SES_SOURCE_EMAIL}
+      notificationAddresses:
+        - ${env:SES_NOTIFICATION_EMAIL}
+
+      visitorNotification:
+        subject: "New Contact Form Submission - {{ fullName }}"
+        text: ./email-templates/visitor-notification.txt
+        html: ./email-templates/visitor-notification.html
+
+      visitorConfirmation:
+        subject: "Thank you for contacting us, {{ firstName }}!"
+        text: ./email-templates/visitor-confirmation.txt
+        html: ./email-templates/visitor-confirmation.html
+
+      visitorConfirmationWithMessage:
+        subject: "Thank you for contacting us, {{ firstName }}!"
+        text: ./email-templates/visitor-confirmation-with-message.txt
+        html: ./email-templates/visitor-confirmation-with-message.html
+
+    slack:
+      token: ${env:SLACK_TOKEN}
+      channel: ${env:SLACK_CHANNEL}
+      username: ${env:SLACK_USERNAME}
+      message: ./slack/message.txt
+      iconEmoji: ":email:"
+
+    logLevel: debug
