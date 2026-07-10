@@ -39,7 +39,7 @@
     "@tanstack/react-query": "5.64.2",
     "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing",
     "react-i18next": "13.5.0",
-    "react-router-dom": "6.30.3",
+    "react-router-dom": "7.18.1",
     "zod": "4.2.0"
   },
   "devDependencies": {
