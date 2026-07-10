@@ -1,7 +1,7 @@
 version: 1
 applications:
   - appRoot: landing-page/www
-    platform: WEB_COMPUTE
+    platform: WEB
     frontend:
       phases:
         preBuild:
