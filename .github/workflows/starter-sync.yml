@@ -44,7 +44,7 @@ jobs:
 
       - name: Create GitHub App token
         id: token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.FLUCTUM_SYNC_APP_ID }}
           private-key: ${{ secrets.FLUCTUM_SYNC_PRIVATE_KEY }}
