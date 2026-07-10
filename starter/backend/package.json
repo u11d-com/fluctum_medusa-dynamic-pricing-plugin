@@ -38,7 +38,7 @@
     "@medusajs/ui": "4.1.12",
     "@tanstack/react-query": "5.64.2",
     "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing",
-    "react-i18next": "13.5.0",
+    "react-i18next": "17.0.9",
     "react-router-dom": "6.30.3",
     "zod": "4.2.0"
   },
