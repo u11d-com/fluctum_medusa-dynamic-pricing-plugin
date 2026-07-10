@@ -1,6 +1,7 @@
 version: 1
 applications:
   - appRoot: landing-page/www
+    platform: WEB_COMPUTE
     frontend:
       phases:
         preBuild:
@@ -10,7 +11,7 @@ applications:
           commands:
             - npm run build
       artifacts:
-        baseDirectory: out
+        baseDirectory: .next
         files:
           - "**/*"
       cache:
