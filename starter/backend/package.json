@@ -40,7 +40,7 @@
     "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing",
     "react-i18next": "13.5.0",
     "react-router-dom": "6.30.3",
-    "zod": "4.2.0"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.15.2",
