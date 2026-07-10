@@ -8,6 +8,6 @@
   "author": "u11d.com",
   "dependencies": {
     "@uninterrupted/serverless-plugin-webform": "^2.0.0",
-    "serverless": "^3.40.0"
+    "serverless": "^4.39.0"
   }
 }
