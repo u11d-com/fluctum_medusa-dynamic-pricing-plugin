@@ -29,7 +29,7 @@ What actually happened. Include any error messages or logs.
 
 - **Plugin version:** (e.g., 0.1.0)
 - **Medusa version:** (e.g., 2.15.2)
-- **Node.js version:** (e.g., 20.11.0)
+- **Node.js version:** (e.g., 24.0.0)
 - **OS:** (e.g., macOS 13.2, Ubuntu 22.04)
 - **Database:** (e.g., PostgreSQL 17)
 

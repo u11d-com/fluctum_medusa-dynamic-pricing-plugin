@@ -15,7 +15,7 @@
   "homepage": "https://fluctum.io",
   "packageManager": "npm@11.6.2",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "turbo run dev --filter=@u11d/medusa-dynamic-pricing-backend --filter=@u11d/medusa-dynamic-pricing-storefront --parallel",
@@ -44,11 +44,6 @@
     "landing-page/**",
     "dynamic-pricing-plugin"
   ],
-  "overrides": {
-    "@types/react": "19.0.5",
-    "@types/react-dom": "19.0.5",
-    "ajv": "^8.0.0"
-  },
   "dependencies": {
     "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing"
   }

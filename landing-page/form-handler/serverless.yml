@@ -6,7 +6,7 @@ useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs24.x
   region: eu-west-1
   stage: ${opt:stage, 'dev'}
   httpApi:

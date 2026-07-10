@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js v20+
+- Node.js v24+
 - Docker (for PostgreSQL + Redis)
 - npm v11+ (managed via `engines` in `package.json`)
 - [yalc](https://github.com/wclr/yalc) — local plugin linking (installed as devDependency in the plugin)

@@ -45,7 +45,7 @@ Prices are **never** written to Medusa's price tables. The frontend computes the
 
 ### Prerequisites
 
-- Node.js v20+
+- Node.js v24+
 - Docker (for PostgreSQL + Redis)
 - npm v11+
 
