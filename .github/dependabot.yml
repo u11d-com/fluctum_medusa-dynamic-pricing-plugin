@@ -1,0 +1,85 @@
+version: 2
+updates:
+  # Plugin dependencies
+  - package-ecosystem: "npm"
+    directory: "/dynamic-pricing-plugin"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    groups:
+      medusa:
+        patterns:
+          - "@medusajs/*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # Backend starter dependencies
+  - package-ecosystem: "npm"
+    directory: "/starter/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    groups:
+      medusa:
+        patterns:
+          - "@medusajs/*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # Storefront dependencies
+  - package-ecosystem: "npm"
+    directory: "/starter/storefront"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      next:
+        patterns:
+          - "next"
+          - "next-*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # Landing page dependencies
+  - package-ecosystem: "npm"
+    directory: "/landing-page/www"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    groups:
+      next:
+        patterns:
+          - "next"
+          - "next-*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # Form handler dependencies
+  - package-ecosystem: "npm"
+    directory: "/landing-page/form-handler"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5

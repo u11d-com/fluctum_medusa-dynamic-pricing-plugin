@@ -12,8 +12,8 @@
 ### 1. Clone & install
 
 ```bash
-git clone <repo-url>
-cd dynamic-pricing
+git clone https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin.git
+cd fluctum_medusa-dynamic-pricing-plugin
 npm install
 ```
 
@@ -29,10 +29,10 @@ Redis will be available at `localhost:6379`.
 ### 3. Configure the backend
 
 ```bash
-cp apps/backend/.env.template apps/backend/.env
+cp starter/backend/.env.template starter/backend/.env
 ```
 
-Edit `apps/backend/.env`:
+Edit `starter/backend/.env`:
 
 ```bash
 DATABASE_URL=postgres://postgres:@localhost:5432/dynamic_pricing
@@ -57,7 +57,7 @@ npm run backend:seed
 ### 6. Create admin user
 
 ```bash
-cd apps/backend && npx medusa user -e admin@example.com -p yourpassword
+cd starter/backend && npx medusa user -e admin@example.com -p yourpassword
 cd ../..
 ```
 
@@ -83,22 +83,22 @@ npm run plugin:build
 
 This runs `medusa plugin:build` and then `yalc push`, updating the `.yalc/` copy in the backend. Restart the backend to pick up changes.
 
-> **Important:** The plugin must be linked to **both** `apps/backend` and the monorepo root. The root link ensures Medusa CLI can resolve the module from `node_modules`. If the root link is missing: `cd <root> && yalc add @u11d/medusa-dynamic-pricing`.
+> **Important:** The plugin must be linked to **both** `starter/backend` and the monorepo root. The root link ensures Medusa CLI can resolve the module from `node_modules`. If the root link is missing: `cd <root> && yalc add @u11d/medusa-dynamic-pricing`.
 
 ---
 
 ## Scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start backend + storefront (turbo, parallel) |
-| `npm run build` | Build all packages |
-| `npm run plugin:build` | Build plugin + push to yalc |
-| `npm run test:unit` | Run plugin unit tests |
-| `npm run test:integration` | Run backend HTTP integration tests |
-| `npm run backend:migrate` | Run Medusa DB migrations |
-| `npm run backend:seed` | Run initial data seed |
-| `npm run storefront:check` | Type-check the storefront |
+| Script                     | Description                                  |
+| -------------------------- | -------------------------------------------- |
+| `npm run dev`              | Start backend + storefront (turbo, parallel) |
+| `npm run build`            | Build all packages                           |
+| `npm run plugin:build`     | Build plugin + push to yalc                  |
+| `npm run test:unit`        | Run plugin unit tests                        |
+| `npm run test:integration` | Run backend HTTP integration tests           |
+| `npm run backend:migrate`  | Run Medusa DB migrations                     |
+| `npm run backend:seed`     | Run initial data seed                        |
+| `npm run storefront:check` | Type-check the storefront                    |
 
 ---
 
@@ -131,7 +131,7 @@ Use raw Knex for `CartPriceLock` writes. See [ADR 0004](docs/adr/0004-raw-knex-f
 
 - Use a `cancelled` closure flag for async work in `useEffect` (not a ref) — safe under React Strict Mode double-mount.
 - No dead code — remove commented-out blocks, unused imports, and orphaned components.
-- Follow the storefront component conventions in `apps/storefront/AGENTS.md` (UI primitives, RSC/client boundaries).
+- Follow the storefront component conventions in `starter/storefront/AGENTS.md` (UI primitives, RSC/client boundaries).
 
 ---
 
@@ -153,9 +153,10 @@ Scope: pure functions (price formula, provider logic, config validation).
 npm run test:integration
 ```
 
-Files: `apps/backend/integration-tests/http/*.spec.ts`
+Files: `starter/backend/integration-tests/http/*.spec.ts`
 
 These run a full Medusa backend with a real PostgreSQL database. They cover:
+
 - Price lock creation, idempotency, force-refresh
 - Order completion with valid locks
 - Order rejection with missing/expired locks
@@ -188,5 +189,5 @@ These run a full Medusa backend with a real PostgreSQL database. They cover:
 - [`docs/adr/`](docs/adr/) — Architecture Decision Records
 - [`AGENTS.md`](AGENTS.md) — Developer reference + AI agent context
 - [`dynamic-pricing-plugin/AGENTS.md`](dynamic-pricing-plugin/AGENTS.md) — Plugin-specific agent context
-- [`apps/backend/AGENTS.md`](apps/backend/AGENTS.md) — Backend-specific agent context
-- [`apps/storefront/AGENTS.md`](apps/storefront/AGENTS.md) — Storefront-specific agent context
+- [`starter/backend/AGENTS.md`](starter/backend/AGENTS.md) — Backend-specific agent context
+- [`starter/storefront/AGENTS.md`](starter/storefront/AGENTS.md) — Storefront-specific agent context

@@ -7,12 +7,12 @@ The dynamic pricing solution is a Medusa v2 plugin (`@u11d/medusa-dynamic-pricin
 ## Component Map
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  Monorepo root                                                  │
-│                                                                 │
+┌────────────────────────────────────────────────────────────────┐
+│  Monorepo root                                                 │
+│                                                                │
 │  ┌──────────────────────────┐   ┌───────────────────────────┐  │
-│  │  dynamic-pricing-plugin  │   │  apps/backend             │  │
-│  │  @u11d/medusa-dynamic-  │   │  @u11d/medusa-dynamic-    │  │
+│  │  dynamic-pricing-plugin  │   │  starter/backend          │  │
+│  │  @u11d/medusa-dynamic-   │   │  @u11d/medusa-dynamic-    │  │
 │  │  pricing                 │   │  pricing-backend          │  │
 │  │                          │   │                           │  │
 │  │  • Module + Service      │   │  • medusa-config.ts       │  │
@@ -23,8 +23,8 @@ The dynamic pricing solution is a Medusa v2 plugin (`@u11d/medusa-dynamic-pricin
 │  │    routes)               │   └───────────────────────────┘  │
 │  │  • SSE manager           │                                  │
 │  │  • Price formula util    │   ┌───────────────────────────┐  │
-│  │  • Providers             │   │  apps/storefront          │  │
-│  └──────────────────────────┘   │  Next.js 15               │  │
+│  │  • Providers             │   │  starter/storefront       │  │
+│  └──────────────────────────┘   │  Next.js 16               │  │
 │                                 │                           │  │
 │  ┌──────────────────────────┐   │  • SSE context + proxy    │  │
 │  │  PostgreSQL              │   │  • Live price bar         │  │
@@ -34,7 +34,7 @@ The dynamic pricing solution is a Medusa v2 plugin (`@u11d/medusa-dynamic-pricin
 │  │  Redis                   │   └───────────────────────────┘  │
 │  │  (event bus + locking)   │                                  │
 │  └──────────────────────────┘                                  │
-└─────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ## Plugin Internal Architecture
@@ -166,12 +166,12 @@ The storefront proxies the SSE stream through a Next.js route handler (`/api/sse
 
 | Layer                | Technology                                           |
 | -------------------- | ---------------------------------------------------- |
-| Backend framework    | Medusa v2 (2.15.2)                                   |
+| Backend framework    | Medusa v2                                            |
 | Language             | TypeScript                                           |
 | Database             | PostgreSQL 17                                        |
 | ORM                  | MikroORM (via Medusa) + raw Knex for write-heavy ops |
 | Cache / messaging    | Redis 8 (event bus + distributed locking)            |
-| Storefront           | Next.js 15 (App Router, RSC)                         |
+| Storefront           | Next.js 16 (App Router, RSC)                         |
 | Admin UI             | Medusa Admin SDK (`@medusajs/ui`, `@medusajs/icons`) |
 | Monorepo             | Turborepo + npm workspaces                           |
 | Local plugin linking | yalc                                                 |

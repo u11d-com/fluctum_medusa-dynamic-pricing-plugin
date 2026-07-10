@@ -67,8 +67,3 @@ Thumbs.db
 
 # Agent state / session metadata (Sisyphus, Prometheus, etc.)
 .omo/
-
-# Personal / environment-specific files
-prompt.txt
-reset-db.sh
-AGENTS.md

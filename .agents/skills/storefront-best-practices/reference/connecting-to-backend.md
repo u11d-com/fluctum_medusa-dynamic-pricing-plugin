@@ -31,11 +31,11 @@ Best practices for connecting storefront to ecommerce backend APIs. Framework-ag
 # Look for backend directory
 ls -la ../backend
 ls -la ./backend
-ls -la ../../apps/backend
+ls -la ../../starter/backend
 ```
 
 Common monorepo patterns:
-- `/apps/storefront` + `/apps/backend`
+- `/starter/storefront` + `/starter/backend`
 - `/frontend` + `/backend`
 - `/packages/web` + `/packages/api`
 

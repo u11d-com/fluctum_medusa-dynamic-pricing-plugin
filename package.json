@@ -1,7 +1,18 @@
 {
   "name": "dynamic-pricing",
   "description": "Fluctum — dynamic pricing solution for Medusa",
+  "version": "0.0.1",
   "private": true,
+  "author": "u11d <hello@u11d.com> (https://u11d.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/issues"
+  },
+  "homepage": "https://fluctum.io",
   "packageManager": "npm@11.6.2",
   "engines": {
     "node": ">=20"
@@ -27,9 +38,10 @@
     "turbo": "^2.0.14"
   },
   "workspaces": [
-    "apps/**",
-    "!apps/backend/.medusa/**",
-    "!apps/backend/.yalc/**",
+    "starter/**",
+    "!starter/backend/.medusa/**",
+    "!starter/backend/.yalc/**",
+    "landing-page/**",
     "dynamic-pricing-plugin"
   ],
   "overrides": {

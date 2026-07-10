@@ -1,0 +1,108 @@
+name: Starter Sync
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag to sync (e.g. v0.1.0)"
+        required: false
+        type: string
+
+jobs:
+  sync:
+    name: Sync to fluctum_starter
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            RAW="${{ inputs.version }}"
+          else
+            RAW="${{ github.event.workflow_run.head_branch }}"
+          fi
+          if [[ -z "${RAW}" ]]; then
+            echo "::error::Version could not be determined. Provide 'version' input or trigger via Release workflow."
+            exit 1
+          fi
+          # Strip refs/tags/ prefix if present, then strip leading v for bare semver
+          RAW="${RAW#refs/tags/}"
+          BARE="${RAW#v}"
+          echo "raw=${RAW}"  >> "$GITHUB_OUTPUT"
+          echo "bare=${BARE}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub App token
+        id: token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.FLUCTUM_SYNC_APP_ID }}
+          private-key: ${{ secrets.FLUCTUM_SYNC_PRIVATE_KEY }}
+          owner: u11d-com
+          repositories: fluctum_starter
+
+      - name: Clone target repo
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: |
+          git clone \
+            "https://x-access-token:${GH_TOKEN}@github.com/u11d-com/fluctum_starter.git" \
+            /tmp/fluctum_starter
+
+      - name: Sync backend
+        run: |
+          rsync -av --delete \
+            --exclude='.yalc/' \
+            --exclude='.yalc.lock' \
+            --exclude='node_modules/' \
+            starter/backend/ /tmp/fluctum_starter/backend/
+
+      - name: Sync storefront
+        run: |
+          rsync -av --delete \
+            --exclude='node_modules/' \
+            --exclude='.next/' \
+            starter/storefront/ /tmp/fluctum_starter/storefront/
+
+      - name: Copy scaffold files to root
+        run: |
+          cp infra/starter-scaffold/README.md /tmp/fluctum_starter/
+          cp infra/starter-scaffold/package.json /tmp/fluctum_starter/
+          cp infra/starter-scaffold/docker-compose.yml /tmp/fluctum_starter/
+          cp infra/starter-scaffold/.env.template /tmp/fluctum_starter/
+          cp infra/starter-scaffold/.gitignore /tmp/fluctum_starter/
+          cp infra/starter-scaffold/turbo.json /tmp/fluctum_starter/
+          mkdir -p /tmp/fluctum_starter/.github/workflows
+          # .github/workflows is empty in scaffold, so we just create the directory
+
+      - name: Rewrite plugin dependency
+        run: |
+          BARE="${{ steps.ver.outputs.bare }}"
+          PKG=/tmp/fluctum_starter/backend/package.json
+          jq --arg v "^${BARE}" \
+            '.dependencies["@u11d/medusa-dynamic-pricing"] = $v' \
+            "${PKG}" > "${PKG}.tmp"
+          mv "${PKG}.tmp" "${PKG}"
+
+      - name: Commit and push
+        run: |
+          cd /tmp/fluctum_starter
+          git config user.name  "fluctum-sync[bot]"
+          git config user.email "fluctum-sync[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit — target is already in sync."
+          else
+            git commit -m "sync: fluctum_starter to @u11d/medusa-dynamic-pricing@${{ steps.ver.outputs.raw }}"
+            git push --force-with-lease
+          fi

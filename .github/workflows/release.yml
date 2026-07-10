@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org/"
+          cache: "npm"
+          cache-dependency-path: dynamic-pricing-plugin/package-lock.json
+      - run: npm ci
+        working-directory: dynamic-pricing-plugin
+      - run: npm run test:unit
+        working-directory: dynamic-pricing-plugin
+      - run: npm run build
+        working-directory: dynamic-pricing-plugin
+      - run: npm publish --access public --provenance
+        working-directory: dynamic-pricing-plugin
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
