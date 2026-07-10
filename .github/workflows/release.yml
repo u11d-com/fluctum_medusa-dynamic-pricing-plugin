@@ -17,7 +17,17 @@ jobs:
         with:
           node-version: 24
           registry-url: "https://registry.npmjs.org/"
-      - run: npm ci
+          cache: npm
+          cache-dependency-path: dynamic-pricing-plugin/package-lock.json
+      - name: Validate tag matches plugin version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./dynamic-pricing-plugin/package.json').version")"
+          if [ "$TAG" != "$PKG_VERSION" ]; then
+            echo "Tag version ($TAG) does not match dynamic-pricing-plugin/package.json version ($PKG_VERSION)"
+            exit 1
+          fi
+      - run: npm ci --workspaces=false --legacy-peer-deps
         working-directory: dynamic-pricing-plugin
       - run: npm run test:unit
         working-directory: dynamic-pricing-plugin
