@@ -33,28 +33,34 @@ export default function HomeClient() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("hero");
 
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   useEffect(() => {
     let cancelled = false;
     const syncTheme = () => {
       if (!cancelled) {
-        setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        setTheme(
+          document.documentElement.classList.contains("dark")
+            ? "dark"
+            : "light",
+        );
       }
     };
     syncTheme();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const toggleTheme = () => {
-    const isDark = document.documentElement.classList.contains('dark');
+    const isDark = document.documentElement.classList.contains("dark");
     if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setTheme('light');
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setTheme("light");
     } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setTheme('dark');
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setTheme("dark");
     }
   };
 
@@ -172,14 +178,13 @@ export default function HomeClient() {
             ))}
           </nav>
 
-          
           <div className="hidden lg:flex items-center gap-4">
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg border border-theme-base text-theme-muted hover:text-theme-base transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
             <Link
               href="#contact"
@@ -226,13 +231,13 @@ export default function HomeClient() {
                 {link.name}
               </Link>
             ))}
-            
+
             <div className="pt-4 border-t border-theme-base flex flex-col gap-3">
               <button
                 onClick={toggleTheme}
                 className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base flex items-center justify-center gap-2 transition-colors"
               >
-                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
                 Toggle Theme
               </button>
               <a
@@ -350,10 +355,15 @@ export default function HomeClient() {
                 >
                   Medusa
                 </a>{" "}
-                — the composable commerce platform. It ships as three
+                - the composable commerce platform. It ships as three
                 components:{" "}
-                <strong className="text-theme-base">Medusa{"\u00A0"}plugin</strong>,{" "}
-                <strong className="text-theme-base">backend{"\u00A0"}starter</strong>
+                <strong className="text-theme-base">
+                  Medusa{"\u00A0"}plugin
+                </strong>
+                ,{" "}
+                <strong className="text-theme-base">
+                  backend{"\u00A0"}starter
+                </strong>
                 , and{" "}
                 <strong className="text-theme-base">
                   storefront{"\u00A0"}starter
@@ -363,8 +373,8 @@ export default function HomeClient() {
               </p>
               <p className="text-lg text-theme-faint leading-relaxed">
                 Because it&apos;s Medusa-based, you inherit everything Medusa
-                offers — multi-region, multi-currency, promotions, and customer
-                management — including localized taxes, shipping, and payment
+                offers - multi-region, multi-currency, promotions, and customer
+                management - including localized taxes, shipping, and payment
                 settings per region. Both backend and storefront are fully
                 customizable through Medusa modules and extension points in
                 TypeScript.
@@ -399,7 +409,7 @@ export default function HomeClient() {
                   Production-ready
                 </h3>
                 <p className="text-theme-muted leading-relaxed">
-                  SSE streams, price locking, and checkout validation — all
+                  SSE streams, price locking, and checkout validation - all
                   built in and battle-tested.
                 </p>
               </div>
@@ -418,7 +428,7 @@ export default function HomeClient() {
                   Make It Your Own
                 </h2>
                 <p className="text-xl text-theme-muted leading-relaxed mb-6">
-                  Medusa separates backend from frontend — your storefront can
+                  Medusa separates backend from frontend - your storefront can
                   look exactly the way you want.
                 </p>
                 <ul className="space-y-4 mb-8">
@@ -704,7 +714,9 @@ export default function HomeClient() {
                 className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-theme-base">Self-Hosted</h3>
+                  <h3 className="text-2xl font-bold text-theme-base">
+                    Self-Hosted
+                  </h3>
                   <ExternalLink className="w-5 h-5 text-theme-muted flex-shrink-0" />
                 </div>
                 <p className="text-theme-muted flex-grow">
