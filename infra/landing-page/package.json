@@ -1,0 +1,24 @@
+{
+  "name": "@u11d/landing-page-infra",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AWS CDK infrastructure for fluctum.io landing page (S3 + CloudFront)",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff",
+    "destroy": "cdk destroy"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "aws-cdk": "^2.160.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.160.0",
+    "constructs": "^10.0.0"
+  }
+}
