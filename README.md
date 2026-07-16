@@ -1,10 +1,18 @@
 # Fluctum — Real-Time Dynamic Pricing for Medusa
 
-> **Fluctum** keeps prices live — gold, silver, or any volatile asset. Prices update every second. Checkout locks them at the right moment.
+> **Fluctum** keeps prices live — gold, silver, or any volatile asset. Prices update every few seconds. Checkout locks them at the right moment.
 
 [![npm](https://img.shields.io/npm/v/@u11d/medusa-dynamic-pricing)](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Fluctum is an open-source dynamic pricing plugin for [Medusa v2](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant.
+
+## Start Here
+
+- **See the demo:** [demo.fluctum.io](https://demo.fluctum.io)
+- **Contact the team:** [hello@u11d.com](mailto:hello@u11d.com)
+- **Use the starter:** [`starter/`](starter/)
+- **Install the plugin:** [npmjs.com/package/@u11d/medusa-dynamic-pricing](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing)
+- **Browse source:** [github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin](https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin)
 
 ## Repository Structure
 
@@ -39,6 +47,8 @@ Storefront:
   Place order     → completeCartWorkflow.hooks.validate → check locks exist + not expired
 ```
 
+`force=true` always creates fresh locks and `force=false` reuses valid existing locks. Both lock paths use the latest spot prices stored in the database.
+
 Prices are **never** written to Medusa's price tables. The frontend computes the final price locally from the spot price and the variant's pricing rule using the formula in [`docs/pricing-formula.md`](docs/pricing-formula.md).
 
 ## Quick Start
@@ -72,26 +82,26 @@ cp starter/backend/.env.template starter/backend/.env
 # Edit starter/backend/.env — set DATABASE_URL and REDIS_URL at minimum
 ```
 
-### 5. Configure storefront
+### 4. Configure storefront
 
 ```bash
 cp starter/storefront/.env.template starter/storefront/.env.local
 # You'll set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY after creating the admin user in step 7
 ```
 
-### 6. Run migrations
+### 5. Run migrations
 
 ```bash
 npm run backend:migrate
 ```
 
-### 7. Seed initial data (optional)
+### 6. Seed initial data (optional)
 
 ```bash
 npm run backend:seed
 ```
 
-### 8. Create admin user
+### 7. Create admin user
 
 ```bash
 cd starter/backend && npx medusa user -e admin@example.com -p yourpassword
@@ -103,7 +113,7 @@ Copy the **Publishable API key** from the admin panel (`http://localhost:9000/ap
 NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
 ```
 
-### 9. Start everything
+### 8. Start everything
 
 ```bash
 npm run dev

@@ -1,6 +1,6 @@
 # @u11d/medusa-dynamic-pricing
 
-A [Medusa v2](https://docs.medusajs.com) plugin for real-time dynamic pricing of precious metals (gold, silver, platinum, palladium). Prices update every few seconds via SSE, are computed on the frontend from live spot prices, and are locked at checkout entry.
+A [Medusa](https://docs.medusajs.com) plugin for real-time dynamic pricing in Medusa stores (precious metals and other volatile-price catalogs). Prices update every few seconds via SSE, are computed on the frontend from live spot prices, and are locked at checkout entry.
 
 ## Features
 
@@ -8,7 +8,7 @@ A [Medusa v2](https://docs.medusajs.com) plugin for real-time dynamic pricing of
 - **Real-time delivery** — Server-Sent Events (SSE) push prices to the storefront and admin panel without polling
 - **Pricing rules** — named rules with spread factor, spread fixed, premium percentage, and premium fixed; assigned per product variant
 - **Per-variant material + weight** — each variant carries a material symbol (XAU, XAG, …) and weight in troy ounces via a module link
-- **Checkout price locks** — prices are locked when the customer enters checkout; the `completeCartWorkflow` validate hook rejects orders with missing or expired locks
+- **Checkout price locks** — prices are locked when the customer enters checkout; `force=true` creates fresh locks and `force=false` reuses valid locks, both using the latest spot prices stored in DB
 - **Admin panel** — config overview, pricing-rule CRUD, live spot-price dashboard, historical prices, variant/product assignment widgets
 - **Currency conversion** — optional conversion rates stored in DB and applied in the pricing formula
 - **Built-in providers** — `randomProvider` (sinusoidal drift, for dev/testing), `createGoldApiProvider` (goldapi.io)
@@ -22,7 +22,7 @@ npm install @u11d/medusa-dynamic-pricing
 Register in `medusa-config.ts`:
 
 ```ts
-import { randomProvider } from "@u11d/medusa-dynamic-pricing"
+import { randomProvider } from "@u11d/medusa-dynamic-pricing";
 
 export default defineConfig({
   plugins: [
@@ -36,17 +36,17 @@ export default defineConfig({
       },
     },
   ],
-})
+});
 ```
 
 ## Plugin Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `materials` | `string[]` | required | Material symbols to track, e.g. `["XAU", "XAG"]` |
-| `fetchIntervalSeconds` | `number` | `10` | How often to fetch/generate spot prices |
-| `provider` | `PriceProviderFn` | required | Function that returns spot prices for a list of materials |
-| `priceLockDurationSeconds` | `number` | `120` | How long a price lock is valid during checkout |
+| Option                     | Type              | Default  | Description                                               |
+| -------------------------- | ----------------- | -------- | --------------------------------------------------------- |
+| `materials`                | `string[]`        | required | Material symbols to track, e.g. `["XAU", "XAG"]`          |
+| `fetchIntervalSeconds`     | `number`          | `10`     | How often to fetch/generate spot prices                   |
+| `provider`                 | `PriceProviderFn` | required | Function that returns spot prices for a list of materials |
+| `priceLockDurationSeconds` | `number`          | `120`    | How long a price lock is valid during checkout            |
 
 ## Pricing Formula
 
@@ -60,49 +60,55 @@ Prices are stored and returned as decimal numbers (not cents). The `computeFinal
 
 ## Data Models
 
-| Model | Key fields |
-|---|---|
-| `SpotPrice` | `material`, `ask`, `bid`, `price`, `timestamp` |
-| `PricingRule` | `name`, `spread_factor`, `spread_fixed`, `premium_percentage`, `premium_fixed` |
+| Model           | Key fields                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| `SpotPrice`     | `material`, `ask`, `bid`, `price`, `timestamp`                                                          |
+| `PricingRule`   | `name`, `spread_factor`, `spread_fixed`, `premium_percentage`, `premium_fixed`                          |
 | `CartPriceLock` | `cart_id`, `variant_id`, `material`, `weight_oz`, `unit_price`, `spot_price`, `locked_at`, `expires_at` |
 
 ## Store API Routes
 
 All routes are under `/store/dynamic-pricing/`.
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/spot-prices` | Latest spot prices; optional `?material=` filter |
-| GET | `/sse` | SSE stream; sends current prices on connect, then broadcasts updates |
-| POST | `/carts/:id/price-lock` | Lock prices for a cart; `?force=true` always creates fresh locks |
-| GET | `/variant-pricing` | Variant pricing details (rule + material + weight) |
-| GET | `/currency-rates` | Active currency conversion rates |
-| GET | `/plugin` | Plugin info (version, materials) |
+| Method | Path                    | Description                                                                                   |
+| ------ | ----------------------- | --------------------------------------------------------------------------------------------- |
+| GET    | `/spot-prices`          | Latest spot prices; optional `?material=` filter                                              |
+| GET    | `/sse`                  | SSE stream; sends current prices on connect, then broadcasts updates                          |
+| POST   | `/carts/:id/price-lock` | Lock prices for a cart; `?force=true` always creates fresh locks (from latest DB spot prices) |
+| GET    | `/variant-pricing`      | Variant pricing details (rule + material + weight)                                            |
+| GET    | `/currency-rates`       | Active currency conversion rates                                                              |
+| GET    | `/plugin`               | Plugin info (version, materials)                                                              |
 
 ## Admin API Routes
 
 All routes are under `/admin/dynamic-pricing/`.
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/config` | Plugin config (read-only) |
-| GET/POST | `/pricing-rules` | List / create pricing rules |
-| GET/DELETE | `/pricing-rules/:id` | Get / delete a pricing rule |
+| Method          | Path                         | Description                                          |
+| --------------- | ---------------------------- | ---------------------------------------------------- |
+| GET             | `/config`                    | Plugin config (read-only)                            |
+| GET/POST        | `/pricing-rules`             | List / create pricing rules                          |
+| GET/DELETE      | `/pricing-rules/:id`         | Get / delete a pricing rule                          |
 | GET/POST/DELETE | `/variants/:id/pricing-rule` | Assign / read / remove a pricing rule from a variant |
-| POST | `/products/:id/pricing-rule` | Bulk-assign a rule to all variants in a product |
-| GET | `/spot-prices` | Historical spot prices with pagination |
-| GET | `/sse` | Admin SSE stream |
-| GET/POST | `/currency-rates` | List / upsert currency conversion rates |
-| GET/POST | `/config/reference-currency` | Read / set reference currency |
-| GET | `/seed` | Seed sample products (dev only) |
+| POST            | `/products/:id/pricing-rule` | Bulk-assign a rule to all variants in a product      |
+| GET             | `/spot-prices`               | Historical spot prices with pagination               |
+| GET             | `/sse`                       | Admin SSE stream                                     |
+| GET/POST        | `/currency-rates`            | List / upsert currency conversion rates              |
+| GET/POST        | `/config/reference-currency` | Read / set reference currency                        |
+| GET             | `/seed`                      | Seed sample products (dev only)                      |
 
 ## Exports
 
 ```ts
-import { randomProvider, createGoldApiProvider } from "@u11d/medusa-dynamic-pricing"
-import { computeFinalPrice, PricingFactors } from "@u11d/medusa-dynamic-pricing/client"
-import { lockCartPricesWorkflow } from "@u11d/medusa-dynamic-pricing/workflows"
-import { DYNAMIC_PRICING_MODULE } from "@u11d/medusa-dynamic-pricing"
+import {
+  randomProvider,
+  createGoldApiProvider,
+} from "@u11d/medusa-dynamic-pricing";
+import {
+  computeFinalPrice,
+  PricingFactors,
+} from "@u11d/medusa-dynamic-pricing/client";
+import { lockCartPricesWorkflow } from "@u11d/medusa-dynamic-pricing/workflows";
+import { DYNAMIC_PRICING_MODULE } from "@u11d/medusa-dynamic-pricing";
 ```
 
 ## Development

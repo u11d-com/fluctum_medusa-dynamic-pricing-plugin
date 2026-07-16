@@ -138,7 +138,14 @@ export default function HomeClient() {
   ];
 
   const footerLinks = [
-    { name: "GitHub repo", href: "https://github.com/u11d-com" },
+    {
+      name: "GitHub repo",
+      href: "https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin",
+    },
+    {
+      name: "NPM package",
+      href: "https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing",
+    },
     { name: "u11d", href: "https://u11d.com" },
     { name: "Medusa", href: "https://medusajs.com" },
     { name: "Deploy Medusa", href: "https://deploymedusa.com" },
@@ -186,12 +193,6 @@ export default function HomeClient() {
             >
               {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-            <Link
-              href="#contact"
-              className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors text-sm"
-            >
-              Contact us
-            </Link>
             <a
               href="https://demo.fluctum.io"
               target="_blank"
@@ -200,6 +201,28 @@ export default function HomeClient() {
             >
               See Demo
               <ExternalLink className="w-4 h-4" />
+            </a>
+            <Link
+              href="#contact"
+              className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors text-sm"
+            >
+              Contact us
+            </Link>
+            <a
+              href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/tree/main/starter"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-theme-muted hover:text-theme-base transition-colors"
+            >
+              Starter
+            </a>
+            <a
+              href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-theme-muted hover:text-theme-base transition-colors"
+            >
+              GitHub
             </a>
           </div>
 
@@ -233,13 +256,6 @@ export default function HomeClient() {
             ))}
 
             <div className="pt-4 border-t border-theme-base flex flex-col gap-3">
-              <button
-                onClick={toggleTheme}
-                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base flex items-center justify-center gap-2 transition-colors"
-              >
-                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-                Toggle Theme
-              </button>
               <a
                 href="https://demo.fluctum.io"
                 target="_blank"
@@ -250,6 +266,38 @@ export default function HomeClient() {
                 See Demo
                 <ExternalLink className="w-4 h-4" />
               </a>
+              <Link
+                href="#contact"
+                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-base font-semibold text-center transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact us
+              </Link>
+              <a
+                href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/tree/main/starter"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base text-center transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Starter
+              </a>
+              <a
+                href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base text-center transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                GitHub
+              </a>
+              <button
+                onClick={toggleTheme}
+                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base flex items-center justify-center gap-2 transition-colors"
+              >
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                Toggle Theme
+              </button>
             </div>
           </div>
         )}
@@ -316,12 +364,6 @@ export default function HomeClient() {
               Real-Time Dynamic Pricing for Medusa
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="#contact"
-                className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors flex items-center justify-center"
-              >
-                Contact Us
-              </Link>
               <a
                 href="https://demo.fluctum.io"
                 target="_blank"
@@ -331,7 +373,24 @@ export default function HomeClient() {
                 See Demo
                 <ExternalLink className="w-4 h-4" />
               </a>
+              <Link
+                href="#contact"
+                className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors flex items-center justify-center"
+              >
+                Contact Us
+              </Link>
             </div>
+            <p className="text-sm text-theme-faint mt-4">
+              Open source plugin, starter backend, and starter storefront.
+              <a
+                href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/tree/main/starter"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#7c3aed] hover:underline ml-1"
+              >
+                Explore starter
+              </a>
+            </p>
           </div>
         </section>
 
@@ -345,8 +404,7 @@ export default function HomeClient() {
                 What is Fluctum?
               </h2>
               <p className="text-xl text-theme-muted leading-relaxed mb-6">
-                Fluctum is an open-source dynamic pricing solution built on top
-                of{" "}
+                Fluctum is an open-source dynamic pricing plugin for{" "}
                 <a
                   href="https://medusajs.com"
                   target="_blank"
@@ -355,7 +413,8 @@ export default function HomeClient() {
                 >
                   Medusa
                 </a>{" "}
-                - the composable commerce platform. It ships as three
+                stores. It is built for precious metals and any catalog where
+                market prices move constantly. Fluctum ships as three connected
                 components:{" "}
                 <strong className="text-theme-base">
                   Medusa{"\u00A0"}plugin
@@ -368,16 +427,14 @@ export default function HomeClient() {
                 <strong className="text-theme-base">
                   storefront{"\u00A0"}starter
                 </strong>
-                . It&apos;s designed for merchants who need tailored commerce
-                workflows, not one-size-fits-all templates.
+                . Teams can launch quickly, then customize deeply in TypeScript.
               </p>
               <p className="text-lg text-theme-faint leading-relaxed">
-                Because it&apos;s Medusa-based, you inherit everything Medusa
-                offers - multi-region, multi-currency, promotions, and customer
-                management - including localized taxes, shipping, and payment
-                settings per region. Both backend and storefront are fully
-                customizable through Medusa modules and extension points in
-                TypeScript.
+                You keep the full Medusa platform benefits: multi-region,
+                multi-currency, promotions, customer management, localized
+                taxes, shipping, and payments. Fluctum adds real-time SSE price
+                updates and checkout price locks validated before order
+                completion.
               </p>
             </div>
 
@@ -604,8 +661,9 @@ export default function HomeClient() {
                   Checkout locks the price
                 </h3>
                 <p className="text-theme-muted leading-relaxed">
-                  When the buyer proceeds, prices are locked for your configured
-                  window (for example, 2 or 10{"\u00A0"}minutes) and validated
+                  When the buyer proceeds, Fluctum creates locks from the latest
+                  spot prices stored in your database for your configured window
+                  (for example, 2 or 10{"\u00A0"}minutes), then validates them
                   at order completion.
                 </p>
               </div>
@@ -725,6 +783,18 @@ export default function HomeClient() {
                 </p>
               </a>
             </div>
+            <p className="text-center text-theme-faint mt-8">
+              Want a fast implementation path? Start from our
+              <a
+                href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/tree/main/starter"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#7c3aed] hover:underline ml-1"
+              >
+                backend + storefront starter
+              </a>
+              .
+            </p>
           </div>
         </section>
 

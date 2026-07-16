@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fluctum Landing Page (`landing-page/www`)
 
-## Getting Started
+Marketing site for [Fluctum](https://fluctum.io) — the open-source real-time dynamic pricing plugin for Medusa stores.
 
-First, run the development server:
+## What this app does
+
+- Presents Fluctum value proposition for mixed audiences (technical + business)
+- Drives primary conversion to demo (`https://demo.fluctum.io`)
+- Supports secondary conversion to contact form, starter adoption, and GitHub
+- Ships static SEO metadata, sitemap, and robots definitions
+
+## Local development
+
+From this folder:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build and run
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+| Variable                  | Description                                         | Required |
+| ------------------------- | --------------------------------------------------- | -------- |
+| `NEXT_PUBLIC_WEBFORM_URL` | Contact form endpoint (serverless form handler URL) | no       |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If `NEXT_PUBLIC_WEBFORM_URL` is missing, the form gracefully falls back to a simulated success flow.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## SEO and analytics
 
-## Deploy on Vercel
+- Global metadata in `src/app/layout.tsx`
+- Sitemap in `src/app/sitemap.ts`
+- Robots rules in `src/app/robots.ts`
+- Analytics script in `src/app/layout.tsx` (Umami)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Content ownership
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Main page content lives in `src/app/HomeClient.tsx`
+- Keep lock behavior wording accurate: checkout locks are created from the latest spot prices stored in DB
+- Keep CTA priority aligned: demo → contact → starter → GitHub
