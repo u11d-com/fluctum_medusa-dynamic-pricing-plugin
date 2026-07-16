@@ -76,12 +76,13 @@ jobs:
 
       - name: Copy scaffold files to root
         run: |
-          cp infra/starter-scaffold/README.md /tmp/fluctum_starter/
-          cp infra/starter-scaffold/package.json /tmp/fluctum_starter/
-          cp infra/starter-scaffold/docker-compose.yml /tmp/fluctum_starter/
-          cp infra/starter-scaffold/.env.template /tmp/fluctum_starter/
-          cp infra/starter-scaffold/.gitignore /tmp/fluctum_starter/
-          cp infra/starter-scaffold/turbo.json /tmp/fluctum_starter/
+          cp starter/scaffold/README.md /tmp/fluctum_starter/
+          cp starter/scaffold/package.json /tmp/fluctum_starter/
+          cp starter/scaffold/package-lock.json /tmp/fluctum_starter/
+          cp starter/scaffold/docker-compose.yml /tmp/fluctum_starter/
+          cp starter/scaffold/.env.template /tmp/fluctum_starter/
+          cp starter/scaffold/.gitignore /tmp/fluctum_starter/
+          cp starter/scaffold/turbo.json /tmp/fluctum_starter/
           mkdir -p /tmp/fluctum_starter/.github/workflows
           # .github/workflows is empty in scaffold, so we just create the directory
 
@@ -93,6 +94,47 @@ jobs:
             '.dependencies["@u11d/medusa-dynamic-pricing"] = $v' \
             "${PKG}" > "${PKG}.tmp"
           mv "${PKG}.tmp" "${PKG}"
+
+      - name: Refresh backend lockfile
+        run: |
+          cd /tmp/fluctum_starter/backend
+          npm install --package-lock-only --workspaces=false --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+
+      - name: Validate synced lockfiles
+        run: |
+          cd /tmp/fluctum_starter
+          required_files=(
+            "package.json"
+            "package-lock.json"
+            "backend/package.json"
+            "backend/package-lock.json"
+            "storefront/package.json"
+            "storefront/package-lock.json"
+          )
+
+          missing=0
+          for file in "${required_files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error::Missing required file: $file"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -ne 0 ]]; then
+            exit 1
+          fi
+
+      - name: Debug sync tree and lockfiles
+        run: |
+          cd /tmp/fluctum_starter
+          echo "Resolved version raw:  ${{ steps.ver.outputs.raw }}"
+          echo "Resolved version bare: ${{ steps.ver.outputs.bare }}"
+          echo "Backend plugin dependency: $(jq -r '.dependencies[\"@u11d/medusa-dynamic-pricing\"]' backend/package.json)"
+          echo "Sync root: $(pwd)"
+          echo "Top-level contents:"
+          ls -la
+          echo "Discovered lockfiles (depth <= 3):"
+          find . -maxdepth 3 -name 'package-lock.json' -print | sort
 
       - name: Commit and push
         run: |

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "workspaces": [
     "backend",
@@ -17,5 +17,6 @@
   },
   "devDependencies": {
     "turbo": "^2"
-  }
+  },
+  "packageManager": "npm@11.6.2"
 }

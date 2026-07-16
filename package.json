@@ -32,7 +32,7 @@
     "storefront:dev": "npm --prefix starter/storefront run dev",
     "storefront:check": "npm --prefix starter/storefront run check",
     "plugin:build": "npm --prefix dynamic-pricing-plugin run build && cd dynamic-pricing-plugin && npx --yes yalc push",
-    "lockfiles:generate": "npm --prefix dynamic-pricing-plugin install --package-lock-only --workspaces=false --legacy-peer-deps --ignore-scripts --no-audit --no-fund && npm --prefix starter/backend install --package-lock-only --workspaces=false --legacy-peer-deps --ignore-scripts --no-audit --no-fund && npm --prefix starter/storefront install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund && npm --prefix landing-page/www install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund && npm --prefix landing-page/form-handler install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund"
+    "lockfiles:generate": "npm --prefix dynamic-pricing-plugin install --package-lock-only --workspaces=false --legacy-peer-deps --ignore-scripts --no-audit --no-fund && npm --prefix starter/backend install --package-lock-only --workspaces=false --legacy-peer-deps --ignore-scripts --no-audit --no-fund && npm --prefix starter/storefront install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund && npm --prefix starter/scaffold install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund && npm --prefix landing-page/www install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund && npm --prefix landing-page/form-handler install --package-lock-only --workspaces=false --ignore-scripts --no-audit --no-fund"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
@@ -40,11 +40,17 @@
   },
   "workspaces": [
     "starter/**",
+    "!starter/scaffold",
+    "!starter/scaffold/**",
     "!starter/backend/.medusa/**",
     "!starter/backend/.yalc/**",
     "landing-page/**",
     "dynamic-pricing-plugin"
   ],
+  "overrides": {
+    "react": "^19.0.4",
+    "react-dom": "^19.0.4"
+  },
   "dependencies": {
     "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing"
   }

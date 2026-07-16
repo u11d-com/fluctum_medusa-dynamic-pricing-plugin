@@ -50,5 +50,15 @@
     "postcss": "^8.4.8",
     "tailwindcss": "^3.0.23",
     "typescript": "^5.3.2"
-  }
+  },
+  "overrides": {
+    "@medusajs/icons": {
+      "react": "^19.0.4",
+      "react-dom": "^19.0.4"
+    }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "npm@11.6.2"
 }

@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish to npm (true/false)"
+        required: false
+        default: "false"
 
 jobs:
   release:
@@ -20,6 +26,7 @@ jobs:
           cache: npm
           cache-dependency-path: dynamic-pricing-plugin/package-lock.json
       - name: Validate tag matches plugin version
+        if: ${{ github.event_name == 'push' }}
         run: |
           TAG="${GITHUB_REF_NAME#v}"
           PKG_VERSION="$(node -p "require('./dynamic-pricing-plugin/package.json').version")"
@@ -33,7 +40,10 @@ jobs:
         working-directory: dynamic-pricing-plugin
       - run: npm run build
         working-directory: dynamic-pricing-plugin
+      - run: npm pack --dry-run
+        working-directory: dynamic-pricing-plugin
       - run: npm publish --access public --provenance
+        if: ${{ github.event_name == 'push' || github.event.inputs.publish == 'true' }}
         working-directory: dynamic-pricing-plugin
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -68,12 +68,16 @@ Protect the `main` branch while allowing the sync app to push updates.
 
 ## 6. Run the Sync Workflow
 
-The workflow runs automatically on pushes to `main`, but you can also trigger it manually.
+The workflow runs automatically after a successful **Release** workflow (`workflow_run`) and can also be triggered manually.
 
 1. Go to the **Actions** tab in the source repository.
 2. Select the **Starter Sync** workflow in the sidebar.
 3. Click **Run workflow**.
 4. You can optionally provide a version number (e.g., `v1.2.3`). This will be used in the commit message.
+
+### Lockfile requirement
+
+Medusa Cloud builds can fail with `No lockfiles found` when the project root in the deployed repository does not contain a lockfile. The sync workflow copies the root scaffold `package-lock.json` and validates lockfiles for root, backend, and storefront before pushing to `u11d-com/fluctum_starter`.
 
 ## 7. Technical Rationale: Force-with-lease
 
