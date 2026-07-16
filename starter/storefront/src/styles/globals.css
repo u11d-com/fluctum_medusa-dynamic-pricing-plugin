@@ -1,6 +1,91 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility content-container {
+  @apply max-w-[1440px] w-full mx-auto px-6;
+}
+
+@utility surface-card {
+  @apply bg-white rounded-xl border border-gray-100 shadow-sm;
+}
+
+@utility surface-muted {
+  @apply bg-ui-bg-subtle rounded-xl border border-ui-border-base;
+}
+
+@utility surface-dark {
+  @apply bg-black border border-white/10 rounded-xl text-white;
+}
+
+@utility surface-floating {
+  @apply bg-white border border-ui-border-base rounded-xl shadow-lg;
+}
+
+@utility contrast-btn {
+  @apply px-4 py-2 border border-white/20 rounded-full hover:bg-white hover:text-black transition-colors duration-200 ease-in;
+}
+
+@utility text-xsmall-regular {
+  @apply text-[10px] leading-4 font-normal;
+}
+
+@utility text-small-regular {
+  @apply text-xs leading-5 font-normal;
+}
+
+@utility text-small-semi {
+  @apply text-xs leading-5 font-semibold;
+}
+
+@utility text-base-regular {
+  @apply text-sm leading-6 font-normal;
+}
+
+@utility text-base-semi {
+  @apply text-sm leading-6 font-semibold;
+}
+
+@utility text-large-regular {
+  @apply text-base leading-6 font-normal;
+}
+
+@utility text-large-semi {
+  @apply text-base leading-6 font-semibold;
+}
+
+@utility text-xl-regular {
+  @apply text-2xl leading-[36px] font-normal;
+}
+
+@utility text-xl-semi {
+  @apply text-2xl leading-[36px] font-semibold;
+}
+
+@utility text-2xl-regular {
+  @apply text-[30px] leading-[48px] font-normal;
+}
+
+@utility text-2xl-semi {
+  @apply text-[30px] leading-[48px] font-semibold;
+}
+
+@utility text-3xl-regular {
+  @apply text-[32px] leading-[44px] font-normal;
+}
+
+@utility text-3xl-semi {
+  @apply text-[32px] leading-[44px] font-semibold;
+}
 
 @layer base {
   :root {
@@ -99,29 +184,100 @@
     --alpha-400: rgba(24, 24, 27, 0.24);
 
     /* Shadow-based tokens */
-    --buttons-danger-focus: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(225, 29, 72, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --buttons-danger-focus:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(225, 29, 72, 1),
+      0px 0px 0px 2px rgba(255, 255, 255, 1),
+      0px 0px 0px 4px rgba(124, 58, 237, 0.6);
     --details-contrast-on-bg-interactive: 0px 1px 2px 0px rgba(30, 58, 138, 0.6);
-    --borders-error: 0px 0px 0px 1px rgba(225, 29, 72, 1), 0px 0px 0px 3px rgba(225, 29, 72, 0.15);
-    --borders-focus: 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 0px 3px rgba(124, 58, 237, 0.6);
-    --buttons-danger: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(225, 29, 72, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
-    --buttons-inverted-focus: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(39, 39, 42, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
-    --elevation-card-hover: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 2px 8px 0px rgba(0, 0, 0, 0.08);
-    --details-switch-handle: 0px 0px 2px 1px rgba(255, 255, 255, 1) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.16), 0px 5px 4px 0px rgba(0, 0, 0, 0.04), 0px 3px 3px 0px rgba(0, 0, 0, 0.04), 0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 0px 1px 0px rgba(0, 0, 0, 0.04);
-    --buttons-neutral: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
-    --borders-base: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
-    --elevation-card-rest: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
-    --buttons-neutral-focus: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
-    --details-switch-background-focus: 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 0px 0px 3px rgba(124, 58, 237, 0.6), 0px 1px 1px 0px rgba(0, 0, 0, 0.06) inset, 0px 2px 4px 0px rgba(0, 0, 0, 0.06) inset, 0px 0px 0px 0.75px rgba(0, 0, 0, 0.06) inset, 0px 0px 8px 0px rgba(0, 0, 0, 0.04) inset;
-    --details-switch-background: 0px 1px 1px 0px rgba(0, 0, 0, 0.06) inset, 0px 2px 4px 0px rgba(0, 0, 0, 0.06) inset, 0px 0px 0px 0.75px rgba(0, 0, 0, 0.06) inset, 0px 0px 8px 0px rgba(0, 0, 0, 0.04) inset;
-    --elevation-flyout: 0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
-    --elevation-tooltip: 0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.08), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08);
-    --elevation-modal: 0px 0px 0px 1px rgba(244, 244, 245, 1) inset, 0px 0px 0px 1.5px rgba(0, 0, 0, 0.06) inset, 0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
-    --elevation-code-block: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
-    --buttons-inverted: 0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(39, 39, 42, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
-    --elevation-commandbar: 0px 0px 0px 0.75px rgba(244, 244, 245, 1) inset, 0px 0px 0px 1.25px rgba(0, 0, 0, 0.06) inset, 0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
-    --borders-interactive-with-focus: 0px -1px 2px 0px rgba(237, 233, 254, 0.5), 0px 0px 0px 1px rgba(124, 58, 237, 1), 0px 0px 0px 2px rgba(255, 255, 255, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.6);
-    --borders-interactive-with-shadow: 0px -1px 2px 0px rgba(237, 233, 254, 0.5), 0px 0px 0px 1px rgba(124, 58, 237, 1);
-    --borders-interactive-with-active: 0px 0px 0px 1px rgba(124, 58, 237, 1), 0px 0px 0px 4px rgba(124, 58, 237, 0.15);
+    --borders-error:
+      0px 0px 0px 1px rgba(225, 29, 72, 1),
+      0px 0px 0px 3px rgba(225, 29, 72, 0.15);
+    --borders-focus:
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 0px 0px 3px rgba(124, 58, 237, 0.6);
+    --buttons-danger:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(225, 29, 72, 1),
+      0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --buttons-inverted-focus:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(39, 39, 42, 1),
+      0px 0px 0px 2px rgba(255, 255, 255, 1),
+      0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --elevation-card-hover:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 2px 8px 0px rgba(0, 0, 0, 0.08);
+    --details-switch-handle:
+      0px 0px 2px 1px rgba(255, 255, 255, 1) inset,
+      0px 1px 0px 0px rgba(255, 255, 255, 1) inset,
+      0px 0px 0px 0.5px rgba(0, 0, 0, 0.16),
+      0px 5px 4px 0px rgba(0, 0, 0, 0.04), 0px 3px 3px 0px rgba(0, 0, 0, 0.04),
+      0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 0px 1px 0px rgba(0, 0, 0, 0.04);
+    --buttons-neutral:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --borders-base:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --elevation-card-rest:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
+    --buttons-neutral-focus:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 0px 0px 2px rgba(255, 255, 255, 1),
+      0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --details-switch-background-focus:
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 0px 0px 3px rgba(124, 58, 237, 0.6),
+      0px 1px 1px 0px rgba(0, 0, 0, 0.06) inset,
+      0px 2px 4px 0px rgba(0, 0, 0, 0.06) inset,
+      0px 0px 0px 0.75px rgba(0, 0, 0, 0.06) inset,
+      0px 0px 8px 0px rgba(0, 0, 0, 0.04) inset;
+    --details-switch-background:
+      0px 1px 1px 0px rgba(0, 0, 0, 0.06) inset,
+      0px 2px 4px 0px rgba(0, 0, 0, 0.06) inset,
+      0px 0px 0px 0.75px rgba(0, 0, 0, 0.06) inset,
+      0px 0px 8px 0px rgba(0, 0, 0, 0.04) inset;
+    --elevation-flyout:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+    --elevation-tooltip:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.08),
+      0px 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 4px 8px 0px rgba(0, 0, 0, 0.08);
+    --elevation-modal:
+      0px 0px 0px 1px rgba(244, 244, 245, 1) inset,
+      0px 0px 0px 1.5px rgba(0, 0, 0, 0.06) inset,
+      0px -1px 0px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+    --elevation-code-block:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(255, 255, 255, 1),
+      0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
+    --buttons-inverted:
+      0px -1px 0px 0px rgba(0, 0, 0, 0.04), 0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+      0px 0px 0px 1px rgba(39, 39, 42, 1),
+      0px 0px 1px 1.5px rgba(0, 0, 0, 0.08), 0px 2px 2px 0px rgba(0, 0, 0, 0.04);
+    --elevation-commandbar:
+      0px 0px 0px 0.75px rgba(244, 244, 245, 1) inset,
+      0px 0px 0px 1.25px rgba(0, 0, 0, 0.06) inset,
+      0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+    --borders-interactive-with-focus:
+      0px -1px 2px 0px rgba(237, 233, 254, 0.5),
+      0px 0px 0px 1px rgba(124, 58, 237, 1),
+      0px 0px 0px 2px rgba(255, 255, 255, 1),
+      0px 0px 0px 4px rgba(124, 58, 237, 0.6);
+    --borders-interactive-with-shadow:
+      0px -1px 2px 0px rgba(237, 233, 254, 0.5),
+      0px 0px 0px 1px rgba(124, 58, 237, 1);
+    --borders-interactive-with-active:
+      0px 0px 0px 1px rgba(124, 58, 237, 1),
+      0px 0px 0px 4px rgba(124, 58, 237, 0.15);
   }
 
   html {
@@ -144,17 +300,6 @@
   /* Override @medusajs/ui-preset's hard-coded Inter in all txt-* typography tokens */
   [class*="txt-"] {
     font-family: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
-  }
-
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
   }
 
   input:focus ~ label,
@@ -187,71 +332,5 @@
   input[type="search"]::-webkit-search-results-button,
   input[type="search"]::-webkit-search-results-decoration {
     -webkit-appearance: none;
-  }
-}
-
-@layer components {
-  .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-6;
-  }
-
-  .surface-card {
-    @apply bg-white rounded-xl border border-gray-100 shadow-sm;
-  }
-
-  .surface-muted {
-    @apply bg-ui-bg-subtle rounded-xl border border-ui-border-base;
-  }
-
-  .surface-dark {
-    @apply bg-black border border-white/10 rounded-xl text-white;
-  }
-
-  .surface-floating {
-    @apply bg-white border border-ui-border-base rounded-xl shadow-lg;
-  }
-
-  .contrast-btn {
-    @apply px-4 py-2 border border-white/20 rounded-full hover:bg-white hover:text-black transition-colors duration-200 ease-in;
-  }
-
-  .text-xsmall-regular {
-    @apply text-[10px] leading-4 font-normal;
-  }
-  .text-small-regular {
-    @apply text-xs leading-5 font-normal;
-  }
-  .text-small-semi {
-    @apply text-xs leading-5 font-semibold;
-  }
-  .text-base-regular {
-    @apply text-sm leading-6 font-normal;
-  }
-  .text-base-semi {
-    @apply text-sm leading-6 font-semibold;
-  }
-  .text-large-regular {
-    @apply text-base leading-6 font-normal;
-  }
-  .text-large-semi {
-    @apply text-base leading-6 font-semibold;
-  }
-  .text-xl-regular {
-    @apply text-2xl leading-[36px] font-normal;
-  }
-  .text-xl-semi {
-    @apply text-2xl leading-[36px] font-semibold;
-  }
-  .text-2xl-regular {
-    @apply text-[30px] leading-[48px] font-normal;
-  }
-  .text-2xl-semi {
-    @apply text-[30px] leading-[48px] font-semibold;
-  }
-  .text-3xl-regular {
-    @apply text-[32px] leading-[44px] font-normal;
-  }
-  .text-3xl-semi {
-    @apply text-[32px] leading-[44px] font-semibold;
   }
 }
