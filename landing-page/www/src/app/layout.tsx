@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const lato = Lato({
@@ -63,15 +62,13 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <head>
         <link rel="icon" href="/fluctum-logo-full.svg" type="image/svg+xml" />
-      </head>
-      <body className={`${lato.variable} antialiased`}>
-        <Script
+        <script
           defer
           src="https://cloud.umami.is/script.js"
           data-website-id="2ff4ceee-0a6a-4df6-a7d5-8da593de3cae"
         />
-        {children}
-      </body>
+      </head>
+      <body className={`${lato.variable} antialiased`}>{children}</body>
     </html>
   );
 }
