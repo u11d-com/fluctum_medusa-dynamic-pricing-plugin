@@ -19,13 +19,13 @@ const medusaAccountId = process.env.NEXT_PUBLIC_MEDUSA_PAYMENTS_ACCOUNT_ID
 const stripePromise = stripeKey
   ? loadStripe(
       stripeKey,
-      medusaAccountId ? { stripeAccount: medusaAccountId } : undefined
+      medusaAccountId ? { stripeAccount: medusaAccountId } : undefined,
     )
   : null
 
 const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
   const paymentSession = cart.payment_collection?.payment_sessions?.find(
-    (s) => s.status === "pending"
+    (s) => s.status === "pending",
   )
 
   if (
@@ -39,6 +39,7 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
         stripeKey={stripeKey}
         stripePromise={stripePromise}
       >
+        {/* @ts-expect-error - @stripe/react-stripe-js Elements children typing conflicts with React 19.2 types */}
         {children}
       </StripeWrapper>
     )

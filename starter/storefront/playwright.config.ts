@@ -20,13 +20,13 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "npm run dev",
+      command: "pnpm run dev",
       url: "http://localhost:8000/us",
       reuseExistingServer: true,
       timeout: 120_000,
     },
     {
-      command: "npm run dev",
+      command: "pnpm run dev",
       url: "http://localhost:9000/health",
       reuseExistingServer: true,
       cwd: "../backend",

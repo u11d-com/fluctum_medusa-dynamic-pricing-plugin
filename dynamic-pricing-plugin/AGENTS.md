@@ -95,6 +95,7 @@ final_price   = after_premium + spread_fixed + premium_fixed
 ### Raw Knex for CartPriceLock Writes
 
 Use raw Knex (via `service.getKnex()`) for all CartPriceLock writes. Do NOT use the MikroORM service layer for these:
+
 - ORM entity cache causes stale reads after DELETE + INSERT in same unit of work
 - `model.bigNumber()` fields require explicit `raw_*` JSONB shadow columns
 - See [ADR 0004](../docs/adr/0004-raw-knex-for-price-locks.md)
@@ -116,16 +117,19 @@ All data mutations must go through Medusa workflows. Do not write to DB directly
 ## Data Models
 
 ### SpotPrice
+
 ```ts
 { id, material: string, ask: number, bid: number, price: number, timestamp: Date }
 ```
 
 ### PricingRule
+
 ```ts
 { id, name: string, spread_factor: number, spread_fixed: number, premium_percentage: number, premium_fixed: number }
 ```
 
 ### CartPriceLock
+
 ```ts
 {
   id, cart_id: string, variant_id: string, material: string, weight_oz: number,
@@ -137,6 +141,7 @@ All data mutations must go through Medusa workflows. Do not write to DB directly
 ```
 
 ### Module Link
+
 ```
 ProductVariant ↔ PricingRule
   extra columns: material TEXT NOT NULL, weight_oz FLOAT
@@ -149,30 +154,30 @@ ProductVariant ↔ PricingRule
 
 ### Store (`/store/dynamic-pricing/`)
 
-| Method | Path | Notes |
-|---|---|---|
-| GET | `/spot-prices` | `?material=` filter |
-| GET | `/sse` | SSE stream; keep-alive comment every 30s |
-| POST | `/carts/:id/price-lock` | `?force=true\|false` (query param, not body) |
-| GET | `/variant-pricing` | Rule + material + weight per variant |
-| GET | `/currency-rates` | Active conversion rates |
-| GET | `/plugin` | Plugin info |
+| Method | Path                    | Notes                                        |
+| ------ | ----------------------- | -------------------------------------------- |
+| GET    | `/spot-prices`          | `?material=` filter                          |
+| GET    | `/sse`                  | SSE stream; keep-alive comment every 30s     |
+| POST   | `/carts/:id/price-lock` | `?force=true\|false` (query param, not body) |
+| GET    | `/variant-pricing`      | Rule + material + weight per variant         |
+| GET    | `/currency-rates`       | Active conversion rates                      |
+| GET    | `/plugin`               | Plugin info                                  |
 
 ### Admin (`/admin/dynamic-pricing/`)
 
-| Method | Path | Notes |
-|---|---|---|
-| GET | `/config` | Read-only plugin config |
-| GET | `/pricing-rules` | List, paginated |
-| POST | `/pricing-rules` | Zod-validated body |
-| GET/DELETE | `/pricing-rules/:id` | |
-| GET/POST/DELETE | `/variants/:id/pricing-rule` | assign / read / remove |
-| POST | `/products/:id/pricing-rule` | Bulk assign to all variants |
-| GET | `/spot-prices` | Historical, paginated |
-| GET | `/sse` | Admin SSE stream |
-| GET/POST | `/currency-rates` | |
-| GET/POST | `/config/reference-currency` | |
-| GET | `/seed` | Dev seed only |
+| Method          | Path                         | Notes                       |
+| --------------- | ---------------------------- | --------------------------- |
+| GET             | `/config`                    | Read-only plugin config     |
+| GET             | `/pricing-rules`             | List, paginated             |
+| POST            | `/pricing-rules`             | Zod-validated body          |
+| GET/DELETE      | `/pricing-rules/:id`         |                             |
+| GET/POST/DELETE | `/variants/:id/pricing-rule` | assign / read / remove      |
+| POST            | `/products/:id/pricing-rule` | Bulk assign to all variants |
+| GET             | `/spot-prices`               | Historical, paginated       |
+| GET             | `/sse`                       | Admin SSE stream            |
+| GET/POST        | `/currency-rates`            |                             |
+| GET/POST        | `/config/reference-currency` |                             |
+| GET             | `/seed`                      | Dev seed only               |
 
 ---
 
@@ -180,11 +185,11 @@ ProductVariant ↔ PricingRule
 
 ```ts
 type DynamicPricingOptions = {
-  materials: string[]           // required, e.g. ["XAU", "XAG"]
-  fetchIntervalSeconds?: number // default 10
-  provider: PriceProviderFn     // required
-  priceLockDurationSeconds?: number // default 120
-}
+  materials: string[]; // required, e.g. ["XAU", "XAG"]
+  fetchIntervalSeconds?: number; // default 10
+  provider: PriceProviderFn; // required
+  priceLockDurationSeconds?: number; // default 120
+};
 ```
 
 Options are validated in `config-loader.ts`, stored via `setPluginOptions()`, and read by jobs/steps/routes via `getPluginOptions()`.
@@ -201,13 +206,14 @@ integration-tests/http/                  ← in starter/backend/ (HTTP cycle tes
 
 ```bash
 # Unit tests only (in this package)
-npm run test:unit
+pnpm run test:unit
 
-# Integration tests (run from monorepo root)
-npm run test:integration
+# Integration tests (run from starter/backend)
+pnpm run test:integration
 ```
 
 **Key integration test notes:**
+
 - Use `Date.now()` suffix on resource names when `disableAutoTeardown: true` to avoid handle collisions
 - Payment module (`@medusajs/medusa/payment`) must be in `medusa-config.ts` modules for cart completion
 - System payment provider key: `pp_system_default` (not `"system"`)
@@ -218,12 +224,13 @@ npm run test:integration
 ## Build & Local Dev
 
 ```bash
-# Build plugin and push to yalc (run from monorepo root)
-npm run plugin:build
+# Build plugin and push to yalc (run from this package)
+pnpm run build
+pnpm exec yalc push
 
-# Or directly in this package
-npm run build        # medusa plugin:build
-npm run dev          # medusa plugin:develop (watch mode)
+# Or individually
+pnpm run build        # medusa plugin:build
+pnpm run dev          # medusa plugin:develop (watch mode)
 ```
 
-After `plugin:build`, the backend's `.yalc/` copy is updated automatically. Restart the backend to pick up changes.
+After `pnpm run build && pnpm exec yalc push`, the backend's and storefront's `.yalc/` copies are updated automatically. Restart the backend to pick up changes.

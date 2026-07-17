@@ -1,0 +1,6 @@
+allowBuilds:
+  aws-sdk: true
+  es5-ext: true
+  esbuild: true
+  protobufjs: true
+  serverless: true

@@ -1,0 +1,20 @@
+{
+  "name": "fluctum-starter",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.13.1",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "backend:migrate": "pnpm --filter @u11d/medusa-dynamic-pricing-backend run migrate",
+    "backend:create-admin": "pnpm --filter @u11d/medusa-dynamic-pricing-backend run create-admin"
+  },
+  "devDependencies": {
+    "turbo": "^2"
+  }
+}

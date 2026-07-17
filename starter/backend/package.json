@@ -17,10 +17,10 @@
     "dev": "medusa develop",
     "migrate": "medusa db:migrate",
     "seed": "medusa db:migrate",
-    "create-admin": "npx medusa user --email admin@admin.com --password admin",
-    "test": "npm run test:unit && npm run test:integration",
+    "create-admin": "pnpm exec medusa user --email admin@admin.com --password admin",
+    "test": "pnpm run test:unit && pnpm run test:integration",
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --passWithNoTests",
-    "test:integration": "npm run test:pricing-rules && npm run test:sse && npm run test:checkout-flow",
+    "test:integration": "pnpm run test:pricing-rules && pnpm run test:sse && pnpm run test:checkout-flow",
     "test:checkout-flow": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --testPathPattern=checkout-flow",
     "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
     "test:pricing-rules": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --testPathPattern=pricing-rules",
@@ -61,5 +61,5 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "npm@11.6.2"
+  "packageManager": "pnpm@11.13.1"
 }

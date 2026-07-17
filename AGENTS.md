@@ -34,32 +34,32 @@ Plugin is linked to backend via yalc (`.yalc/` in backend). Workflow for local d
 
 ## Local Development — Fresh Environment Reset
 
-**⚠️ ALWAYS use `npm run db:reset` when resetting your local database. Do NOT reset manually.**
+**⚠️ ALWAYS use `./reset-db.sh` when resetting your local database. Do NOT reset manually.**
 
 This is a common failure mode: manually dropping the DB or running `docker compose down -v` recreates a fresh Postgres with a fresh publishable API key — but `starter/storefront/.env` still holds the OLD key. The storefront then returns HTTP 500 on every request because the key is rejected by the backend (`{"type":"not_allowed","message":"A valid publishable key is required..."}`).
 
-The `db:reset` script (`reset-db.sh` at the repo root) does everything in one atomic operation:
+The `reset-db.sh` script at the repo root does everything in one atomic operation (there is no root `package.json`, so it's run directly, not via a package-manager script):
 
 1. Terminates active Postgres connections to `dynamic_pricing`
 2. `DROP DATABASE dynamic_pricing`
 3. `CREATE DATABASE dynamic_pricing`
-4. `npm run backend:migrate` (also runs the initial data seed)
-5. `npm run backend:create-admin` (creates the default admin user)
+4. `pnpm run backend:migrate` (from `starter/`, also runs the initial data seed)
+5. `pnpm run backend:create-admin` (from `starter/`, creates the default admin user)
 6. Reads the freshly-generated publishable API key and updates `starter/storefront/.env` in place
 
 Usage:
 
 ```bash
-npm run db:reset
+./reset-db.sh
 ```
 
-**Restart the storefront after `db:reset`.** `NEXT_PUBLIC_*` env vars are baked in at Next.js process start — an already-running storefront will keep serving requests with the stale key from memory. Recommended flow:
+**Restart the storefront after resetting.** `NEXT_PUBLIC_*` env vars are baked in at Next.js process start — an already-running storefront will keep serving requests with the stale key from memory. Recommended flow:
 
-1. Stop backend + storefront (Ctrl+C the `npm run dev` / turbo process)
-2. `npm run db:reset`
-3. `npm run dev` again
+1. Stop backend + storefront (Ctrl+C the `pnpm run dev` / turbo process, run from `starter/`)
+2. `./reset-db.sh`
+3. `cd starter && pnpm run dev` again
 
-Manual reset (`docker compose down -v`, dropping the DB by hand, running migrate + seed separately) is a supported fallback ONLY IF you also manually re-sync the publishable key into `starter/storefront/.env` and restart the storefront. In practice: use `db:reset`.
+Manual reset (`docker compose down -v`, dropping the DB by hand, running migrate + seed separately) is a supported fallback ONLY IF you also manually re-sync the publishable key into `starter/storefront/.env` and restart the storefront. In practice: use `./reset-db.sh`.
 
 ---
 
@@ -275,7 +275,7 @@ Verify plugin setup, backend setup, docker-compose, yalc link.
 
 **Seed data:**
 
-- Product year variant `"Random"` renamed to `"Random Year"` in `seed-products.ts`. Takes effect after next `npm run db:reset`.
+- Product year variant `"Random"` renamed to `"Random Year"` in `seed-products.ts`. Takes effect after next `./reset-db.sh`.
 
 **E2E tests (Playwright):**
 
@@ -355,7 +355,7 @@ This project targets production workloads under high traffic. All code must foll
 | Integration (HTTP)    | Jest + `@medusajs/test-utils` (`integration-tests/http/*.spec.ts`) | Full HTTP request/response cycles, auth, workflows                          |
 | E2E                   | Playwright (`starter/storefront/e2e/*.spec.ts`)                    | Browser-level cart + checkout flows (13 tests, all passing)                 |
 
-Run E2E tests: `npx playwright test --project=chromium` from `starter/storefront/`. Requires both dev servers running (`npm run dev`).
+Run E2E tests: `pnpm exec playwright test --project=chromium` from `starter/storefront/`. Requires both dev servers running (`pnpm run dev` from `starter/`).
 
 **HTTP integration tests must cover:** full checkout flow (Step 8), pricing rule assignment, SSE subscription.
 
@@ -364,10 +364,10 @@ Run E2E tests: `npx playwright test --project=chromium` from `starter/storefront
 ## Process Rules
 
 1. **Approval gate**: After each numbered step, implementation stops and waits for Michał's manual testing, code review, and explicit approval before proceeding.
-2. **Build verification**: Run `npm run build` (or `medusa plugin:build`) after every change. Do not mark a step complete until build succeeds.
+2. **Build verification**: Run `pnpm run build` (in `starter/`) or `pnpm run build` (`medusa plugin:build`, in `dynamic-pricing-plugin/`) after every change. Do not mark a step complete until build succeeds.
 3. **Migrations**: Every new data model requires a migration. Run migrations before testing.
-4. **Plugin → backend sync**: After plugin changes, run `yalc push` in `dynamic-pricing-plugin/`. The plugin must be linked to **both** the backend (`starter/backend`) and the monorepo root — Medusa CLI resolves modules from the root `node_modules`. Run `yalc add @u11d/medusa-dynamic-pricing` in the root if not already linked. Then restart backend.
-   - **Critical order when seeding files change**: `npm run build` → `npx yalc push` → `npm run db:reset`. The `db:reset` runs the compiled plugin code from `.yalc/`/`node_modules` at reset time. If you run `db:reset` before `yalc push`, the old compiled seed runs and the DB is seeded incorrectly. Tests will appear to pass if the running DB was manually patched, masking the broken seed.
+4. **Plugin → backend sync**: After plugin changes, run `pnpm exec yalc push` in `dynamic-pricing-plugin/`. `.yalc/` directories are gitignored — after a fresh clone or deleting yalc state, `yalc push` auto-pushes to any project with an existing `yalc.lock` entry; for a NEW consumer, run `pnpm dlx yalc add @u11d/medusa-dynamic-pricing` from within that consumer's directory. Then restart backend.
+   - **Critical order when seeding files change**: `pnpm run build` → `pnpm exec yalc push` → `./reset-db.sh`. The reset script runs the compiled plugin code from `.yalc/`/`node_modules` at reset time. If you run the reset before `yalc push`, the old compiled seed runs and the DB is seeded incorrectly. Tests will appear to pass if the running DB was manually patched, masking the broken seed.
 5. **No PUT/PATCH**: Only GET, POST, DELETE HTTP methods.
 6. **Workflows for mutations**: All data mutations go through Medusa workflows.
 7. **No Medusa price overrides**: We never write to Medusa's price tables for dynamic pricing.
@@ -382,5 +382,6 @@ Run E2E tests: `npx playwright test --project=chromium` from `starter/storefront
 - PostgreSQL 16
 - Jest + @medusajs/test-utils
 - yalc (local plugin linking)
-- turbo (monorepo)
+- pnpm (package manager, independent projects — no root workspace)
+- turbo (within the `starter/` workspace only)
 - Docker Compose (local DB)

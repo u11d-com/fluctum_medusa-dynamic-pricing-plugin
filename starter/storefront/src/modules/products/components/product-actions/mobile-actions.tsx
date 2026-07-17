@@ -38,7 +38,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   optionsDisabled,
 }) => {
   const { state, open, close } = useToggleState()
-  const t = useTranslations('product')
+  const t = useTranslations("product")
 
   const price = getProductPrice({
     product: product,
@@ -85,6 +85,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
         })}
       >
         <Transition
+          // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           show={show}
           enter="ease-in-out duration-300"
@@ -105,7 +106,10 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div className="flex items-end gap-x-2 text-ui-fg-base">
                   {selectedPrice.price_type === "sale" && (
                     <Text>
-                      <Text as="span" className="line-through text-small-regular">
+                      <Text
+                        as="span"
+                        className="line-through text-small-regular"
+                      >
                         {selectedPrice.original_price}
                       </Text>
                     </Text>
@@ -123,24 +127,28 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div></div>
               )}
             </div>
-            <div className={clx("grid grid-cols-2 w-full gap-x-4", {
-              "!grid-cols-1": isSimple
-            })}>
-              {!isSimple && <Button
-                onClick={open}
-                variant="secondary"
-                className="w-full"
-                data-testid="mobile-actions-button"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span>
-                    {variant
-                      ? Object.values(options).join(" / ")
-                      : t('selectOptions')}
-                  </span>
-                  <ChevronDown />
-                </div>
-              </Button>}
+            <div
+              className={clx("grid grid-cols-2 w-full gap-x-4", {
+                "!grid-cols-1": isSimple,
+              })}
+            >
+              {!isSimple && (
+                <Button
+                  onClick={open}
+                  variant="secondary"
+                  className="w-full"
+                  data-testid="mobile-actions-button"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span>
+                      {variant
+                        ? Object.values(options).join(" / ")
+                        : t("selectOptions")}
+                    </span>
+                    <ChevronDown />
+                  </div>
+                </Button>
+              )}
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
@@ -149,18 +157,20 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 data-testid="mobile-cart-button"
               >
                 {!variant
-                  ? t('selectVariant')
+                  ? t("selectVariant")
                   : !inStock
-                  ? t('outOfStock')
-                  : t('addToCart')}
+                    ? t("outOfStock")
+                    : t("addToCart")}
               </Button>
             </div>
           </div>
         </Transition>
       </div>
+      {/* @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types */}
       <Transition appear show={state} as={Fragment}>
         <Dialog as="div" className="relative z-[75]" onClose={close}>
           <Transition.Child
+            // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
@@ -175,6 +185,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           <div className="fixed bottom-0 inset-x-0">
             <div className="flex min-h-full h-full items-center justify-center text-center">
               <Transition.Child
+                // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
                 as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"
@@ -191,7 +202,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                     <IconButton
                       type="button"
                       onClick={close}
-                      aria-label={t('closeOptions')}
+                      aria-label={t("closeOptions")}
                       className="bg-ui-bg-base w-12 h-12 rounded-full text-ui-fg-base flex justify-center items-center"
                       data-testid="close-modal-button"
                     >

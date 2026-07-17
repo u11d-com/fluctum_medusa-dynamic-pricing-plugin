@@ -69,13 +69,13 @@ const isTest = process.env.NODE_ENV === "test"
 
 ## Environment Variables
 
-| Variable | Required | Notes |
-|---|---|---|
-| `DATABASE_URL` | yes | PostgreSQL connection string |
-| `REDIS_URL` | yes (non-test) | Redis connection string |
-| `GOLD_API_KEY` | no | goldapi.io key; omit to use `randomProvider` |
-| `JWT_SECRET` | yes | Medusa auth JWT secret |
-| `COOKIE_SECRET` | yes | Medusa cookie secret |
+| Variable        | Required       | Notes                                        |
+| --------------- | -------------- | -------------------------------------------- |
+| `DATABASE_URL`  | yes            | PostgreSQL connection string                 |
+| `REDIS_URL`     | yes (non-test) | Redis connection string                      |
+| `GOLD_API_KEY`  | no             | goldapi.io key; omit to use `randomProvider` |
+| `JWT_SECRET`    | yes            | Medusa auth JWT secret                       |
+| `COOKIE_SECRET` | yes            | Medusa cookie secret                         |
 
 ---
 
@@ -86,11 +86,11 @@ Integration tests use `@medusajs/test-utils` and run a full Medusa backend in me
 ### Running Tests
 
 ```bash
-# From monorepo root
-npm run test:integration
+# From starter/
+pnpm run test:integration
 
 # From this package
-npx jest --runInBand --forceExit
+pnpm exec jest --runInBand --forceExit
 ```
 
 ### Critical Test Gotchas
@@ -112,11 +112,11 @@ npx jest --runInBand --forceExit
 Migrations live in the plugin (`dynamic-pricing-plugin/src/modules/dynamic-pricing/migrations/`). To run:
 
 ```bash
-# From monorepo root
-npm run backend:migrate
+# From starter/
+pnpm run backend:migrate
 
 # Or from this package
-npx medusa db:migrate
+pnpm exec medusa db:migrate
 ```
 
 To generate a new migration after changing a data model in the plugin, see the [`db-generate` skill](../.agents/skills/db-generate/SKILL.md).
@@ -131,7 +131,7 @@ If you need to add a route, job, subscriber, or module at the backend level (not
 
 1. Create the file in the appropriate `src/` subdirectory
 2. Follow Medusa v2 conventions for that file type
-3. Run `npm run build` to verify compilation
+3. Run `pnpm run build` to verify compilation
 4. Add integration tests in `integration-tests/http/`
 
 ### Modifying plugin config
@@ -143,13 +143,13 @@ Edit `starter/backend/medusa-config.ts`. The plugin validates its options on sta
 Follow the existing pattern in `integration-tests/http/checkout-flow.spec.ts`:
 
 ```ts
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils";
 
 medusaIntegrationTestRunner({
   testSuite: ({ api, getContainer }) => {
     it("test name", async () => {
       // ...
-    })
+    });
   },
-})
+});
 ```

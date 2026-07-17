@@ -1,0 +1,13 @@
+packages:
+  - backend
+  - storefront
+autoInstallPeers: false
+allowBuilds:
+  "@medusajs/telemetry": true
+  "@parcel/watcher": true
+  "@swc/core": true
+  esbuild: true
+  msgpackr-extract: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true

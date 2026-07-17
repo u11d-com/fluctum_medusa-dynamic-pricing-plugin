@@ -1,6 +1,10 @@
 {
   "name": "fluctum-form-handler",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.13.1",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "deploy:dev": "serverless deploy --stage dev",
     "deploy:prod": "serverless deploy --stage prod"

@@ -14,8 +14,8 @@ Marketing site for [Fluctum](https://fluctum.io) — the open-source real-time d
 From this folder:
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Open `http://localhost:3000`.
@@ -23,8 +23,8 @@ Open `http://localhost:3000`.
 ## Build and run
 
 ```bash
-npm run build
-npm run start
+pnpm run build
+pnpm run start
 ```
 
 ## Environment variables

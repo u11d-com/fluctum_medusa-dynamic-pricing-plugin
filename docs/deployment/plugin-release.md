@@ -18,7 +18,7 @@ Before bumping the version, ensure the plugin builds correctly and the publish c
 cd dynamic-pricing-plugin
 
 # 1. Clean build
-npm run build
+pnpm run build
 
 # 2. Dry run publish (checks files and provenance requirements)
 npm publish --dry-run

@@ -12,14 +12,14 @@ AWS CDK infrastructure for the fluctum.io landing page. Provisions:
 GitHub Actions → S3 bucket → CloudFront (OAC) → fluctum.io (custom domain)
 ```
 
-- Build happens in GitHub Actions (`landing-page/www/` → `npm run build` → `out/`)
+- Build happens in GitHub Actions (`landing-page/www/` → `pnpm run build` → `out/`)
 - Deployment uploads `out/` to S3 and invalidates CloudFront cache
 - CloudFront serves content globally with 24h default TTL, 365d max TTL
 
 ## Prerequisites
 
 1. AWS CLI configured with credentials (`aws configure`)
-2. Node.js 20+ and npm installed
+2. Node.js 20+ and pnpm installed
 3. CDK CLI installed globally: `npm install -g aws-cdk`
 
 ## Deploy Infrastructure
@@ -28,7 +28,7 @@ GitHub Actions → S3 bucket → CloudFront (OAC) → fluctum.io (custom domain)
 cd infra/landing-page
 
 # Install dependencies
-npm install
+pnpm install
 
 # Bootstrap CDK in your AWS account (first-time only)
 cdk bootstrap
@@ -75,7 +75,7 @@ See [.github/workflows/deploy-landing.yml](../../.github/workflows/deploy-landin
 Preview CloudFormation template before deployment:
 
 ```bash
-npm run synth
+pnpm run synth
 ```
 
 Check the `cdk.out/` folder for generated CloudFormation JSON.

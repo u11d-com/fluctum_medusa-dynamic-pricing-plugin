@@ -57,14 +57,21 @@ Prices are **never** written to Medusa's price tables. The frontend computes the
 
 - Node.js v24+
 - Docker (for PostgreSQL + Redis)
-- npm v11+
+- pnpm v11+ (`corepack enable` picks up the pinned version automatically)
 
 ### 1. Clone & install
+
+Each project in this repo is an **independent pnpm project** (no root workspace) — install per project as needed. For the full local dev flow you'll need the plugin and the `starter/` workspace:
 
 ```bash
 git clone https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin.git
 cd fluctum_medusa-dynamic-pricing-plugin
-npm install
+
+# Build the plugin and link it via yalc
+cd dynamic-pricing-plugin && pnpm install && pnpm run build && pnpm exec yalc push && cd ..
+
+# Install the starter workspace (backend + storefront)
+cd starter && pnpm install && cd ..
 ```
 
 ### 2. Start infrastructure
@@ -89,22 +96,16 @@ cp starter/storefront/.env.template starter/storefront/.env.local
 # You'll set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY after creating the admin user in step 7
 ```
 
-### 5. Run migrations
+### 5. Run migrations (also seeds initial data)
 
 ```bash
-npm run backend:migrate
+cd starter && pnpm run backend:migrate
 ```
 
-### 6. Seed initial data (optional)
+### 6. Create admin user
 
 ```bash
-npm run backend:seed
-```
-
-### 7. Create admin user
-
-```bash
-cd starter/backend && npx medusa user -e admin@example.com -p yourpassword
+cd starter/backend && pnpm exec medusa user -e admin@example.com -p yourpassword
 ```
 
 Copy the **Publishable API key** from the admin panel (`http://localhost:9000/app` → Settings → API Keys) into `starter/storefront/.env.local`:
@@ -113,10 +114,10 @@ Copy the **Publishable API key** from the admin panel (`http://localhost:9000/ap
 NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
 ```
 
-### 8. Start everything
+### 7. Start everything
 
 ```bash
-npm run dev
+cd starter && pnpm run dev
 ```
 
 - Backend: `http://localhost:9000`
@@ -125,10 +126,10 @@ npm run dev
 
 ### Resetting your local environment
 
-Once set up, if you need a clean slate (schema changes, corrupted data, reproducing a bug):
+Once set up, if you need a clean slate (schema changes, corrupted data, reproducing a bug), run the script directly from the repo root (no package manager needed):
 
 ```bash
-npm run db:reset
+./reset-db.sh
 ```
 
 This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `dynamic_pricing` database, runs migrations, creates the admin user, and **syncs the fresh publishable API key into `starter/storefront/.env`**. Restart the storefront afterwards — `NEXT_PUBLIC_*` env vars are baked in at process start, so an already-running storefront will keep using the stale key. See [`AGENTS.md`](AGENTS.md#local-development--fresh-environment-reset) for the full rationale.
@@ -176,27 +177,32 @@ import { randomProvider, createGoldApiProvider } from "@u11d/medusa-dynamic-pric
 
 ## Plugin Development (yalc workflow)
 
-The plugin is linked to the backend via [yalc](https://github.com/wclr/yalc):
+The plugin is linked to the backend and storefront via [yalc](https://github.com/wclr/yalc):
 
 ```bash
 # After any plugin change:
-npm run plugin:build   # builds plugin AND pushes to yalc store
-# Backend picks up the updated .yalc copy automatically
+cd dynamic-pricing-plugin
+pnpm run build       # runs `medusa plugin:build`
+pnpm exec yalc push  # pushes the built package to every linked consumer
+# Backend and storefront pick up the updated .yalc copy automatically
 ```
 
 ## Scripts
 
-| Script                     | Description                                                                                                                                                       |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`              | Start backend + storefront in parallel (turbo)                                                                                                                    |
-| `npm run build`            | Build all packages                                                                                                                                                |
-| `npm run plugin:build`     | Build plugin and push to yalc                                                                                                                                     |
-| `npm run test:unit`        | Run unit tests in the plugin                                                                                                                                      |
-| `npm run test:integration` | Run HTTP integration tests in the backend                                                                                                                         |
-| `npm run backend:migrate`  | Run Medusa DB migrations                                                                                                                                          |
-| `npm run backend:seed`     | Run initial data seed                                                                                                                                             |
-| `npm run db:reset`         | **Destructive:** drop DB, recreate, migrate, seed, create admin, sync storefront `.env` — see [`AGENTS.md`](AGENTS.md#local-development--fresh-environment-reset) |
-| `npm run storefront:check` | Type-check the storefront                                                                                                                                         |
+There is no root package.json — run each project's scripts from its own directory (or `pnpm --dir <path> run <script>` from the repo root).
+
+| Script                          | Where                     | Description                                                                                                                                                       |
+| ------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm run dev`                  | `starter/`                | Start backend + storefront in parallel (turbo)                                                                                                                    |
+| `pnpm run build`                | `starter/`                | Build backend + storefront                                                                                                                                        |
+| `pnpm run backend:migrate`      | `starter/`                | Run Medusa DB migrations (also seeds initial data)                                                                                                                |
+| `pnpm run backend:create-admin` | `starter/`                | Create the default admin user                                                                                                                                     |
+| `pnpm run build`                | `dynamic-pricing-plugin/` | Build the plugin (`medusa plugin:build`)                                                                                                                          |
+| `pnpm exec yalc push`           | `dynamic-pricing-plugin/` | Push the built plugin to all yalc-linked consumers                                                                                                                |
+| `pnpm run test:unit`            | `dynamic-pricing-plugin/` | Run plugin unit tests                                                                                                                                             |
+| `pnpm run test:integration`     | `starter/backend/`        | Run backend HTTP integration tests                                                                                                                                |
+| `pnpm run check`                | `starter/storefront/`     | Lint + type-check the storefront                                                                                                                                  |
+| `./reset-db.sh`                 | repo root                 | **Destructive:** drop DB, recreate, migrate, seed, create admin, sync storefront `.env` — see [`AGENTS.md`](AGENTS.md#local-development--fresh-environment-reset) |
 
 ## Documentation
 
@@ -211,10 +217,10 @@ npm run plugin:build   # builds plugin AND pushes to yalc store
 
 ```bash
 # Unit tests (plugin)
-npm run test:unit
+cd dynamic-pricing-plugin && pnpm run test:unit
 
 # Integration tests (full HTTP cycle against real DB)
-npm run test:integration
+cd starter/backend && pnpm run test:integration
 ```
 
 Integration tests cover: price lock creation, idempotency, order completion with valid locks, rejection of missing/expired locks, pricing rule CRUD, and SSE subscription.

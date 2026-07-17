@@ -1,10 +1,6 @@
 {
   "version": "v1",
   "packages": {
-    "@u11d/dynamic-pricing-plugin": {
-      "signature": "d05e9489031bb536051a6ffbdd566f47",
-      "file": true
-    },
     "@u11d/medusa-dynamic-pricing": {
       "signature": "4bd5989a5158a08dee89bf9772f4adfd",
       "file": true

@@ -138,6 +138,7 @@ These remain outside `ui` because they encapsulate behavior/domain logic:
 Cart state is managed client-side via `CartProvider` + `useCart()` in `src/modules/cart/context/cart-context.tsx`.
 
 **Key facts:**
+
 - `CartProvider` wraps the `(main)` layout. It does **NOT** wrap the `(checkout)` layout.
 - `useCart()` returns a **no-op context** (not throw) when used outside `CartProvider` — safe for checkout components.
 - `useCart()` returns `{ cart, addToCart, updateLineItem, deleteLineItem }`.
@@ -147,6 +148,7 @@ Cart state is managed client-side via `CartProvider` + `useCart()` in `src/modul
 - `ItemsTemplate` (`cart/templates/items.tsx`) is a `"use client"` component reading from `useCart()` so Item children re-render when cart state changes. Without this, cart-page item list is stale.
 
 **Mutation callers:**
+
 - `add-to-cart-button` — wraps call in local `useTransition`, shows spinner only while pending (no "Adding" / "Added" labels)
 - `product-actions` — wraps in local `useTransition`, shows `isLoading` on Button
 - `delete-button` — wraps in local `useTransition`, shows Spinner icon while pending, button disabled, forwards `data-testid` prop to inner `<button>`
@@ -156,16 +158,16 @@ Cart state is managed client-side via `CartProvider` + `useCart()` in `src/modul
 
 We never show Medusa's cached prices in dynamic-pricing UI. Show `"—"` instead.
 
-| Component | Rule |
-|---|---|
-| `LineItemPrice` | Shows `"—"` when `price` prop is `undefined` (never falls back to `item.total`) |
-| `CartTotals` | Accepts `null` for `subtotalOverride`/`totalOverride` → renders `"—"` (use `null` not `undefined` to suppress fallback) |
-| `CartDropdown` subtotal | `dynamicSubtotal > 0 ? dynamicSubtotal : null` — shows `"—"` while SSE loads |
-| Cart page `Summary` | Same null-passthrough pattern |
-| Checkout `CheckoutSummary` | `lockedSubtotal > 0 ? lockedSubtotal : null` — shows `"—"` while lock loading |
-| Checkout preview `Item` | No `cart` prop → no SSE fallback; locked prices or `"—"` only |
-| Order page `LineItemPrice` | Pass `price={item.total ?? 0}` explicitly — orders always use finalized Medusa prices |
-| `SpotPriceBarClient` | Never returns `null`; renders `"—"` per material while SSE loading |
+| Component                  | Rule                                                                                                                    |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `LineItemPrice`            | Shows `"—"` when `price` prop is `undefined` (never falls back to `item.total`)                                         |
+| `CartTotals`               | Accepts `null` for `subtotalOverride`/`totalOverride` → renders `"—"` (use `null` not `undefined` to suppress fallback) |
+| `CartDropdown` subtotal    | `dynamicSubtotal > 0 ? dynamicSubtotal : null` — shows `"—"` while SSE loads                                            |
+| Cart page `Summary`        | Same null-passthrough pattern                                                                                           |
+| Checkout `CheckoutSummary` | `lockedSubtotal > 0 ? lockedSubtotal : null` — shows `"—"` while lock loading                                           |
+| Checkout preview `Item`    | No `cart` prop → no SSE fallback; locked prices or `"—"` only                                                           |
+| Order page `LineItemPrice` | Pass `price={item.total ?? 0}` explicitly — orders always use finalized Medusa prices                                   |
+| `SpotPriceBarClient`       | Never returns `null`; renders `"—"` per material while SSE loading                                                      |
 
 ## Checkout Page Architecture Constraints
 
@@ -186,21 +188,22 @@ We never show Medusa's cached prices in dynamic-pricing UI. Show `"—"` instead
 
 Tests live in `starter/storefront/e2e/`. Playwright config: `timeout: 90_000`, `expect.timeout: 10_000`, `retries: 1`, `reuseExistingServer: true`.
 
-| File | Tests | Coverage |
-|---|---|---|
-| `cart-reactivity.spec.ts` | 6 | Badge update (product page + landing page), quantity change, inc/dec, remove item, remove one of multiple |
-| `checkout-flow.spec.ts` | 7 | Add + quantity update, add from landing, remove from cart, price format check, full checkout flow, refresh prices, page-refresh preserves locks |
+| File                      | Tests | Coverage                                                                                                                                        |
+| ------------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cart-reactivity.spec.ts` | 6     | Badge update (product page + landing page), quantity change, inc/dec, remove item, remove one of multiple                                       |
+| `checkout-flow.spec.ts`   | 7     | Add + quantity update, add from landing, remove from cart, price format check, full checkout flow, refresh prices, page-refresh preserves locks |
 
 Run both with:
+
 ```bash
-npx playwright test cart-reactivity.spec.ts checkout-flow.spec.ts --project=chromium
+pnpm exec playwright test cart-reactivity.spec.ts checkout-flow.spec.ts --project=chromium
 ```
 
 ## Validation Commands
 
 Run from `starter/storefront`:
 
-- `npm run typecheck`
-- `npm run build`
+- `pnpm run typecheck`
+- `pnpm run build`
 
 Use these as required validation for storefront UI and type changes.

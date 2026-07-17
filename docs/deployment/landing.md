@@ -7,7 +7,7 @@
 ```
 landing-page/www/ (Next.js static export)
   ↓ GitHub Actions (.github/workflows/deploy-landing.yml)
-  ↓ npm run build → out/
+  ↓ pnpm run build → out/
   ↓ aws s3 sync → S3 bucket
   ↓ CloudFront invalidation
   ↓ https://fluctum.io (custom domain)
@@ -32,7 +32,7 @@ landing-page/www/ (Next.js static export)
 
 ```bash
 cd infra/landing-page
-npm install
+pnpm install
 cdk bootstrap  # First-time only, per AWS account
 cdk deploy
 ```
@@ -123,8 +123,8 @@ Trigger workflow manually in GitHub Actions tab:
 
 1. ✅ Checkout code
 2. ✅ Setup Node.js 20 + cache
-3. ✅ Install dependencies (`npm ci`)
-4. ✅ Build static site (`npm run build`)
+3. ✅ Install dependencies (`pnpm install --frozen-lockfile`)
+4. ✅ Build static site (`pnpm run build`)
 5. ✅ Configure AWS credentials
 6. ✅ Sync to S3 with cache headers:
    - Static assets (JS, CSS, images): `max-age=31536000, immutable` (1 year)
@@ -152,7 +152,7 @@ Trigger workflow manually in GitHub Actions tab:
 
 - Check `NEXT_PUBLIC_WEBFORM_URL` is set correctly in GitHub secrets
 - Review build logs for missing dependencies or syntax errors
-- Test build locally: `cd landing-page/www && npm run build`
+- Test build locally: `cd landing-page/www && pnpm run build`
 
 ### Content Not Updating
 

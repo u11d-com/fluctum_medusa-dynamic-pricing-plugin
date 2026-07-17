@@ -20,10 +20,10 @@ echo "✨ Creating new database ${DB_NAME}..."
 psql "${CONNECTION_STRING}/postgres" -c "CREATE DATABASE \"${DB_NAME}\";"
 
 echo "Running migrations..."
-npm run backend:migrate
+(cd starter && pnpm run backend:migrate)
 
 echo "Creating admin user..."
-npm run backend:create-admin
+(cd starter && pnpm run backend:create-admin)
 
 echo "📝 Fetching publishable key from database..."
 PUBLISHABLE_KEY=$(psql "${CONNECTION_STRING}/${DB_NAME}" -t -c "SELECT token FROM api_key WHERE type = 'publishable' LIMIT 1;" | xargs)

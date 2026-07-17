@@ -1,3 +1,4 @@
+import type { ReactElement } from "react"
 import Image from "next/image"
 import { Text } from "@modules/common/components/ui"
 import { getTranslations } from "next-intl/server"
@@ -70,18 +71,20 @@ export default async function Footer() {
 
         <div className="flex w-full mb-10 justify-center items-center border-t border-white/10 pt-6">
           <Text className="txt-compact-small text-white/20 text-[11px]">
-            {t.rich('madeBy', {
-              link: () => (
-                <a
-                  href="https://u11d.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline hover:text-white/50"
-                >
-                  u11d
-                </a>
-              ),
-            }) as JSX.Element}
+            {
+              t.rich("madeBy", {
+                link: () => (
+                  <a
+                    href="https://u11d.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:text-white/50"
+                  >
+                    u11d
+                  </a>
+                ),
+              }) as ReactElement
+            }
           </Text>
         </div>
       </div>

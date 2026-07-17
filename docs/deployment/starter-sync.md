@@ -77,7 +77,7 @@ The workflow runs automatically after a successful **Release** workflow (`workfl
 
 ### Lockfile requirement
 
-Medusa Cloud builds can fail with `No lockfiles found` when the project root in the deployed repository does not contain a lockfile. The sync workflow copies the root scaffold `package-lock.json` and validates lockfiles for root, backend, and storefront before pushing to `u11d-com/fluctum_starter`.
+Medusa Cloud builds can fail with `No lockfiles found` when the project root in the deployed repository does not contain a lockfile. The sync workflow copies the `starter/` workspace's `pnpm-lock.yaml` and `pnpm-workspace.yaml` to the target repo root, regenerates the lockfile against the newly-published plugin version (`pnpm install --lockfile-only`), and validates it exists before pushing to `u11d-com/fluctum_starter`.
 
 ## 7. Technical Rationale: Force-with-lease
 

@@ -15,9 +15,9 @@
 ## What's included
 
 - **Medusa v2 backend** (`backend/`) — pre-configured with [`@u11d/medusa-dynamic-pricing`](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing)
-- **Next.js 15 storefront** (`storefront/`) — live SSE price bar, dynamic cart, price-locked checkout
+- **Next.js 16 storefront** (`storefront/`) — live SSE price bar, dynamic cart, price-locked checkout
 - **Docker Compose** — PostgreSQL 17 + Redis 8 for local development
-- **Turbo** monorepo with `dev` / `build` / `lint` / `test` tasks
+- **Turbo** monorepo (pnpm workspaces) with `dev` / `build` / `lint` / `test` tasks
 
 Prices update every few seconds from a live spot-price feed (goldapi.io or the built-in random provider for dev). They are displayed in real time via SSE and locked at checkout entry to protect both customer and merchant.
 
@@ -25,8 +25,8 @@ Prices update every few seconds from a live spot-price feed (goldapi.io or the b
 
 ## Prerequisites
 
-- Node.js v20+
-- npm v10+
+- Node.js v24+
+- pnpm v11+ (`corepack enable` to get the version pinned in `package.json` automatically)
 - Docker & Docker Compose
 
 ---
@@ -40,7 +40,7 @@ Click **[Use this template](https://github.com/u11d-com/fluctum_starter/generate
 ```bash
 git clone https://github.com/u11d-com/fluctum_starter.git my-store
 cd my-store
-npm install
+pnpm install
 ```
 
 ### 2. Configure environment variables
@@ -68,14 +68,14 @@ PostgreSQL will be available on port `5432` (database: `fluctum`) and Redis on p
 ### 4. Run migrations
 
 ```bash
-cd backend && npx medusa db:migrate
+cd backend && pnpm exec medusa db:migrate
 ```
 
 ### 5. Seed data & create admin user
 
 ```bash
-cd backend && npx medusa db:seed --seed-file=src/seed.ts
-cd backend && npx medusa user -e admin@example.com -p yourpassword
+cd backend && pnpm exec medusa db:seed --seed-file=src/seed.ts
+cd backend && pnpm exec medusa user -e admin@example.com -p yourpassword
 ```
 
 Copy the **Publishable API key** from the admin panel (`http://localhost:9000/app` → Settings → API Keys) into `storefront/.env.local`:
@@ -87,7 +87,7 @@ NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
 ### 6. Start everything
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 | Service     | URL                       |
@@ -155,12 +155,12 @@ See the [plugin documentation](https://github.com/u11d-com/fluctum_medusa-dynami
 
 ## Scripts
 
-| Script          | Description                            |
-| --------------- | -------------------------------------- |
-| `npm run dev`   | Start backend + storefront in parallel |
-| `npm run build` | Build all packages                     |
-| `npm run lint`  | Lint all packages                      |
-| `npm run test`  | Run all tests                          |
+| Script           | Description                            |
+| ---------------- | -------------------------------------- |
+| `pnpm run dev`   | Start backend + storefront in parallel |
+| `pnpm run build` | Build all packages                     |
+| `pnpm run lint`  | Lint all packages                      |
+| `pnpm run test`  | Run all tests                          |
 
 ---
 

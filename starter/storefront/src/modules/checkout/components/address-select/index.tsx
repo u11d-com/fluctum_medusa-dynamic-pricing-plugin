@@ -1,6 +1,6 @@
 "use client"
 
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
 import { ChoiceCard, Radio, Text, clx } from "@modules/common/components/ui"
@@ -24,7 +24,7 @@ export type AddressFields = Pick<
 >
 
 function toStoreCartAddress(
-  address: HttpTypes.StoreCustomerAddress
+  address: HttpTypes.StoreCustomerAddress,
 ): AddressFields {
   return {
     first_name: address.first_name ?? "",
@@ -43,10 +43,7 @@ function toStoreCartAddress(
 type AddressSelectProps = {
   addresses: HttpTypes.StoreCustomerAddress[]
   addressInput: AddressFields | null
-  onSelect: (
-    address: AddressFields | undefined,
-    email?: string
-  ) => void
+  onSelect: (address: AddressFields | undefined, email?: string) => void
 }
 
 const AddressSelect = ({
@@ -54,7 +51,7 @@ const AddressSelect = ({
   addressInput,
   onSelect,
 }: AddressSelectProps) => {
-  const t = useTranslations('checkout')
+  const t = useTranslations("checkout")
 
   const handleSelect = (id: string) => {
     const savedAddress = addresses.find((a) => a.id === id)
@@ -64,7 +61,9 @@ const AddressSelect = ({
   }
 
   const selectedAddress = useMemo(() => {
-    return addresses.find((a) => addressInput && compareAddresses(a, addressInput))
+    return addresses.find(
+      (a) => addressInput && compareAddresses(a, addressInput),
+    )
   }, [addresses, addressInput])
 
   return (
@@ -77,9 +76,9 @@ const AddressSelect = ({
           {({ open }) => (
             <>
               <Text as="span" className="block truncate">
-                  {selectedAddress
-                    ? selectedAddress.address_1
-                    : t('chooseAddress')}
+                {selectedAddress
+                  ? selectedAddress.address_1
+                  : t("chooseAddress")}
               </Text>
               <ChevronUpDown
                 className={clx("transition-rotate duration-200", {
@@ -90,6 +89,7 @@ const AddressSelect = ({
           )}
         </Listbox.Button>
         <Transition
+          // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           leave="transition ease-in duration-100"
           leaveFrom="opacity-100"
@@ -121,9 +121,7 @@ const AddressSelect = ({
                           {address.first_name} {address.last_name}
                         </Text>
                         {address.company && (
-                          <Text as="span">
-                            {address.company}
-                          </Text>
+                          <Text as="span">{address.company}</Text>
                         )}
                         <div className="flex flex-col text-left mt-2">
                           <Text as="span">

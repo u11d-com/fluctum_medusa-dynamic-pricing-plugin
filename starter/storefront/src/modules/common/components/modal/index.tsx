@@ -3,7 +3,7 @@
 import { Dialog, Transition } from "@headlessui/react"
 import { clx } from "@modules/common/components/ui"
 import React, { Fragment } from "react"
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 
 import { ModalProvider, useModal } from "@lib/context/modal-context"
 import X from "@modules/common/icons/x"
@@ -14,7 +14,7 @@ type ModalProps = {
   size?: "small" | "medium" | "large"
   search?: boolean
   children: React.ReactNode
-  'data-testid'?: string
+  "data-testid"?: string
 }
 
 const Modal = ({
@@ -23,12 +23,14 @@ const Modal = ({
   size = "medium",
   search = false,
   children,
-  'data-testid': dataTestId
+  "data-testid": dataTestId,
 }: ModalProps) => {
   return (
+    // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[75]" onClose={close}>
         <Transition.Child
+          // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -47,10 +49,11 @@ const Modal = ({
               {
                 "items-center": !search,
                 "items-start": search,
-              }
+              },
             )}
           >
             <Transition.Child
+              // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -69,7 +72,7 @@ const Modal = ({
                     "max-w-3xl": size === "large",
                     "bg-transparent shadow-none": search,
                     "bg-ui-bg-base shadow-xl border rounded-rounded": !search,
-                  }
+                  },
                 )}
               >
                 <ModalProvider close={close}>{children}</ModalProvider>
@@ -84,7 +87,7 @@ const Modal = ({
 
 const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { close } = useModal()
-  const t = useTranslations('common')
+  const t = useTranslations("common")
 
   return (
     <Dialog.Title className="flex items-center justify-between">
@@ -93,7 +96,7 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <button
           type="button"
           onClick={close}
-          aria-label={t('closeModal')}
+          aria-label={t("closeModal")}
           data-testid="close-modal-button"
         >
           <X size={20} />
@@ -106,6 +109,7 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const Description: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Dialog.Description className="flex text-small-regular text-ui-fg-base items-center justify-center pt-2 pb-4 h-full">
+      {/* @ts-expect-error - headlessui Dialog.Description children typing conflicts with React 19.2 types */}
       {children}
     </Dialog.Description>
   )

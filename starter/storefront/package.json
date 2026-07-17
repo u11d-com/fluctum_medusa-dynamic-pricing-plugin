@@ -11,10 +11,10 @@
     "dev": "next dev --turbopack -p 8000",
     "build": "next build",
     "start": "next start -p 8000",
-    "lint": "npm run lint:custom",
+    "lint": "pnpm run lint:custom",
     "lint:custom": "node ./scripts/lint-custom.mjs",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck",
+    "check": "pnpm run lint && pnpm run typecheck",
     "analyze": "ANALYZE=true next build",
     "test:e2e": "playwright test"
   },
@@ -25,6 +25,7 @@
     "@medusajs/ui-preset": "2.15.2",
     "@stripe/react-stripe-js": "^5.3.0",
     "@stripe/stripe-js": "^8.2.0",
+    "@u11d/medusa-dynamic-pricing": "file:.yalc/@u11d/medusa-dynamic-pricing",
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
     "next": "^16.2.6",
@@ -42,8 +43,8 @@
     "@tailwindcss/postcss": "^4.3.2",
     "@types/lodash": "^4.14.195",
     "@types/node": "^24.0.0",
-    "@types/react": "^19.0.6",
-    "@types/react-dom": "^19.0.6",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "ansi-colors": "^4.1.3",
     "eslint": "^9.13.0",
     "eslint-config-next": "^16.2.6",
@@ -51,15 +52,8 @@
     "tailwindcss": "^4.3.2",
     "typescript": "^5.3.2"
   },
-  "overrides": {
-    "tailwindcss": "^4.3.2",
-    "@medusajs/icons": {
-      "react": "^19.0.4",
-      "react-dom": "^19.0.4"
-    }
-  },
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "npm@11.6.2"
+  "packageManager": "pnpm@11.13.1"
 }

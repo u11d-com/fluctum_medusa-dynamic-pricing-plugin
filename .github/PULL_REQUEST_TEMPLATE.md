@@ -20,7 +20,7 @@ Closes #(issue number if applicable)
 - [ ] I have not written to Medusa's price tables
 - [ ] Prices are stored as decimal numbers (not cents)
 - [ ] I have added/updated tests for my changes
-- [ ] All tests pass locally (`npm run test:unit` and/or `npm run test:integration`)
+- [ ] All tests pass locally (`pnpm run test:unit` in `dynamic-pricing-plugin/` and/or `pnpm run test:integration` in `starter/backend/`)
 - [ ] I have added necessary documentation updates
 
 ## Testing

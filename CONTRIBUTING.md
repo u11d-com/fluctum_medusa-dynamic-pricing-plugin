@@ -4,17 +4,24 @@
 
 - Node.js v24+
 - Docker (for PostgreSQL + Redis)
-- npm v11+ (managed via `engines` in `package.json`)
-- [yalc](https://github.com/wclr/yalc) — local plugin linking (installed as devDependency in the plugin)
+- pnpm v11+ (`corepack enable` picks up the version pinned in each project's `package.json`)
+- [yalc](https://github.com/wclr/yalc) — local plugin linking (installed as devDependency in the plugin, invoked via `pnpm exec yalc`)
 
 ## Local Setup
 
 ### 1. Clone & install
 
+This repo has **no root package.json** — every project (`dynamic-pricing-plugin/`, `starter/`, `landing-page/www/`, `landing-page/form-handler/`, `infra/landing-page/`) is an independent pnpm project. For backend/storefront development:
+
 ```bash
 git clone https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin.git
 cd fluctum_medusa-dynamic-pricing-plugin
-npm install
+
+# Build the plugin and link it via yalc
+cd dynamic-pricing-plugin && pnpm install && pnpm run build && pnpm exec yalc push && cd ..
+
+# Install the starter workspace (backend + storefront)
+cd starter && pnpm install && cd ..
 ```
 
 ### 2. Start infrastructure
@@ -42,29 +49,23 @@ COOKIE_SECRET=supersecret
 # GOLD_API_KEY=your-key   # Optional: omit to use randomProvider
 ```
 
-### 4. Run migrations
+### 4. Run migrations (also seeds initial data)
 
 ```bash
-npm run backend:migrate
+cd starter && pnpm run backend:migrate
 ```
 
-### 5. Seed initial data (optional)
+### 5. Create admin user
 
 ```bash
-npm run backend:seed
-```
-
-### 6. Create admin user
-
-```bash
-cd starter/backend && npx medusa user -e admin@example.com -p yourpassword
+cd starter/backend && pnpm exec medusa user -e admin@example.com -p yourpassword
 cd ../..
 ```
 
-### 7. Start everything
+### 6. Start everything
 
 ```bash
-npm run dev
+cd starter && pnpm run dev
 ```
 
 - Backend: `http://localhost:9000`
@@ -75,30 +76,35 @@ npm run dev
 
 ## Plugin Development Workflow
 
-The plugin is linked to the backend via [yalc](https://github.com/wclr/yalc). After every plugin change:
+The plugin is linked to the backend and storefront via [yalc](https://github.com/wclr/yalc). After every plugin change:
 
 ```bash
-npm run plugin:build
+cd dynamic-pricing-plugin
+pnpm run build       # runs `medusa plugin:build`
+pnpm exec yalc push  # pushes the built package to every linked consumer
 ```
 
-This runs `medusa plugin:build` and then `yalc push`, updating the `.yalc/` copy in the backend. Restart the backend to pick up changes.
+Restart the backend to pick up changes.
 
-> **Important:** The plugin must be linked to **both** `starter/backend` and the monorepo root. The root link ensures Medusa CLI can resolve the module from `node_modules`. If the root link is missing: `cd <root> && yalc add @u11d/medusa-dynamic-pricing`.
+> **Important:** `.yalc/` directories are gitignored. After a fresh clone (or after deleting yalc state), `pnpm exec yalc push` from `dynamic-pricing-plugin/` auto-pushes to any project with a `yalc.lock` entry. If a NEW consumer needs linking (no prior `yalc.lock` entry), run `pnpm dlx yalc add @u11d/medusa-dynamic-pricing` from within that consumer's directory.
 
 ---
 
 ## Scripts
 
-| Script                     | Description                                  |
-| -------------------------- | -------------------------------------------- |
-| `npm run dev`              | Start backend + storefront (turbo, parallel) |
-| `npm run build`            | Build all packages                           |
-| `npm run plugin:build`     | Build plugin + push to yalc                  |
-| `npm run test:unit`        | Run plugin unit tests                        |
-| `npm run test:integration` | Run backend HTTP integration tests           |
-| `npm run backend:migrate`  | Run Medusa DB migrations                     |
-| `npm run backend:seed`     | Run initial data seed                        |
-| `npm run storefront:check` | Type-check the storefront                    |
+There is no root package.json — run scripts from each project's own directory.
+
+| Script                          | Where                     | Description                                        |
+| ------------------------------- | ------------------------- | -------------------------------------------------- |
+| `pnpm run dev`                  | `starter/`                | Start backend + storefront (turbo, parallel)       |
+| `pnpm run build`                | `starter/`                | Build backend + storefront                         |
+| `pnpm run backend:migrate`      | `starter/`                | Run Medusa DB migrations (also seeds initial data) |
+| `pnpm run backend:create-admin` | `starter/`                | Create the default admin user                      |
+| `pnpm run build`                | `dynamic-pricing-plugin/` | Build plugin (`medusa plugin:build`)               |
+| `pnpm exec yalc push`           | `dynamic-pricing-plugin/` | Push built plugin to yalc consumers                |
+| `pnpm run test:unit`            | `dynamic-pricing-plugin/` | Run plugin unit tests                              |
+| `pnpm run test:integration`     | `starter/backend/`        | Run backend HTTP integration tests                 |
+| `pnpm run check`                | `starter/storefront/`     | Lint + type-check the storefront                   |
 
 ---
 
@@ -140,7 +146,7 @@ Use raw Knex for `CartPriceLock` writes. See [ADR 0004](docs/adr/0004-raw-knex-f
 ### Unit Tests (plugin)
 
 ```bash
-npm run test:unit
+cd dynamic-pricing-plugin && pnpm run test:unit
 ```
 
 Files: `dynamic-pricing-plugin/src/**/__tests__/*.unit.spec.ts`
@@ -150,7 +156,7 @@ Scope: pure functions (price formula, provider logic, config validation).
 ### Integration Tests (backend)
 
 ```bash
-npm run test:integration
+cd starter/backend && pnpm run test:integration
 ```
 
 Files: `starter/backend/integration-tests/http/*.spec.ts`
@@ -171,11 +177,11 @@ These run a full Medusa backend with a real PostgreSQL database. They cover:
 
 1. **Approval gate** — After each numbered step (see `AGENTS.md`), stop and wait for manual testing and explicit approval before proceeding to the next step.
 
-2. **Build verification** — Run `npm run build` (or `npm run plugin:build`) after every change. Do not mark a step complete until the build passes.
+2. **Build verification** — Run `pnpm run build` (in `starter/`) or `pnpm run build` (in `dynamic-pricing-plugin/`) after every change. Do not mark a step complete until the build passes.
 
-3. **Migrations** — Every new data model requires a migration. Run `npm run backend:migrate` before testing. See the `db-generate` skill for how to generate migrations.
+3. **Migrations** — Every new data model requires a migration. Run `pnpm run backend:migrate` (from `starter/`) before testing. See the `db-generate` skill for how to generate migrations.
 
-4. **Plugin → backend sync** — After plugin changes, run `npm run plugin:build`. Restart the backend.
+4. **Plugin → backend sync** — After plugin changes, run `pnpm run build && pnpm exec yalc push` from `dynamic-pricing-plugin/`. Restart the backend.
 
 5. **No commits without explicit request** — Agents do not commit unless the user explicitly asks.
 

@@ -74,17 +74,18 @@ jobs:
             --exclude='.next/' \
             starter/storefront/ /tmp/fluctum_starter/storefront/
 
-      - name: Copy scaffold files to root
+      - name: Copy starter root files to target root
         run: |
-          cp starter/scaffold/README.md /tmp/fluctum_starter/
-          cp starter/scaffold/package.json /tmp/fluctum_starter/
-          cp starter/scaffold/package-lock.json /tmp/fluctum_starter/
-          cp starter/scaffold/docker-compose.yml /tmp/fluctum_starter/
-          cp starter/scaffold/.env.template /tmp/fluctum_starter/
-          cp starter/scaffold/.gitignore /tmp/fluctum_starter/
-          cp starter/scaffold/turbo.json /tmp/fluctum_starter/
+          cp starter/README.md /tmp/fluctum_starter/
+          cp starter/package.json /tmp/fluctum_starter/
+          cp starter/pnpm-lock.yaml /tmp/fluctum_starter/
+          cp starter/pnpm-workspace.yaml /tmp/fluctum_starter/
+          cp starter/docker-compose.yml /tmp/fluctum_starter/
+          cp starter/.env.template /tmp/fluctum_starter/
+          cp starter/.gitignore /tmp/fluctum_starter/
+          cp starter/turbo.json /tmp/fluctum_starter/
           mkdir -p /tmp/fluctum_starter/.github/workflows
-          # .github/workflows is empty in scaffold, so we just create the directory
+          # .github/workflows is empty in the source, so we just create the directory
 
       - name: Rewrite plugin dependency
         run: |
@@ -95,21 +96,30 @@ jobs:
             "${PKG}" > "${PKG}.tmp"
           mv "${PKG}.tmp" "${PKG}"
 
-      - name: Refresh backend lockfile
-        run: |
-          cd /tmp/fluctum_starter/backend
-          npm install --package-lock-only --workspaces=false --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.1
 
-      - name: Validate synced lockfiles
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Refresh lockfile
+        run: |
+          cd /tmp/fluctum_starter
+          pnpm install --lockfile-only
+
+      - name: Validate synced lockfile
         run: |
           cd /tmp/fluctum_starter
           required_files=(
             "package.json"
-            "package-lock.json"
+            "pnpm-lock.yaml"
+            "pnpm-workspace.yaml"
             "backend/package.json"
-            "backend/package-lock.json"
             "storefront/package.json"
-            "storefront/package-lock.json"
           )
 
           missing=0
@@ -124,7 +134,7 @@ jobs:
             exit 1
           fi
 
-      - name: Debug sync tree and lockfiles
+      - name: Debug sync tree and lockfile
         run: |
           cd /tmp/fluctum_starter
           echo "Resolved version raw:  ${{ steps.ver.outputs.raw }}"
@@ -134,7 +144,7 @@ jobs:
           echo "Top-level contents:"
           ls -la
           echo "Discovered lockfiles (depth <= 3):"
-          find . -maxdepth 3 -name 'package-lock.json' -print | sort
+          find . -maxdepth 3 -name 'pnpm-lock.yaml' -print | sort
 
       - name: Commit and push
         run: |
