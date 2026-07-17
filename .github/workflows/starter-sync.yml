@@ -90,11 +90,12 @@ jobs:
       - name: Rewrite plugin dependency
         run: |
           BARE="${{ steps.ver.outputs.bare }}"
-          PKG=/tmp/fluctum_starter/backend/package.json
-          jq --arg v "^${BARE}" \
-            '.dependencies["@u11d/medusa-dynamic-pricing"] = $v' \
-            "${PKG}" > "${PKG}.tmp"
-          mv "${PKG}.tmp" "${PKG}"
+          for PKG in /tmp/fluctum_starter/backend/package.json /tmp/fluctum_starter/storefront/package.json; do
+            jq --arg v "^${BARE}" \
+              '.dependencies["@u11d/medusa-dynamic-pricing"] = $v' \
+              "${PKG}" > "${PKG}.tmp"
+            mv "${PKG}.tmp" "${PKG}"
+          done
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -140,6 +141,7 @@ jobs:
           echo "Resolved version raw:  ${{ steps.ver.outputs.raw }}"
           echo "Resolved version bare: ${{ steps.ver.outputs.bare }}"
           echo "Backend plugin dependency: $(jq -r '.dependencies[\"@u11d/medusa-dynamic-pricing\"]' backend/package.json)"
+          echo "Storefront plugin dependency: $(jq -r '.dependencies[\"@u11d/medusa-dynamic-pricing\"]' storefront/package.json)"
           echo "Sync root: $(pwd)"
           echo "Top-level contents:"
           ls -la
