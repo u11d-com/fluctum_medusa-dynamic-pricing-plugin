@@ -2,6 +2,19 @@ packages:
   - backend
   - storefront
 autoInstallPeers: false
+# backend (React 18, Medusa admin) and storefront (React 19) intentionally use
+# different React major versions. pnpm's default hoistPattern ('*') hoists a
+# single shared copy of @types/react[-dom] into node_modules/.pnpm/node_modules,
+# which nested dependencies with no private @types/react of their own (e.g.
+# @headlessui/react) can resolve via ancestor lookup - picking whichever version
+# won the hoist, unrelated to which package actually imported it. That created
+# two structurally incompatible ReactNode/ElementType types in the same
+# TypeScript program. Excluding these from hoisting forces every package to
+# resolve its own explicitly-declared @types/react[-dom] version only.
+hoistPattern:
+  - "*"
+  - "!@types/react"
+  - "!@types/react-dom"
 allowBuilds:
   "@medusajs/telemetry": true
   "@parcel/watcher": true

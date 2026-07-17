@@ -85,7 +85,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
         })}
       >
         <Transition
-          // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+          // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           show={show}
           enter="ease-in-out duration-300"
@@ -166,11 +166,11 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           </div>
         </Transition>
       </div>
-      {/* @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types */}
+      {/* @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types */}
       <Transition appear show={state} as={Fragment}>
         <Dialog as="div" className="relative z-[75]" onClose={close}>
           <Transition.Child
-            // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+            // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
@@ -185,7 +185,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           <div className="fixed bottom-0 inset-x-0">
             <div className="flex min-h-full h-full items-center justify-center text-center">
               <Transition.Child
-                // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+                // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
                 as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"

@@ -26,11 +26,11 @@ const Modal = ({
   "data-testid": dataTestId,
 }: ModalProps) => {
   return (
-    // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+    // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[75]" onClose={close}>
         <Transition.Child
-          // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+          // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -53,7 +53,7 @@ const Modal = ({
             )}
           >
             <Transition.Child
-              // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+              // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -109,7 +109,7 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const Description: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Dialog.Description className="flex text-small-regular text-ui-fg-base items-center justify-center pt-2 pb-4 h-full">
-      {/* @ts-expect-error - headlessui Dialog.Description children typing conflicts with React 19.2 types */}
+      {/* @ts-ignore - headlessui Dialog.Description children typing conflicts with React 19.2 types */}
       {children}
     </Dialog.Description>
   )

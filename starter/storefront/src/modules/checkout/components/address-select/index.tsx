@@ -89,7 +89,7 @@ const AddressSelect = ({
           )}
         </Listbox.Button>
         <Transition
-          // @ts-expect-error - headlessui Transition `as` prop typing conflicts with React 19.2 types
+          // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           leave="transition ease-in duration-100"
           leaveFrom="opacity-100"
