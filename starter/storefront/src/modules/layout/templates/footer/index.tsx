@@ -52,12 +52,34 @@ export default async function Footer() {
               {t("openSource")}
             </span>
             <a
-              href="https://github.com/anomalyco/dynamic-pricing"
+              href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
               target="_blank"
               rel="noreferrer"
               className="text-white/50 hover:text-white transition-colors text-sm"
             >
               {t("githubRepository")}
+            </a>
+          </div>
+
+          <div className="flex flex-col gap-y-3">
+            <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
+              {t("fluctum")}
+            </span>
+            <a
+              href="https://fluctum.io"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white/50 hover:text-white transition-colors text-sm"
+            >
+              {t("website")}
+            </a>
+            <a
+              href="https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white/50 hover:text-white transition-colors text-sm"
+            >
+              {t("npmPackage")}
             </a>
           </div>
 

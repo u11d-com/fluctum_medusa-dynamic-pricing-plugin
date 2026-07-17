@@ -317,6 +317,9 @@
     "poweredBy": "Desarrollado con",
     "openSource": "Código abierto",
     "githubRepository": "Repositorio GitHub",
+    "fluctum": "Fluctum",
+    "website": "Sitio web",
+    "npmPackage": "Paquete NPM",
     "region": "Región",
     "madeBy": "Hecho con pasión por <link>u11d</link> en Szczecin, Polonia"
   }
