@@ -99,7 +99,6 @@ const CartDropdown = () => {
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}
-          // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           enter="transition ease-out duration-200"
           enterFrom="opacity-0 translate-y-1"
@@ -124,7 +123,7 @@ const CartDropdown = () => {
               </div>
               {cartState && cartState.items?.length ? (
                 <>
-                  <div className="overflow-y-scroll max-h-[402px] px-4 py-3 grid grid-cols-1 gap-y-6 no-scrollbar">
+                  <div className="overflow-y-scroll max-h-100 px-4 py-3 grid grid-cols-1 gap-y-6 no-scrollbar">
                     {sortByCreatedAtDesc(cartState.items).map((item) => (
                       <div
                         className="grid grid-cols-[96px_minmax(0,1fr)] gap-x-4"

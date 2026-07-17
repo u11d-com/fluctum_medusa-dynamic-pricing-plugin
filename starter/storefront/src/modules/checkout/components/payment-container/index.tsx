@@ -1,6 +1,6 @@
 "use client"
 
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 import { Radio as RadioGroupOption } from "@headlessui/react"
 import { ChoiceCard, Radio, Text } from "@modules/common/components/ui"
 import React, { useContext, useMemo, type JSX } from "react"
@@ -8,7 +8,10 @@ import React, { useContext, useMemo, type JSX } from "react"
 import { isManual } from "@lib/constants"
 import SkeletonCardDetails from "@modules/skeletons/components/skeleton-card-details"
 import { CardElement } from "@stripe/react-stripe-js"
-import type { StripeCardElementOptions } from "@stripe/stripe-js"
+import type {
+  StripeCardElementChangeEvent,
+  StripeCardElementOptions,
+} from "@stripe/stripe-js"
 import PaymentTest from "../payment-test"
 import { StripeContext } from "../payment-wrapper/stripe-wrapper"
 
@@ -79,7 +82,7 @@ export const StripeCardContainer = ({
   setError: (error: string | null) => void
   setCardComplete: (complete: boolean) => void
 }) => {
-  const t = useTranslations('checkout')
+  const t = useTranslations("checkout")
   const stripeReady = useContext(StripeContext)
 
   const useOptions: StripeCardElementOptions = useMemo(() => {
@@ -110,13 +113,13 @@ export const StripeCardContainer = ({
         (stripeReady ? (
           <div className="my-4 transition-all duration-150 ease-in-out">
             <Text as="span" variant="label" className="mb-1">
-              {t('enterCardDetails')}
+              {t("enterCardDetails")}
             </Text>
             <CardElement
               options={useOptions}
-              onChange={(e) => {
+              onChange={(e: StripeCardElementChangeEvent) => {
                 setCardBrand(
-                  e.brand && e.brand.charAt(0).toUpperCase() + e.brand.slice(1)
+                  e.brand && e.brand.charAt(0).toUpperCase() + e.brand.slice(1),
                 )
                 setError(e.error?.message || null)
                 setCardComplete(e.complete)

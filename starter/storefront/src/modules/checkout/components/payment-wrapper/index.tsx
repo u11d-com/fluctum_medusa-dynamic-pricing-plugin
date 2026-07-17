@@ -39,7 +39,6 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
         stripeKey={stripeKey}
         stripePromise={stripePromise}
       >
-        {/* @ts-ignore - @stripe/react-stripe-js Elements children typing conflicts with React 19.2 types */}
         {children}
       </StripeWrapper>
     )

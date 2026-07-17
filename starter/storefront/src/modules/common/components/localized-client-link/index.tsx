@@ -24,7 +24,6 @@ const LocalizedClientLink = ({
 
   return (
     <Link href={`/${countryCode}${href}`} {...props}>
-      {/* @ts-ignore - next/link children typing conflicts with React 19.2 types */}
       {children}
     </Link>
   )

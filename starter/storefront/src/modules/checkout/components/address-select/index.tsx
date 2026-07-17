@@ -1,7 +1,11 @@
 "use client"
-
 import { useTranslations } from "next-intl"
-import { Listbox, Transition } from "@headlessui/react"
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  Transition,
+} from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
 import { ChoiceCard, Radio, Text, clx } from "@modules/common/components/ui"
 import { Fragment, useMemo } from "react"
@@ -69,11 +73,11 @@ const AddressSelect = ({
   return (
     <Listbox onChange={handleSelect} value={selectedAddress?.id}>
       <div className="relative">
-        <Listbox.Button
-          className="relative w-full flex justify-between items-center px-4 py-[10px] text-left bg-ui-bg-base cursor-default border rounded-rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-gray-300 focus-visible:ring-offset-2 focus-visible:border-gray-300 text-base-regular"
+        <ListboxButton
+          className="relative w-full flex justify-between items-center px-4 py-2 text-left bg-ui-bg-base cursor-default border rounded-rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-gray-300 focus-visible:ring-offset-2 focus-visible:border-gray-300 text-base-regular"
           data-testid="shipping-address-select"
         >
-          {({ open }) => (
+          {({ open }: { open: boolean }) => (
             <>
               <Text as="span" className="block truncate">
                 {selectedAddress
@@ -87,15 +91,14 @@ const AddressSelect = ({
               />
             </>
           )}
-        </Listbox.Button>
+        </ListboxButton>
         <Transition
-          // @ts-ignore - headlessui Transition `as` prop typing conflicts with React 19.2 types
           as={Fragment}
           leave="transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options
+          <ListboxOptions
             className="absolute z-20 w-full overflow-auto text-small-regular bg-ui-bg-base border border-top-0 max-h-60 focus-visible:outline-none sm:text-sm"
             data-testid="shipping-address-options"
           >
@@ -144,7 +147,7 @@ const AddressSelect = ({
                 </Listbox.Option>
               )
             })}
-          </Listbox.Options>
+          </ListboxOptions>
         </Transition>
       </div>
     </Listbox>
