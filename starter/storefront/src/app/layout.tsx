@@ -30,6 +30,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const messages = await getMessages()
   return (
     <html lang={locale} className={`${lato.variable} ${cinzel.variable}`}>
+      <head>
+        <link rel="icon" href="/fluctum-logo-full.svg" type="image/svg+xml" />
+      </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SpotPriceProvider>
