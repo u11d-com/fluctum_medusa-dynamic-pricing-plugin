@@ -1,10 +1,48 @@
-# Fluctum — Real-Time Dynamic Pricing for Medusa
+<h1 align="center">
+  Fluctum
+</h1>
 
-> **Fluctum** keeps prices live — gold, silver, or any volatile asset. Prices update every few seconds. Checkout locks them at the right moment.
+<p align="center">
+  <em>Real-Time Dynamic Pricing for Medusa</em>
+</p>
 
-[![npm](https://img.shields.io/npm/v/@u11d/medusa-dynamic-pricing)](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<!-- prettier-ignore -->
+<p align="center">
+<a href="https://u11d.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://u11d.com/static/u11d-white-b0b10621fc20805805f23cd6b8c349e0.svg"><source media="(prefers-color-scheme: light)" srcset="https://u11d.com/static/u11d-color-136ce418fbbb940b43748ef1bef30220.svg"><img alt="u11d logo" src="https://u11d.com/static/u11d-color-136ce418fbbb940b43748ef1bef30220.svg" width="110" height="37"></picture></a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://www.medusajs.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/medusa-logo-light.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/medusa-logo-dark.svg"><img alt="Medusa logo" src="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/medusa-logo-dark.svg" width="37" height="37"></picture></a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://fluctum.io"><img alt="Fluctum logo" src="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/fluctum-logo-full.svg" width="80" height="37"></a>
+</p>
 
-Fluctum is an open-source dynamic pricing plugin for [Medusa v2](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant.
+<p align="center">
+  <strong>Fluctum</strong> keeps prices live — gold, silver, or any volatile asset. Prices update every few seconds. Checkout locks them at the right moment.
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing"><img src="https://img.shields.io/npm/v/@u11d/medusa-dynamic-pricing.svg" alt="NPM Version"/></a>
+  <a href="https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing"><img src="https://img.shields.io/npm/dm/@u11d/medusa-dynamic-pricing.svg" alt="NPM Weekly Downloads"/></a>
+  <a href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"><img src="https://img.shields.io/github/stars/u11d-com/fluctum_medusa-dynamic-pricing-plugin.svg" alt="GitHub Stars"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"/></a>
+  <a href="https://docs.medusajs.com"><img src="https://img.shields.io/badge/Medusa-2.15%2B-9333ea.svg" alt="Medusa Version"/></a>
+</p>
+
+Fluctum is an open-source dynamic pricing plugin for [Medusa v2](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant. Created and maintained by [u11d](https://u11d.com).
+
+## Table of Contents
+
+- [Start Here](#start-here)
+- [Repository Structure](#repository-structure)
+- [How It Works](#how-it-works)
+- [Quick Start](#quick-start)
+- [Environment Variables](#environment-variables)
+- [Plugin Configuration](#plugin-configuration)
+- [Plugin Development (yalc workflow)](#plugin-development-yalc-workflow)
+- [Scripts](#scripts)
+- [Documentation](#documentation)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [License](#license)
 
 ## Start Here
 

@@ -1,10 +1,25 @@
-# Fluctum Starter
+<h1 align="center">
+  Fluctum Starter
+</h1>
 
-> Real-time dynamic pricing for Medusa v2 — gold, silver, and any volatile-price asset.
+<!-- prettier-ignore -->
+<p align="center">
+<a href="https://u11d.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://u11d.com/static/u11d-white-b0b10621fc20805805f23cd6b8c349e0.svg"><source media="(prefers-color-scheme: light)" srcset="https://u11d.com/static/u11d-color-136ce418fbbb940b43748ef1bef30220.svg"><img alt="u11d logo" src="https://u11d.com/static/u11d-color-136ce418fbbb940b43748ef1bef30220.svg" width="110" height="37"></picture></a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://www.medusajs.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/medusa-logo-light.svg"><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/medusa-logo-dark.svg"><img alt="Medusa logo" src="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/medusa-logo-dark.svg" width="37" height="37"></picture></a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://fluctum.io"><img alt="Fluctum logo" src="https://raw.githubusercontent.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin/main/landing-page/www/public/fluctum-logo-full.svg" width="80" height="37"></a>
+</p>
 
-[![Use this template](https://img.shields.io/badge/-Use%20this%20template-238636?style=for-the-badge&logo=github)](https://github.com/u11d-com/fluctum_starter/generate)
-[![Deploy to Medusa Cloud](https://img.shields.io/badge/Deploy%20to-Medusa%20Cloud-7C3AED?style=for-the-badge)](https://cloud.medusajs.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  Real-time dynamic pricing for Medusa v2 — gold, silver, and any volatile-price asset.
+</p>
+
+<p align="center">
+<a href="https://github.com/u11d-com/fluctum_starter/generate"><img src="https://img.shields.io/badge/-Use%20this%20template-238636?style=for-the-badge&logo=github" alt="Use this template"/></a>
+<a href="https://cloud.medusajs.com"><img src="https://img.shields.io/badge/Deploy%20to-Medusa%20Cloud-7C3AED?style=for-the-badge" alt="Deploy to Medusa Cloud"/></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"/></a>
+</p>
 
 ---
 
@@ -53,8 +68,8 @@ cp .env.template backend/.env
 For the storefront:
 
 ```bash
-cp storefront/.env.template storefront/.env.local
-# Edit storefront/.env.local — set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY after running migrations
+cp storefront/.env.template storefront/.env
+# Edit storefront/.env — set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY after running migrations
 ```
 
 ### 3. Start infrastructure
@@ -65,20 +80,19 @@ docker compose up -d
 
 PostgreSQL will be available on port `5432` (database: `fluctum`) and Redis on port `6379`.
 
-### 4. Run migrations
+### 4. Run migrations (also seeds initial data)
 
 ```bash
-cd backend && pnpm exec medusa db:migrate
+pnpm run backend:migrate
 ```
 
-### 5. Seed data & create admin user
+### 5. Create admin user
 
 ```bash
-cd backend && pnpm exec medusa db:seed --seed-file=src/seed.ts
-cd backend && pnpm exec medusa user -e admin@example.com -p yourpassword
+pnpm run backend:create-admin
 ```
 
-Copy the **Publishable API key** from the admin panel (`http://localhost:9000/app` → Settings → API Keys) into `storefront/.env.local`:
+Copy the **Publishable API key** from the admin panel (`http://localhost:9000/app` → Settings → API Keys) into `storefront/.env`:
 
 ```
 NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
