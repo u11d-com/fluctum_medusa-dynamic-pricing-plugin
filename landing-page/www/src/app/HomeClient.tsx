@@ -163,6 +163,7 @@ export default function HomeClient() {
             href="#hero"
             className="flex-shrink-0"
             onClick={() => setIsMobileMenuOpen(false)}
+            data-umami-event="logo_click"
           >
             <Image
               src="/fluctum-logo-full.svg"
@@ -183,6 +184,9 @@ export default function HomeClient() {
                     ? "text-[#7c3aed] drop-shadow-[0_0_8px_rgba(124,58,237,0.8)]"
                     : "text-theme-muted hover:text-theme-base"
                 }`}
+                data-umami-event="nav_link"
+                data-umami-event-section={link.href.slice(1)}
+                data-umami-event-location="header"
               >
                 {link.name}
               </Link>
@@ -194,6 +198,8 @@ export default function HomeClient() {
               onClick={toggleTheme}
               className="p-2 rounded-lg border border-theme-base text-theme-muted hover:text-theme-base transition-colors"
               aria-label="Toggle theme"
+              data-umami-event="toggle_theme"
+              data-umami-event-location="header"
             >
               {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
@@ -202,6 +208,8 @@ export default function HomeClient() {
               target="_blank"
               rel="noreferrer"
               className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors text-sm flex items-center gap-2"
+              data-umami-event="cta_see_demo"
+              data-umami-event-location="header"
             >
               See Demo
               <ExternalLink className="w-4 h-4" />
@@ -209,6 +217,8 @@ export default function HomeClient() {
             <Link
               href="#contact"
               className="px-5 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors text-sm"
+              data-umami-event="cta_contact_us"
+              data-umami-event-location="header"
             >
               Contact us
             </Link>
@@ -217,6 +227,7 @@ export default function HomeClient() {
           <button
             className="lg:hidden p-2 text-theme-base opacity-80 hover:text-theme-base"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            data-umami-event="toggle_mobile_menu"
           >
             {isMobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -238,6 +249,9 @@ export default function HomeClient() {
                     : "text-theme-base opacity-80"
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
+                data-umami-event="nav_link"
+                data-umami-event-section={link.href.slice(1)}
+                data-umami-event-location="mobile-menu"
               >
                 {link.name}
               </Link>
@@ -250,6 +264,8 @@ export default function HomeClient() {
                 rel="noreferrer"
                 className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-base font-semibold text-center flex items-center justify-center gap-2 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
+                data-umami-event="cta_see_demo"
+                data-umami-event-location="mobile-menu"
               >
                 See Demo
                 <ExternalLink className="w-4 h-4" />
@@ -258,12 +274,16 @@ export default function HomeClient() {
                 href="#contact"
                 className="w-full px-5 py-3 bg-[#7c3aed] text-white rounded-lg font-semibold text-center transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
+                data-umami-event="cta_contact_us"
+                data-umami-event-location="mobile-menu"
               >
                 Contact us
               </Link>
               <button
                 onClick={toggleTheme}
                 className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base flex items-center justify-center gap-2 transition-colors"
+                data-umami-event="toggle_theme"
+                data-umami-event-location="mobile-menu"
               >
                 {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
                 Toggle Theme
@@ -339,6 +359,8 @@ export default function HomeClient() {
                 target="_blank"
                 rel="noreferrer"
                 className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                data-umami-event="cta_see_demo"
+                data-umami-event-location="hero"
               >
                 See Demo
                 <ExternalLink className="w-4 h-4" />
@@ -346,6 +368,8 @@ export default function HomeClient() {
               <Link
                 href="#contact"
                 className="w-full sm:w-auto px-8 py-4 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+                data-umami-event="cta_contact_us"
+                data-umami-event-location="hero"
               >
                 Contact Us
               </Link>
@@ -357,6 +381,8 @@ export default function HomeClient() {
                 target="_blank"
                 rel="noreferrer"
                 className="text-[#7c3aed] hover:underline ml-1"
+                data-umami-event="link_github_plugin"
+                data-umami-event-location="hero"
               >
                 See more
               </a>
@@ -581,6 +607,7 @@ export default function HomeClient() {
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-theme-muted hover:text-theme-base transition-colors"
+                data-umami-event="link_medusa_plugins"
               >
                 ...and hundreds more via Medusa Plugins{" "}
                 <ArrowRight className="w-4 h-4" />
@@ -722,6 +749,7 @@ export default function HomeClient() {
                 target="_blank"
                 rel="noreferrer"
                 className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
+                data-umami-event="cta_deploy_medusa_cloud"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <h3 className="text-2xl font-bold text-theme-base">
@@ -740,6 +768,7 @@ export default function HomeClient() {
                 target="_blank"
                 rel="noreferrer"
                 className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
+                data-umami-event="cta_deploy_self_hosted"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <h3 className="text-2xl font-bold text-theme-base">
@@ -760,6 +789,8 @@ export default function HomeClient() {
                 target="_blank"
                 rel="noreferrer"
                 className="text-[#7c3aed] hover:underline ml-1"
+                data-umami-event="link_starter"
+                data-umami-event-location="deployment"
               >
                 backend + storefront starter
               </a>
@@ -782,6 +813,7 @@ export default function HomeClient() {
               <a
                 href="mailto:hello@u11d.com"
                 className="text-[#7c3aed] hover:underline"
+                data-umami-event="link_email_contact"
               >
                 hello@u11d.com
               </a>
@@ -859,6 +891,7 @@ export default function HomeClient() {
                   type="submit"
                   disabled={formStatus === "submitting"}
                   className="w-full px-8 py-4 bg-[#7c3aed] hover:bg-[#6d28d9] disabled:bg-[#7c3aed]/50 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                  data-umami-event="form_contact_submit"
                 >
                   {formStatus === "submitting" ? "Sending..." : "Send Message"}
                 </button>
@@ -893,6 +926,8 @@ export default function HomeClient() {
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-theme-base transition-colors"
+                    data-umami-event="footer_link"
+                    data-umami-event-name={link.name}
                   >
                     {link.name}
                   </a>
