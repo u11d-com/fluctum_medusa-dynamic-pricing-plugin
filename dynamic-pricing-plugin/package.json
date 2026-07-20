@@ -1,6 +1,6 @@
 {
   "name": "@u11d/medusa-dynamic-pricing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fluctum — dynamic pricing plugin for Medusa v2 — real-time precious metals pricing via SSE, checkout price locks, and admin pricing-rule management.",
   "author": "u11d <hello@u11d.com> (https://u11d.com)",
   "repository": {
