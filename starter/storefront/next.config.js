@@ -34,7 +34,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "jwdkcxwjmzopyijqvodr.supabase.co",
+        hostname: "d788ald2ygy3h.cloudfront.net",
         pathname: "/storage/v1/object/public/product-images/**",
       },
       ...(S3_HOSTNAME && S3_PATHNAME
