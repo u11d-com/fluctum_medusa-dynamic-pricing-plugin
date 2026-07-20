@@ -34,6 +34,7 @@
     "react-country-flag": "^3.1.0",
     "react-dom": "^19.2.5",
     "server-only": "^0.0.1",
+    "sharp": "^0.34.5",
     "sonner": "^1.7.4",
     "tailwindcss-radix": "^2.8.0"
   },

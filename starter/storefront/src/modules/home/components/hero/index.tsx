@@ -1,17 +1,22 @@
+import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Button, Heading, Surface, Text } from "@modules/common/components/ui"
 import { buttonClassName } from "@modules/common/components/ui/button"
 import { getTranslations } from "next-intl/server"
 
 const Hero = async () => {
-  const t = await getTranslations('home')
+  const t = await getTranslations("home")
   return (
     <div className="w-full">
       <div className="relative h-[70vh] min-h-[480px] flex items-center overflow-hidden bg-black">
-        {/* Hero background image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url(/hero.jpg)" }}
+        <Image
+          src="/hero.webp"
+          alt=""
+          fill
+          priority
+          quality={70}
+          sizes="100vw"
+          className="object-cover"
         />
 
         {/* Grid pattern overlay */}
@@ -54,17 +59,17 @@ const Hero = async () => {
               size="2xl"
               className="text-white md:text-[3.5rem]"
             >
-              {t('heroTitle')}
+              {t("heroTitle")}
             </Heading>
             <Text className="text-base md:text-lg text-white/60 mt-5 max-w-xl leading-relaxed">
-              {t('heroSubtitle')}
+              {t("heroSubtitle")}
             </Text>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             <LocalizedClientLink href="/store">
               <Button variant="primary" size="lg" className="rounded-lg">
-                {t('browseProducts')}
+                {t("browseProducts")}
                 <svg
                   width="16"
                   height="16"
@@ -89,7 +94,7 @@ const Hero = async () => {
                   "rounded-lg border-white/20 text-white/60 hover:text-white hover:bg-white/10",
               })}
             >
-              {t('howItWorks')}
+              {t("howItWorks")}
             </a>
           </div>
         </div>
@@ -99,10 +104,10 @@ const Hero = async () => {
           <div className="content-container px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 overflow-hidden rounded-t-xl">
               {[
-                { label: t('liveSpotPrices'), value: "XAU · XAG · XPT · XPD" },
-                { label: t('refreshRate'), value: t('refreshRateValue') },
-                { label: t('pricingModel'), value: t('pricingModelValue') },
-                { label: t('checkoutLabel'), value: t('checkoutValue') },
+                { label: t("liveSpotPrices"), value: "XAU · XAG · XPT · XPD" },
+                { label: t("refreshRate"), value: t("refreshRateValue") },
+                { label: t("pricingModel"), value: t("pricingModelValue") },
+                { label: t("checkoutLabel"), value: t("checkoutValue") },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -126,18 +131,18 @@ const Hero = async () => {
             level="h2"
             className="text-2xl md:text-3xl font-light text-white tracking-tight"
           >
-            {t('builtOnFairness')}
+            {t("builtOnFairness")}
           </Heading>
           <Text className="text-white/50 mt-3 mx-auto font-light">
-            {t('builtOnFairnessDesc')}
+            {t("builtOnFairnessDesc")}
           </Text>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {[
             {
-              title: t('liveSpotData'),
-              body: t('liveSpotDataDesc'),
+              title: t("liveSpotData"),
+              body: t("liveSpotDataDesc"),
               icon: (
                 <svg
                   width="24"
@@ -155,8 +160,8 @@ const Hero = async () => {
               ),
             },
             {
-              title: t('simpleFormula'),
-              body: t('simpleFormulaDesc'),
+              title: t("simpleFormula"),
+              body: t("simpleFormulaDesc"),
               icon: (
                 <svg
                   width="24"
@@ -176,8 +181,8 @@ const Hero = async () => {
               ),
             },
             {
-              title: t('lockedAtCheckout'),
-              body: t('lockedAtCheckoutDesc'),
+              title: t("lockedAtCheckout"),
+              body: t("lockedAtCheckoutDesc"),
               icon: (
                 <svg
                   width="24"

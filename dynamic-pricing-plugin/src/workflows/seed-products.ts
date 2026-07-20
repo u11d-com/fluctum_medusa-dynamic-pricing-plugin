@@ -14,26 +14,24 @@ import DynamicPricingModuleService from "../modules/dynamic-pricing/service";
 import { DYNAMIC_PRICING_MODULE } from "../modules/dynamic-pricing";
 import { getLinkKnex, LINK_TABLE } from "./steps/link-table";
 
-// ── Image URLs (from Battalion Metals product photography) ────────────────────
-
 const IMAGES = {
-  goldEagle: ["https://d788ald2ygy3h.cloudfront.net/gold-eagle.png"],
-  goldBuffalo: ["https://d788ald2ygy3h.cloudfront.net/gold-buffalo.png"],
-  goldMaple: ["https://d788ald2ygy3h.cloudfront.net/gold-maple.png"],
-  goldKrugerrand: ["https://d788ald2ygy3h.cloudfront.net/gold-krugerrand.png"],
-  goldBritannia: ["https://d788ald2ygy3h.cloudfront.net/gold-britannia.png"],
-  goldBarRand: ["https://d788ald2ygy3h.cloudfront.net/gold-bar-rand.png"],
+  goldEagle: ["https://d788ald2ygy3h.cloudfront.net/gold-eagle.webp"],
+  goldBuffalo: ["https://d788ald2ygy3h.cloudfront.net/gold-buffalo.webp"],
+  goldMaple: ["https://d788ald2ygy3h.cloudfront.net/gold-maple.webp"],
+  goldKrugerrand: ["https://d788ald2ygy3h.cloudfront.net/gold-krugerrand.webp"],
+  goldBritannia: ["https://d788ald2ygy3h.cloudfront.net/gold-britannia.webp"],
+  goldBarRand: ["https://d788ald2ygy3h.cloudfront.net/gold-bar-rand.webp"],
   goldBarValcambi: [
-    "https://d788ald2ygy3h.cloudfront.net/gold-bar-valcambi.png",
+    "https://d788ald2ygy3h.cloudfront.net/gold-bar-valcambi.webp",
   ],
-  silverEagle: ["https://d788ald2ygy3h.cloudfront.net/silver-eagle.png"],
-  silverMaple: ["https://d788ald2ygy3h.cloudfront.net/silver-maple.png"],
+  silverEagle: ["https://d788ald2ygy3h.cloudfront.net/silver-eagle.webp"],
+  silverMaple: ["https://d788ald2ygy3h.cloudfront.net/silver-maple.webp"],
   silverKrugerrand: [
-    "https://d788ald2ygy3h.cloudfront.net/silver-krugerrand.png",
+    "https://d788ald2ygy3h.cloudfront.net/silver-krugerrand.webp",
   ],
-  silverBarPamp: ["https://d788ald2ygy3h.cloudfront.net/silver-bar-pamp.png"],
+  silverBarPamp: ["https://d788ald2ygy3h.cloudfront.net/silver-bar-pamp.webp"],
   silverBarValcambi: [
-    "https://d788ald2ygy3h.cloudfront.net/silver-bar-valcambi.jpg",
+    "https://d788ald2ygy3h.cloudfront.net/silver-bar-valcambi.webp",
   ],
 };
 
