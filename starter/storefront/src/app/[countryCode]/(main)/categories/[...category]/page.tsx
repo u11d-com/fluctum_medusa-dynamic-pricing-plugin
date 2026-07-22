@@ -15,6 +15,8 @@ type Props = {
   }>
 }
 
+export const dynamic = "force-dynamic"
+
 export async function generateStaticParams() {
   try {
     const product_categories = await listCategories()

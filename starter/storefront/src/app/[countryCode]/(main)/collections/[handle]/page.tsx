@@ -17,6 +17,8 @@ type Props = {
 
 export const PRODUCT_LIMIT = 12
 
+export const dynamic = "force-dynamic"
+
 export async function generateStaticParams() {
   try {
     const { collections } = await listCollections({
