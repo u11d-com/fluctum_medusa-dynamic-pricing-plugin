@@ -20,7 +20,13 @@ type ItemProps = {
   lockedPrice?: { unit_price: number; total: number } | null
 }
 
-const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProps) => {
+const Item = ({
+  item,
+  cart,
+  type = "full",
+  currencyCode,
+  lockedPrice,
+}: ItemProps) => {
   const t = useTranslations("cart")
   const [updating, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -39,11 +45,13 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
     startTransition(async () => {
       try {
         await updateLineItem({
-            lineId: item.id,
-            quantity: clamped,
-          })
+          lineId: item.id,
+          quantity: clamped,
+        })
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('failedToUpdateQuantity'))
+        setError(
+          err instanceof Error ? err.message : t("failedToUpdateQuantity"),
+        )
         setInputValue(String(item.quantity))
       }
     })
@@ -67,6 +75,8 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
       e.currentTarget.blur()
     }
   }
+
+  const decreaseDisabled = updating || parseInt(inputValue, 10) <= 1
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
@@ -104,9 +114,9 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
               {/* TODO i18n: aria-labels "Decrease quantity" / "Increase quantity" — no matching key in cart/common */}
               <button
                 type="button"
-                aria-label={t('decreaseQuantity')}
-                className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30"
-                disabled={updating || parseInt(inputValue, 10) <= 1}
+                aria-label={t("decreaseQuantity")}
+                className={`${decreaseDisabled ? "cursor-not-allowed" : "cursor-pointer"} w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30`}
+                disabled={decreaseDisabled}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) - 1)}
                 data-testid="product-decrement-button"
               >
@@ -125,8 +135,8 @@ const Item = ({ item, cart, type = "full", currencyCode, lockedPrice }: ItemProp
               />
               <button
                 type="button"
-                aria-label={t('increaseQuantity')}
-                className="w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
+                aria-label={t("increaseQuantity")}
+                className="cursor-pointer w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
                 disabled={updating}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) + 1)}
                 data-testid="product-increment-button"

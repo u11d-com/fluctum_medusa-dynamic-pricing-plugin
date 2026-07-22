@@ -16,7 +16,7 @@ type OrderCompletedTemplateProps = {
 export default async function OrderCompletedTemplate({
   order,
 }: OrderCompletedTemplateProps) {
-  const t = await getTranslations('order')
+  const t = await getTranslations("order")
   return (
     <div className="py-6 min-h-[calc(100vh-64px)]">
       <div className="content-container flex flex-col justify-center items-center gap-y-10 max-w-4xl h-full w-full">
@@ -29,18 +29,17 @@ export default async function OrderCompletedTemplate({
             size="xl"
             className="flex flex-col gap-y-3 text-ui-fg-base mb-4"
           >
-            <span>{t('thankYou')}</span>
-            <span>{t('orderPlaced')}</span>
+            <span>{t("thankYou")}</span>
+            <span>{t("orderPlaced")}</span>
           </Heading>
           <OrderDetails order={order} />
           <Heading level="h2" size="2xl" className="flex flex-row">
-            {t('summary')}
+            {t("summary")}
           </Heading>
           <Items order={order} />
           <CartTotals totals={order} />
           <ShippingDetails order={order} />
           <PaymentDetails order={order} />
-          <Help />
         </Surface>
       </div>
     </div>

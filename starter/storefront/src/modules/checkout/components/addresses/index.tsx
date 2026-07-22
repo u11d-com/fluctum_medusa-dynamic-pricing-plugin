@@ -1,5 +1,5 @@
 "use client"
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 import { setAddresses } from "@lib/data/cart"
 import useToggleState from "@lib/hooks/use-toggle-state"
 import compareAddresses from "@lib/util/compare-addresses"
@@ -17,7 +17,7 @@ import CheckoutStepCard from "../checkout-step-card"
 
 function formatAddressLine(
   first?: string | null,
-  second?: string | null
+  second?: string | null,
 ): string | null {
   const left = first ?? ""
   const right = second ?? ""
@@ -28,11 +28,14 @@ function formatAddressLine(
 
 function formatPostalCityLine(
   postalCode?: string | null,
-  city?: string | null
+  city?: string | null,
 ): string | null {
   const left = postalCode ?? ""
   const right = city ?? ""
-  const combined = `${left}, ${right}`.replace(/^,\s*/, "").replace(/,\s*$/, "").trim()
+  const combined = `${left}, ${right}`
+    .replace(/^,\s*/, "")
+    .replace(/,\s*$/, "")
+    .trim()
 
   return combined || null
 }
@@ -44,7 +47,7 @@ const Addresses = ({
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
 }) => {
-  const t = useTranslations('checkout')
+  const t = useTranslations("checkout")
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -54,7 +57,7 @@ const Addresses = ({
   const { state: sameAsBilling, toggle: toggleSameAsBilling } = useToggleState(
     cart?.shipping_address && cart?.billing_address
       ? compareAddresses(cart?.shipping_address, cart?.billing_address)
-      : true
+      : true,
   )
 
   const handleEdit = () => {
@@ -65,7 +68,7 @@ const Addresses = ({
 
   return (
     <CheckoutStepCard
-      title={t('shippingAddress')}
+      title={t("shippingAddress")}
       isOpen={isOpen}
       isComplete={!isOpen}
       canEdit={!isOpen && !!cart?.shipping_address}
@@ -84,19 +87,15 @@ const Addresses = ({
 
             {!sameAsBilling && (
               <div>
-                <Heading
-                  level="h2"
-                  size="2xl"
-                  className="gap-x-4 pb-6 pt-8"
-                >
-                  {t('billingAddress')}
+                <Heading level="h2" size="2xl" className="gap-x-4 pb-6 pt-8">
+                  {t("billingAddress")}
                 </Heading>
 
                 <BillingAddress cart={cart} />
               </div>
             )}
             <SubmitButton className="mt-6" data-testid="submit-address-button">
-              {t('continueToDelivery')}
+              {t("continueToDelivery")}
             </SubmitButton>
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>
@@ -108,49 +107,49 @@ const Addresses = ({
               <div className="flex items-start gap-x-8">
                 <div className="flex items-start gap-x-1 w-full">
                   <AddressSummaryBlock
-                    title={t('shippingAddress')}
+                    title={t("shippingAddress")}
                     dataTestId="shipping-address-summary"
                     lines={[
                       formatAddressLine(
                         cart.shipping_address.first_name,
-                        cart.shipping_address.last_name
+                        cart.shipping_address.last_name,
                       ),
                       formatAddressLine(
                         cart.shipping_address.address_1,
-                        cart.shipping_address.address_2
+                        cart.shipping_address.address_2,
                       ),
                       formatPostalCityLine(
                         cart.shipping_address.postal_code,
-                        cart.shipping_address.city
+                        cart.shipping_address.city,
                       ),
                       cart.shipping_address.country_code?.toUpperCase(),
                     ]}
                   />
 
                   <AddressSummaryBlock
-                    title={t('contact')}
+                    title={t("contact")}
                     dataTestId="shipping-contact-summary"
                     lines={[cart.shipping_address.phone, cart.email]}
                   />
 
                   <AddressSummaryBlock
-                    title={t('billingAddress')}
+                    title={t("billingAddress")}
                     dataTestId="billing-address-summary"
                     lines={
                       sameAsBilling
-                        ? [t('sameAsBilling')]
+                        ? [t("sameAsBilling")]
                         : [
                             formatAddressLine(
                               cart.billing_address?.first_name,
-                              cart.billing_address?.last_name
+                              cart.billing_address?.last_name,
                             ),
                             formatAddressLine(
                               cart.billing_address?.address_1,
-                              cart.billing_address?.address_2
+                              cart.billing_address?.address_2,
                             ),
                             formatPostalCityLine(
                               cart.billing_address?.postal_code,
-                              cart.billing_address?.city
+                              cart.billing_address?.city,
                             ),
                             cart.billing_address?.country_code?.toUpperCase(),
                           ]
@@ -161,13 +160,12 @@ const Addresses = ({
             ) : (
               <div>
                 <Spinner />
-                <Text className="sr-only">{t('loadingAddressData')}</Text>
+                <Text className="sr-only">{t("loadingAddressData")}</Text>
               </div>
             )}
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
     </CheckoutStepCard>
   )
 }

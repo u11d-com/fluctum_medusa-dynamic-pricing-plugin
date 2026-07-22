@@ -278,7 +278,8 @@
     "transferDeclineError": "Wystąpił błąd podczas odrzucania przeniesienia. Spróbuj ponownie."
   },
   "home": {
-    "heroTitle": "Metale szlachetne po prawdziwej wartości rynkowej",
+    "heroTitle_1": "Metale szlachetne",
+    "heroTitle_2": "w dobrej cenie",
     "heroSubtitle": "Ceny spotowe na żywo z globalnych rynków, aktualizowane co 10 sekund. Bez narzutów, bez nieaktualnych wycen — transparentne ceny złota, srebra, platyny i palladu.",
     "browseProducts": "Przeglądaj produkty",
     "howItWorks": "Jak to działa",
@@ -316,6 +317,7 @@
     "tagline": "Rozwiązanie do dynamicznej wyceny metali szlachetnych o otwartym kodzie. Ceny spot w czasie rzeczywistym, transparentna wartość rynkowa.",
     "poweredBy": "Zasilany przez",
     "openSource": "Open Source",
+    "starter": "Starter",
     "githubRepository": "Repozytorium GitHub",
     "fluctum": "Fluctum",
     "website": "Strona internetowa",

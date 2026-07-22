@@ -24,8 +24,8 @@ export default async function Footer() {
                 height={56}
                 style={{ height: "auto" }}
               />
-              <span className="font-cinzel font-bold text-xl text-brand-primary tracking-wide">
-                fluctum
+              <span className="font-bold text-xl text-brand-primary tracking-wide">
+                Fluctum
               </span>
             </LocalizedClientLink>
             <Text as="p" className="text-xs text-white/40 leading-relaxed">
@@ -49,20 +49,6 @@ export default async function Footer() {
 
           <div className="flex flex-col gap-y-3">
             <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
-              {t("openSource")}
-            </span>
-            <a
-              href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/50 hover:text-white transition-colors text-sm"
-            >
-              {t("githubRepository")}
-            </a>
-          </div>
-
-          <div className="flex flex-col gap-y-3">
-            <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
               {t("fluctum")}
             </span>
             <a
@@ -80,6 +66,22 @@ export default async function Footer() {
               className="text-white/50 hover:text-white transition-colors text-sm"
             >
               {t("npmPackage")}
+            </a>
+            <a
+              href="https://github.com/u11d-com/fluctum_starter"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white/50 hover:text-white transition-colors text-sm"
+            >
+              {t("starter")}
+            </a>
+            <a
+              href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white/50 hover:text-white transition-colors text-sm"
+            >
+              {t("githubRepository")}
             </a>
           </div>
 

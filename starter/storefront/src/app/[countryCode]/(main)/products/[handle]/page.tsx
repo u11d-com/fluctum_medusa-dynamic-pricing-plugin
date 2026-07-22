@@ -13,7 +13,7 @@ type Props = {
 export async function generateStaticParams() {
   try {
     const countryCodes = await listRegions().then((regions) =>
-      regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
+      regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat(),
     )
 
     if (!countryCodes) {
@@ -39,14 +39,14 @@ export async function generateStaticParams() {
         countryData.products.map((product) => ({
           countryCode: countryData.country,
           handle: product.handle,
-        }))
+        })),
       )
       .filter((param) => param.handle)
   } catch (error) {
     console.error(
       `Failed to generate static paths for product pages: ${
         error instanceof Error ? error.message : "Unknown error"
-      }.`
+      }.`,
     )
     return []
   }
@@ -54,7 +54,7 @@ export async function generateStaticParams() {
 
 function getImagesForVariant(
   product: HttpTypes.StoreProduct,
-  selectedVariantId?: string
+  selectedVariantId?: string,
 ) {
   if (!selectedVariantId || !product.variants) {
     return product.images
@@ -88,10 +88,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.title} | fluctum`,
+    title: `${product.title} | Fluctum`,
     description: `${product.title}`,
     openGraph: {
-      title: `${product.title} | fluctum`,
+      title: `${product.title} | Fluctum`,
       description: `${product.title}`,
       images: product.thumbnail ? [product.thumbnail] : [],
     },

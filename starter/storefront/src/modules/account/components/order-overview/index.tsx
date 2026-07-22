@@ -29,14 +29,14 @@ const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
       className="w-full flex flex-col items-center gap-y-4"
       data-testid="no-orders-container"
     >
-      <Heading level="h2" size="md">{t('noOrders')}</Heading>
-      <Text>
-        {t('noOrdersBody')}
-      </Text>
+      <Heading level="h2" size="md">
+        {t("noOrders")}
+      </Heading>
+      <Text>{t("noOrdersBody")}</Text>
       <div className="mt-4">
         <LocalizedClientLink href="/" passHref>
           <Button data-testid="continue-shopping-button">
-            {t('continueExploring')}
+            {t("continueExploring")}
           </Button>
         </LocalizedClientLink>
       </div>

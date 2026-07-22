@@ -278,7 +278,8 @@
     "paidAt": "paid at"
   },
   "home": {
-    "heroTitle": "Precious metals at true market value",
+    "heroTitle_1": "Precious metals at",
+    "heroTitle_2": "true market value",
     "heroSubtitle": "Live spot prices from global markets, updated every 10 seconds. No markups, no stale quotes \u2014 just transparent pricing for gold, silver, platinum, and palladium.",
     "browseProducts": "Browse Products",
     "howItWorks": "How It Works",
@@ -316,6 +317,7 @@
     "tagline": "Open-source dynamic pricing solution for precious metals. Real-time spot prices, transparent fair-market value.",
     "poweredBy": "Powered by",
     "openSource": "Open Source",
+    "starter": "Starter",
     "githubRepository": "GitHub Repository",
     "fluctum": "Fluctum",
     "website": "Website",

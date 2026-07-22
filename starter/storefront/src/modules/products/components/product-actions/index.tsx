@@ -22,7 +22,7 @@ type ProductActionsProps = {
 }
 
 const optionsAsKeymap = (
-  variantOptions: HttpTypes.StoreProductVariant["options"]
+  variantOptions: HttpTypes.StoreProductVariant["options"],
 ) => {
   return variantOptions?.reduce((acc: Record<string, string>, varopt) => {
     if (varopt.option_id) acc[varopt.option_id] = varopt.value
@@ -42,7 +42,7 @@ export default function ProductActions({
   const [isAdding, startAddTransition] = useTransition()
   const { addToCart } = useCart()
   const countryCode = getCountryCodeFromParams(useParams())
-  const t = useTranslations('product')
+  const t = useTranslations("product")
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -159,10 +159,12 @@ export default function ProductActions({
           countryCode: code,
         })
       } catch {
-        toast.error(t('addToCartError'))
+        toast.error(t("addToCartError"))
       }
     })
   }
+
+  console.log({ selectedVariant, isValidVariant })
 
   return (
     <>
@@ -193,11 +195,14 @@ export default function ProductActions({
 
         {selectedVariant && (
           <div className="text-small-regular text-ui-fg-muted">
-            {selectedVariant.manage_inventory && selectedVariant.inventory_quantity != null
-              ? (selectedVariant.inventory_quantity > 0
-                  ? t('inStockQuantity', { quantity: selectedVariant.inventory_quantity })
-                  : t('outOfStock'))
-              : t('inStock')}
+            {selectedVariant.manage_inventory &&
+            selectedVariant.inventory_quantity != null
+              ? selectedVariant.inventory_quantity > 0
+                ? t("inStockQuantity", {
+                    quantity: selectedVariant.inventory_quantity,
+                  })
+                : t("outOfStock")
+              : t("inStock")}
           </div>
         )}
 
@@ -215,11 +220,11 @@ export default function ProductActions({
           isLoading={isAdding}
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
-            ? t('selectVariant')
-            : !inStock || !isValidVariant
-            ? t('outOfStock')
-            : t('addToCart')}
+          {!selectedVariant
+            ? t("selectVariant")
+            : !inStock
+              ? t("outOfStock")
+              : t("addToCart")}
         </Button>
         <MobileActions
           product={product}

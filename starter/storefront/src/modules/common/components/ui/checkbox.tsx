@@ -16,14 +16,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           id={id}
           className={clsx(
             "h-4 w-4 rounded border-ui-border-base text-brand-primary focus:ring-brand-primary bg-ui-bg-field",
-            className
+            className,
           )}
           {...props}
         />
-        {label && <Label htmlFor={id}>{label}</Label>}
+        {label && (
+          <span>
+            <Label htmlFor={id}>{label}</Label>
+          </span>
+        )}
       </div>
     )
-  }
+  },
 )
 
 Checkbox.displayName = "Checkbox"

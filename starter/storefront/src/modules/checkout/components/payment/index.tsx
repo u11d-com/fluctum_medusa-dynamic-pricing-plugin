@@ -1,5 +1,5 @@
 "use client"
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 import { RadioGroup } from "@headlessui/react"
 import { isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
@@ -8,12 +8,7 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer, {
   StripeCardContainer,
 } from "@modules/checkout/components/payment-container"
-import {
-  Button,
-  Container,
-  Divider,
-  Text,
-} from "@modules/common/components/ui"
+import { Button, Container, Divider, Text } from "@modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
@@ -26,9 +21,9 @@ const Payment = ({
   cart: HttpTypes.StoreCart
   availablePaymentMethods: { id: string }[]
 }) => {
-  const t = useTranslations('checkout')
+  const t = useTranslations("checkout")
   const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession) => paymentSession.status === "pending"
+    (paymentSession) => paymentSession.status === "pending",
   )
 
   const [isLoading, setIsLoading] = useState(false)
@@ -36,7 +31,7 @@ const Payment = ({
   const [cardBrand, setCardBrand] = useState<string | null>(null)
   const [cardComplete, setCardComplete] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    activeSession?.provider_id ?? ""
+    activeSession?.provider_id ?? "",
   )
 
   const searchParams = useSearchParams()
@@ -56,7 +51,7 @@ const Payment = ({
   }
 
   const paymentReady =
-    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0)
+    activeSession && (cart?.shipping_methods?.length ?? 0) !== 0
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -65,7 +60,7 @@ const Payment = ({
 
       return params.toString()
     },
-    [searchParams]
+    [searchParams],
   )
 
   const handleEdit = () => {
@@ -96,7 +91,7 @@ const Payment = ({
         // instead of "Place order". window.location.assign forces a full page reload,
         // guaranteeing the server returns the post-initiatePaymentSession cart.
         window.location.assign(
-          pathname + "?" + createQueryString("step", "review")
+          pathname + "?" + createQueryString("step", "review"),
         )
         return
       }
@@ -113,7 +108,7 @@ const Payment = ({
 
   return (
     <CheckoutStepCard
-      title={t('payment')}
+      title={t("payment")}
       isOpen={isOpen}
       isComplete={!isOpen && !!paymentReady}
       disabled={!isOpen && !paymentReady}
@@ -170,8 +165,8 @@ const Payment = ({
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeLike(selectedPaymentMethod)
-              ? t('enterCardDetails')
-              : t('continueToReview')}
+              ? t("enterCardDetails")
+              : t("continueToReview")}
           </Button>
         </div>
 
@@ -180,19 +175,16 @@ const Payment = ({
             <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text as="span" variant="label" className="mb-1">
-                  {t('paymentMethod')}
+                  {t("paymentMethod")}
                 </Text>
-                <Text
-                  variant="muted"
-                  data-testid="payment-method-summary"
-                >
+                <Text variant="muted" data-testid="payment-method-summary">
                   {paymentInfoMap[activeSession?.provider_id]?.title ||
                     activeSession?.provider_id}
                 </Text>
               </div>
               <div className="flex flex-col w-1/3">
                 <Text as="span" variant="label" className="mb-1">
-                  {t('paymentDetails')}
+                  {t("paymentDetails")}
                 </Text>
                 <div
                   className="flex gap-2 items-center"
@@ -204,9 +196,9 @@ const Payment = ({
                     )}
                   </Container>
                   <Text variant="muted">
-                  {isStripeLike(selectedPaymentMethod) && cardBrand
-                    ? cardBrand
-                    : t('anotherStep')}
+                    {isStripeLike(selectedPaymentMethod) && cardBrand
+                      ? cardBrand
+                      : t("anotherStep")}
                   </Text>
                 </div>
               </div>
@@ -214,7 +206,6 @@ const Payment = ({
           ) : null}
         </div>
       </div>
-      <Divider className="mt-8" />
     </CheckoutStepCard>
   )
 }

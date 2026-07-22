@@ -10,7 +10,7 @@ export default async function Nav() {
   return (
     <header className="sticky top-0 inset-x-0 z-50 h-16 mx-auto border-b duration-200 bg-black border-white/10">
       <nav className="content-container flex items-center justify-between w-full h-full text-small-regular">
-        <div className="flex items-center h-full">
+        <div className="flex items-center h-full w-40">
           <LocalizedClientLink
             href="/"
             className="flex items-center gap-2.5"
@@ -23,8 +23,8 @@ export default async function Nav() {
               height={52}
               style={{ height: "auto" }}
             />
-            <span className="font-cinzel font-bold text-2xl text-brand-primary tracking-wide">
-              fluctum
+            <span className="font-bold text-2xl text-brand-primary tracking-wide">
+              Fluctum
             </span>
           </LocalizedClientLink>
         </div>
@@ -53,7 +53,7 @@ export default async function Nav() {
           </LocalizedClientLink>
         </div>
 
-        <div className="flex items-center h-full">
+        <div className="flex items-center h-full w-40 justify-end">
           <CartDropdown />
         </div>
       </nav>

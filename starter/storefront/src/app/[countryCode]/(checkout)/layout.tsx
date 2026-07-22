@@ -37,8 +37,8 @@ export default function CheckoutLayout({
               width={28}
               height={28}
             />
-            <span className="font-cinzel font-bold text-sm text-brand-primary hover:text-brand-hover tracking-wide">
-              fluctum
+            <span className="font-bold text-sm text-brand-primary hover:text-brand-hover tracking-wide">
+              Fluctum
             </span>
           </LocalizedClientLink>
           <div className="flex-1 basis-0" />

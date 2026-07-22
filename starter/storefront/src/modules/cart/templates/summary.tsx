@@ -29,7 +29,10 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 const Summary = ({ cart }: SummaryProps) => {
   const { cart: contextCart, regionCurrencyCode } = useCart()
   const effectiveCart = contextCart ?? cart
-  const { subtotal: dynamicSubtotal } = useCartPricing(effectiveCart, regionCurrencyCode)
+  const { subtotal: dynamicSubtotal } = useCartPricing(
+    effectiveCart,
+    regionCurrencyCode,
+  )
   const router = useRouter()
   const params = useParams()
   const countryCode = getCountryCodeFromParams(params)
@@ -38,9 +41,12 @@ const Summary = ({ cart }: SummaryProps) => {
   const t = useTranslations("cart")
   const tCheckout = useTranslations("checkout")
 
-  const dynamicTotal = dynamicSubtotal > 0
-    ? dynamicSubtotal + (effectiveCart.shipping_subtotal ?? 0) + (effectiveCart.tax_total ?? 0)
-    : null
+  const dynamicTotal =
+    dynamicSubtotal > 0
+      ? dynamicSubtotal +
+        (effectiveCart.shipping_subtotal ?? 0) +
+        (effectiveCart.tax_total ?? 0)
+      : null
 
   const handleCheckout = async () => {
     if (!effectiveCart.id || !countryCode) return
@@ -57,17 +63,20 @@ const Summary = ({ cart }: SummaryProps) => {
   return (
     <div className="flex flex-col gap-y-4">
       <Heading level="h2" size="2xl">
-        {t('summaryTitle')}
+        {t("summaryTitle")}
       </Heading>
-      <Divider />
-      <CartTotals totals={effectiveCart} subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : null} totalOverride={dynamicTotal} />
+      <CartTotals
+        totals={effectiveCart}
+        subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : null}
+        totalOverride={dynamicTotal}
+      />
       <Button
         className="w-full h-10"
         onClick={handleCheckout}
         disabled={isLocking}
         data-testid="checkout-button"
       >
-        {isLocking ? tCheckout('lockingPricesShort') : t("checkout")}
+        {isLocking ? tCheckout("lockingPricesShort") : t("checkout")}
       </Button>
     </div>
   )

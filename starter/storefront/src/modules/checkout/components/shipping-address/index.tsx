@@ -1,6 +1,6 @@
 "use client"
 
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 import { HttpTypes } from "@medusajs/types"
 import { Checkbox, Container, Input, Text } from "@modules/common/components/ui"
 import React, { useEffect, useMemo, useState } from "react"
@@ -8,7 +8,9 @@ import AddressFields, {
   createAddressFormData,
   toAddressFromFormData,
 } from "../address-fields"
-import AddressSelect, { AddressFields as StoreAddressFields } from "../address-select"
+import AddressSelect, {
+  AddressFields as StoreAddressFields,
+} from "../address-select"
 
 const ShippingAddress = ({
   customer,
@@ -21,7 +23,7 @@ const ShippingAddress = ({
   checked: boolean
   onChange: () => void
 }) => {
-  const t = useTranslations('checkout')
+  const t = useTranslations("checkout")
   const [formData, setFormData] = useState<Record<string, string>>({
     ...createAddressFormData("shipping_address", cart?.shipping_address),
     email: cart?.email || "",
@@ -29,22 +31,19 @@ const ShippingAddress = ({
 
   const countriesInRegion = useMemo(
     () => cart?.region?.countries?.map((c) => c.iso_2),
-    [cart?.region]
+    [cart?.region],
   )
 
   // check if customer has saved addresses that are in the current region
   const addressesInRegion = useMemo(
     () =>
       customer?.addresses.filter(
-        (a) => a.country_code && countriesInRegion?.includes(a.country_code)
+        (a) => a.country_code && countriesInRegion?.includes(a.country_code),
       ),
-    [customer?.addresses, countriesInRegion]
+    [customer?.addresses, countriesInRegion],
   )
 
-  const setFormAddress = (
-    address?: StoreAddressFields,
-    email?: string
-  ) => {
+  const setFormAddress = (address?: StoreAddressFields, email?: string) => {
     if (address) {
       setFormData((prevState: Record<string, string>) => ({
         ...prevState,
@@ -74,7 +73,7 @@ const ShippingAddress = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLInputElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setFormData({
       ...formData,
@@ -114,9 +113,9 @@ const ShippingAddress = ({
         }}
         includePhone={false}
       />
-      <div className="my-8 flex justify-center">
+      <div className="my-4">
         <Checkbox
-          label={t('sameAsBilling')}
+          label={t("sameAsBilling")}
           name="same_as_billing"
           checked={checked}
           onChange={onChange}
@@ -126,7 +125,7 @@ const ShippingAddress = ({
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <Input
-          label={t('email')}
+          label={t("email")}
           name="email"
           type="email"
           title="Enter a valid email address."
@@ -137,7 +136,7 @@ const ShippingAddress = ({
           data-testid="shipping-email-input"
         />
         <Input
-          label={t('phone')}
+          label={t("phone")}
           name="shipping_address.phone"
           autoComplete="tel"
           value={formData["shipping_address.phone"]}

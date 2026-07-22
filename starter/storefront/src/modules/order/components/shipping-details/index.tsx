@@ -8,12 +8,12 @@ type ShippingDetailsProps = {
 }
 
 const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
-  const t = await getTranslations('order')
-  const tCheckout = await getTranslations('checkout')
+  const t = await getTranslations("order")
+  const tCheckout = await getTranslations("checkout")
   return (
     <div>
       <Heading level="h2" size="2xl" className="flex flex-row my-6">
-        {t('shipping')}
+        {t("shipping")}
       </Heading>
       <div className="flex items-start gap-x-8">
         <div
@@ -21,7 +21,7 @@ const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
           data-testid="shipping-address-summary"
         >
           <Text as="span" variant="label" className="mb-1">
-            {t('shippingTo')}
+            {t("shippingTo")}
           </Text>
           <Text variant="muted">
             {order.shipping_address?.first_name}{" "}
@@ -45,11 +45,9 @@ const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
           data-testid="shipping-contact-summary"
         >
           <Text as="span" variant="label" className="mb-1">
-            {tCheckout('contact')}
+            {tCheckout("contact")}
           </Text>
-          <Text variant="muted">
-            {order.shipping_address?.phone}
-          </Text>
+          <Text variant="muted">{order.shipping_address?.phone}</Text>
           <Text variant="muted">{order.email}</Text>
         </div>
 
@@ -58,7 +56,7 @@ const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
           data-testid="shipping-method-summary"
         >
           <Text as="span" variant="label" className="mb-1">
-            {tCheckout('method')}
+            {tCheckout("method")}
           </Text>
           <Text variant="muted">
             {(order.shipping_methods?.[0] as { name?: string })?.name} (
@@ -70,7 +68,6 @@ const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
           </Text>
         </div>
       </div>
-      <Divider className="mt-8" />
     </div>
   )
 }

@@ -278,7 +278,8 @@
     "transferDeclineError": "Beim Ablehnen der Übertragung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
   },
   "home": {
-    "heroTitle": "Edelmetalle zum wahren Marktwert",
+    "heroTitle_1": "Edelmetalle",
+    "heroTitle_2": "zum wahren Marktwert",
     "heroSubtitle": "Live-Spotpreise von globalen Märkten, alle 10 Sekunden aktualisiert. Ohne Aufschläge, ohne veraltete Kurse — transparente Preise für Gold, Silber, Platin und Palladium.",
     "browseProducts": "Produkte entdecken",
     "howItWorks": "So funktioniert es",
@@ -316,6 +317,7 @@
     "tagline": "Open-Source-Lösung für dynamische Preisgestaltung bei Edelmetallen. Echtzeit-Spotpreise, transparenter Marktwert.",
     "poweredBy": "Betrieben mit",
     "openSource": "Open Source",
+    "starter": "Starter",
     "githubRepository": "GitHub-Repository",
     "fluctum": "Fluctum",
     "website": "Webseite",

@@ -57,9 +57,12 @@ const Hero = async () => {
             <Heading
               level="h1"
               size="2xl"
-              className="text-white md:text-[3.5rem]"
+              className="text-white md:text-[3rem]"
             >
-              {t("heroTitle")}
+              {t("heroTitle_1")}{" "}
+              <span className="text-brand-primary font-medium">
+                {t("heroTitle_2")}
+              </span>
             </Heading>
             <Text className="text-base md:text-lg text-white/60 mt-5 max-w-xl leading-relaxed">
               {t("heroSubtitle")}

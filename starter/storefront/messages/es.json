@@ -278,7 +278,8 @@
     "transferDeclineError": "Hubo un error al rechazar la transferencia. Por favor inténtelo de nuevo."
   },
   "home": {
-    "heroTitle": "Metales preciosos al valor real de mercado",
+    "heroTitle_1": "Metales preciosos",
+    "heroTitle_2": "al valor real de mercado",
     "heroSubtitle": "Precios spot en vivo de los mercados globales, actualizados cada 10 segundos. Sin márgenes, sin cotizaciones desactualizadas — precios transparentes para oro, plata, platino y paladio.",
     "browseProducts": "Ver productos",
     "howItWorks": "Cómo funciona",
@@ -316,6 +317,7 @@
     "tagline": "Solución de precios dinámicos de código abierto para metales preciosos. Precios spot en tiempo real, valor de mercado transparente.",
     "poweredBy": "Desarrollado con",
     "openSource": "Código abierto",
+    "starter": "Starter",
     "githubRepository": "Repositorio GitHub",
     "fluctum": "Fluctum",
     "website": "Sitio web",

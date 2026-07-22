@@ -1,4 +1,4 @@
-import { Lato, Cinzel } from "next/font/google"
+import { Lato } from "next/font/google"
 import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
 import "styles/globals.css"
@@ -14,13 +14,6 @@ const lato = Lato({
   weight: ["300", "400", "700", "900"],
 })
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  variable: "--font-cinzel",
-  display: "swap",
-  weight: ["700", "800", "900"],
-})
-
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
@@ -29,7 +22,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const locale = await getLocale()
   const messages = await getMessages()
   return (
-    <html lang={locale} className={`${lato.variable} ${cinzel.variable}`}>
+    <html lang={locale} className={`${lato.variable}`}>
       <head>
         <link rel="icon" href="/fluctum-logo-full.svg" type="image/svg+xml" />
       </head>

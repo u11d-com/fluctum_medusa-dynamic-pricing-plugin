@@ -64,7 +64,6 @@ module.exports = {
       },
       fontFamily: {
         sans: ["var(--font-lato)", "ui-sans-serif", "system-ui", "sans-serif"],
-        cinzel: ["var(--font-cinzel)", "Georgia", "serif"],
       },
       keyframes: {
         ring: {

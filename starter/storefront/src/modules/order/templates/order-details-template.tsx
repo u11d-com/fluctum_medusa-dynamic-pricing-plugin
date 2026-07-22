@@ -19,19 +19,19 @@ type OrderDetailsTemplateProps = {
 const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
   order,
 }) => {
-  const t = useTranslations('order')
+  const t = useTranslations("order")
   return (
     <div className="flex flex-col justify-center gap-y-4">
       <div className="flex gap-2 justify-between items-center">
         <Heading level="h1" size="lg">
-          {t('orderDetails')}
+          {t("orderDetails")}
         </Heading>
         <LocalizedClientLink
           href="/account/orders"
           className="flex gap-2 items-center text-ui-fg-subtle hover:text-ui-fg-base"
           data-testid="back-to-overview-button"
         >
-          <XMark /> {t('backToOverview')}
+          <XMark /> {t("backToOverview")}
         </LocalizedClientLink>
       </div>
       <div
@@ -42,7 +42,6 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
         <Items order={order} />
         <ShippingDetails order={order} />
         <OrderSummary order={order} />
-        <Help />
       </div>
     </div>
   )
