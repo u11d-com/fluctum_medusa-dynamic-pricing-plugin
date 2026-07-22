@@ -150,7 +150,6 @@ export default function HomeClient() {
       name: "NPM package",
       href: "https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing",
     },
-    { name: "u11d", href: "https://u11d.com" },
     { name: "Medusa", href: "https://medusajs.com" },
     { name: "Deploy Medusa", href: "https://deploymedusa.com" },
   ];
@@ -936,7 +935,11 @@ export default function HomeClient() {
             </nav>
           </div>
           <p className="text-center text-theme-dimmer text-sm">
-            © {new Date().getFullYear()} Fluctum by u11d. All rights reserved.
+            © {new Date().getFullYear()} Fluctum by{" "}
+            <a href="https://u11d.com" target="_blank">
+              u11d
+            </a>
+            . All rights reserved.
           </p>
         </div>
       </footer>
