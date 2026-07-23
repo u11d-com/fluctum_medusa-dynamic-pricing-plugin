@@ -164,8 +164,6 @@ export default function ProductActions({
     })
   }
 
-  console.log({ selectedVariant, isValidVariant })
-
   return (
     <>
       <div className="flex flex-col gap-y-2" ref={actionsRef}>
