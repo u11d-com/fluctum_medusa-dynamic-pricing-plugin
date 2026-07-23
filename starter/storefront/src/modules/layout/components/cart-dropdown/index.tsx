@@ -199,7 +199,8 @@ const CartDropdown = () => {
                       </Text>
                       <Text
                         as="span"
-                        className="text-large-semi"
+                        key={subtotal ?? "stale"}
+                        className="text-large-semi inline-block animate-price-pulse"
                         data-testid="cart-subtotal"
                         data-value={subtotal ?? undefined}
                       >

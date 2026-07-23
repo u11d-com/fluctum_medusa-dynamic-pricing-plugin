@@ -21,7 +21,8 @@ const LineItemUnitPrice = ({
     <div className="flex flex-col justify-center h-full">
       <Text
         as="span"
-        className="text-base-regular text-ui-fg-muted"
+        key={unitAmount}
+        className="text-base-regular text-ui-fg-muted inline-block animate-price-pulse"
         data-testid="product-unit-price"
       >
         {convertToLocale({

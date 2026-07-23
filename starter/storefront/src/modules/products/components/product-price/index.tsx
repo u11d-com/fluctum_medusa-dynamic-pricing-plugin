@@ -95,7 +95,7 @@ export default function ProductPrice({
     <div className="flex flex-col">
       <Text as="span" className="text-xl-semi">
         {!variant && t('from') + ' '}
-        <Text as="span" data-testid="product-price" data-value={displayPrice}>
+        <Text as="span" key={displayPrice} className="inline-block animate-price-pulse" data-testid="product-price" data-value={displayPrice}>
           {convertToLocale({ amount: displayPrice, currency_code: cartCurrencyCode.toLowerCase() })}
         </Text>
       </Text>

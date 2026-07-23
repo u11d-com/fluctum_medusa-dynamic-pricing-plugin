@@ -38,6 +38,8 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals, subtotalOverride, total
           <span>{t('subtotal')} (excl. shipping and taxes)</span>
           <span
             data-testid="cart-subtotal"
+            key={displaySubtotal ?? "stale"}
+            className="inline-block animate-price-pulse"
             data-value={displaySubtotal ?? undefined}
           >
             {displaySubtotal === null
@@ -62,7 +64,8 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals, subtotalOverride, total
       <div className="flex items-center justify-between text-ui-fg-base mb-2 txt-medium ">
         <span>{t('total')}</span>
         <span
-          className="txt-xlarge-plus"
+          key={displayTotal ?? "stale"}
+          className="txt-xlarge-plus inline-block animate-price-pulse"
           data-testid="cart-total"
           data-value={displayTotal ?? undefined}
         >

@@ -32,7 +32,7 @@ export default function PreviewPrice({
   if (displayPrice === null) return null
 
   return (
-    <Text as="span" variant="muted" data-testid="price">
+    <Text as="span" variant="muted" key={displayPrice} className="inline-block animate-price-pulse" data-testid="price">
       {convertToLocale({ amount: displayPrice, currency_code: cartCurrencyCode.toLowerCase() })}
     </Text>
   )
