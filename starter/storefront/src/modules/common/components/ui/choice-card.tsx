@@ -11,10 +11,10 @@ export const choiceCardClassName = ({
   className?: string
 }) =>
   clsx(
-    "border border-ui-border-base bg-ui-bg-base rounded-rounded transition-all duration-150 mb-3",
+    "border border-ui-border-base bg-ui-bg-base rounded-rounded transition-all duration-150 mb-3 cursor-pointer",
     "hover:shadow-borders-interactive-with-active",
     selected && "border-ui-border-interactive",
-    disabled && "opacity-60 pointer-events-none",
+    disabled && "opacity-60 pointer-events-none cursor-not-allowed",
     className,
   )
 

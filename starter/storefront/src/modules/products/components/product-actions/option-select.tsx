@@ -1,5 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import { ChoiceCardButton, Text, clx } from "@modules/common/components/ui"
+import { ChoiceCardButton, Text } from "@modules/common/components/ui"
 import React from "react"
 
 type OptionSelectProps = {
@@ -23,7 +23,9 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
 
   return (
     <div className="flex flex-col gap-y-3">
-      <Text as="span" className="text-sm">Select {title}</Text>
+      <Text as="span" className="text-sm">
+        Select {title}
+      </Text>
       <div
         className="flex flex-wrap justify-between gap-2"
         data-testid={dataTestId}
@@ -34,10 +36,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
               onClick={() => updateOption(option.id, v)}
               key={v}
               selected={v === current}
-              className={clx("text-small-regular h-10 p-2 flex-1", {
-                "hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150":
-                  v !== current,
-              })}
+              className="text-small-regular h-10 p-2 flex-1"
               disabled={disabled}
               data-testid="option-button"
             >

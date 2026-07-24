@@ -25,12 +25,18 @@ export default function ProductPrice({
 }) {
   const { prices, rates, isLoading: spotLoading } = useSpotPrices()
   const { cart, regionCurrencyCode } = useCart()
-  const cartCurrencyCode = (cart?.currency_code ?? regionCurrencyCode).toUpperCase()
+  const cartCurrencyCode = (
+    cart?.currency_code ?? regionCurrencyCode
+  ).toUpperCase()
   const isUsd = cartCurrencyCode === "USD"
-  const conversionRate: number | null = isUsd ? 1 : (rates[cartCurrencyCode] ?? null)
-  const [pricingData, setPricingData] = useState<Record<string, VariantPricingData>>({})
+  const conversionRate: number | null = isUsd
+    ? 1
+    : (rates[cartCurrencyCode] ?? null)
+  const [pricingData, setPricingData] = useState<
+    Record<string, VariantPricingData>
+  >({})
   const [pricingLoading, setPricingLoading] = useState(true)
-  const t = useTranslations('product')
+  const t = useTranslations("product")
 
   useEffect(() => {
     let cancelled = false
@@ -69,8 +75,16 @@ export default function ProductPrice({
     return <div className="block w-32 h-9 bg-gray-100 animate-pulse" />
   }
 
-  function computePrice(v: HttpTypes.StoreProductVariant, rate: number): number | null {
-    return computeVariantDynamicPrice(v.id, pricingData, spotPriceByMaterial, rate)
+  function computePrice(
+    v: HttpTypes.StoreProductVariant,
+    rate: number,
+  ): number | null {
+    return computeVariantDynamicPrice(
+      v.id,
+      pricingData,
+      spotPriceByMaterial,
+      rate,
+    )
   }
 
   const displayPrice = variant
@@ -85,7 +99,7 @@ export default function ProductPrice({
     return (
       <div className="flex flex-col">
         <Text as="span" variant="muted" data-testid="product-price-unavailable">
-          {t('priceUnavailable')}
+          {t("priceUnavailable")}
         </Text>
       </div>
     )
@@ -94,9 +108,18 @@ export default function ProductPrice({
   return (
     <div className="flex flex-col">
       <Text as="span" className="text-xl-semi">
-        {!variant && t('from') + ' '}
-        <Text as="span" key={displayPrice} className="inline-block animate-price-pulse" data-testid="product-price" data-value={displayPrice}>
-          {convertToLocale({ amount: displayPrice, currency_code: cartCurrencyCode.toLowerCase() })}
+        {!variant && t("from") + " "}
+        <Text
+          as="span"
+          key={displayPrice}
+          className="inline-block animate-price-pulse"
+          data-testid="product-price"
+          data-value={displayPrice}
+        >
+          {convertToLocale({
+            amount: displayPrice,
+            currency_code: cartCurrencyCode.toLowerCase(),
+          })}
         </Text>
       </Text>
     </div>

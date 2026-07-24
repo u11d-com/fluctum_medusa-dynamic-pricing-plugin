@@ -13,6 +13,7 @@ import {
 } from "@headlessui/react"
 
 import { ModalProvider, useModal } from "@lib/context/modal-context"
+import { IconButton } from "@modules/common/components/ui"
 import X from "@modules/common/icons/x"
 
 type ModalProps = {
@@ -97,14 +98,14 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <DialogTitle className="flex items-center justify-between">
       <div className="text-large-semi">{children}</div>
       <div>
-        <button
+        <IconButton
           type="button"
           onClick={close}
           aria-label={t("closeModal")}
           data-testid="close-modal-button"
         >
           <X size={20} />
-        </button>
+        </IconButton>
       </div>
     </DialogTitle>
   )

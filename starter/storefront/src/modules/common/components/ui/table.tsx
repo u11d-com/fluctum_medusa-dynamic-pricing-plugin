@@ -20,7 +20,7 @@ const TableRoot = forwardRef<HTMLTableElement, TableProps>(
         {children}
       </table>
     )
-  }
+  },
 )
 
 TableRoot.displayName = "Table"
@@ -38,7 +38,7 @@ const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>(
         {children}
       </thead>
     )
-  }
+  },
 )
 
 TableHeader.displayName = "TableHeader"
@@ -48,15 +48,11 @@ type TableBodyProps = HTMLAttributes<HTMLTableSectionElement>
 const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
   ({ className, children, ...props }, ref) => {
     return (
-      <tbody
-        ref={ref}
-        className={clsx("[&_tr:last-child]:border-0", className)}
-        {...props}
-      >
+      <tbody ref={ref} className={className} {...props}>
         {children}
       </tbody>
     )
-  }
+  },
 )
 
 TableBody.displayName = "TableBody"
@@ -69,15 +65,15 @@ const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         className={clsx(
-          "border-b border-ui-border-base transition-colors hover:bg-ui-bg-base-hover",
-          className
+          "border-b border-ui-border-base transition-colors",
+          className,
         )}
         {...props}
       >
         {children}
       </tr>
     )
-  }
+  },
 )
 
 TableRow.displayName = "TableRow"
@@ -91,14 +87,14 @@ const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
         ref={ref}
         className={clsx(
           "h-12 px-4 text-left align-middle font-medium text-ui-fg-muted [&:has([role=checkbox])]:pr-0",
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </th>
     )
-  }
+  },
 )
 
 TableHead.displayName = "TableHead"
@@ -112,14 +108,14 @@ const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
         ref={ref}
         className={clsx(
           "p-4 align-middle [&:has([role=checkbox])]:pr-0",
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </td>
     )
-  }
+  },
 )
 
 TableCell.displayName = "TableCell"

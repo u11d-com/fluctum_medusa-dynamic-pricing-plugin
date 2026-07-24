@@ -18,7 +18,12 @@ const LineItemPrice = ({
     <div className="flex flex-col gap-x-2 text-ui-fg-subtle items-end">
       <div className="text-left">
         {price !== undefined ? (
-          <span key={price} className="inline-block animate-price-pulse" data-testid="product-price" data-value={price}>
+          <span
+            key={price}
+            className="inline-block animate-price-pulse"
+            data-testid="product-price"
+            data-value={price}
+          >
             {convertToLocale({
               amount: price,
               currency_code: currencyCode,

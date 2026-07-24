@@ -1,8 +1,8 @@
 "use client"
 
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl"
 import { CheckCircleSolid } from "@medusajs/icons"
-import { Heading, Surface, Text, clx } from "@modules/common/components/ui"
+import { Button, Heading, Surface, clx } from "@modules/common/components/ui"
 
 type CheckoutStepCardProps = {
   title: string
@@ -25,7 +25,7 @@ export default function CheckoutStepCard({
   children,
   dataTestId,
 }: CheckoutStepCardProps) {
-  const t = useTranslations('checkout')
+  const t = useTranslations("checkout")
 
   return (
     <Surface className="p-6" data-testid={dataTestId}>
@@ -41,15 +41,9 @@ export default function CheckoutStepCard({
           {!isOpen && isComplete && <CheckCircleSolid />}
         </Heading>
         {!isOpen && canEdit && onEdit && (
-          <Text>
-            <button
-              type="button"
-              onClick={onEdit}
-              className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
-            >
-              {t('edit')}
-            </button>
-          </Text>
+          <Button type="button" variant="link" size="xs" onClick={onEdit}>
+            {t("edit")}
+          </Button>
         )}
       </div>
       {children}

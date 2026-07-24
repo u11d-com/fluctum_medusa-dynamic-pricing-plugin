@@ -19,21 +19,35 @@ export default function PreviewPrice({
 }) {
   const { prices, rates } = useSpotPrices()
   const { cart, regionCurrencyCode } = useCart()
-  const cartCurrencyCode = (cart?.currency_code ?? regionCurrencyCode).toUpperCase()
+  const cartCurrencyCode = (
+    cart?.currency_code ?? regionCurrencyCode
+  ).toUpperCase()
   const isUsd = cartCurrencyCode === "USD"
-  const conversionRate: number | null = isUsd ? 1 : (rates[cartCurrencyCode] ?? null)
+  const conversionRate: number | null = isUsd
+    ? 1
+    : (rates[cartCurrencyCode] ?? null)
 
-  const liveResult = (prices.length > 0 && conversionRate !== null)
-    ? computeCheapestVariant(variants, pricingData, prices, conversionRate)
-    : null
+  const liveResult =
+    prices.length > 0 && conversionRate !== null
+      ? computeCheapestVariant(variants, pricingData, prices, conversionRate)
+      : null
 
   const displayPrice = liveResult?.price ?? (isUsd ? initialPrice : null)
 
   if (displayPrice === null) return null
 
   return (
-    <Text as="span" variant="muted" key={displayPrice} className="inline-block animate-price-pulse" data-testid="price">
-      {convertToLocale({ amount: displayPrice, currency_code: cartCurrencyCode.toLowerCase() })}
+    <Text
+      as="span"
+      variant="muted"
+      key={displayPrice}
+      className="inline-block animate-price-pulse"
+      data-testid="price"
+    >
+      {convertToLocale({
+        amount: displayPrice,
+        currency_code: cartCurrencyCode.toLowerCase(),
+      })}
     </Text>
   )
 }

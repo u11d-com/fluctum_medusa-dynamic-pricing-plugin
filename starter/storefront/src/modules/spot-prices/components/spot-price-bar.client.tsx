@@ -25,9 +25,14 @@ function SpotPriceValue({
 }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className={`w-2.5 h-2.5 rounded-full ${materialDotClass(item.material)}`} />
+      <span
+        className={`w-2.5 h-2.5 rounded-full animate-dot-pulse ${materialDotClass(item.material)}`}
+      />
       <span className="font-semibold">{materialName(item.material)}</span>
-      <span key={item.amount ?? "stale"} className="inline-block animate-price-pulse">
+      <span
+        key={item.amount ?? "stale"}
+        className="inline-block animate-price-pulse"
+      >
         {item.amount === null
           ? "—"
           : convertToLocale({
@@ -41,14 +46,20 @@ function SpotPriceValue({
   )
 }
 
-export default function SpotPriceBarClient({ regionCurrencyCode = "USD" }: { regionCurrencyCode?: string }) {
+export default function SpotPriceBarClient({
+  regionCurrencyCode = "USD",
+}: {
+  regionCurrencyCode?: string
+}) {
   const { prices, rates } = useSpotPrices()
   const { cart } = useCart()
   const cachedRef = useRef<SpotPricePayload[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
 
   // Use cart currency if available, fall back to region currency (when cart dropped on region switch)
-  const currencyCode = (cart?.currency_code?.toUpperCase() ?? regionCurrencyCode).toUpperCase()
+  const currencyCode = (
+    cart?.currency_code?.toUpperCase() ?? regionCurrencyCode
+  ).toUpperCase()
   const isUsd = currencyCode === "USD"
   const conversionRate = isUsd ? 1 : (rates[currencyCode] ?? null)
 
@@ -61,7 +72,8 @@ export default function SpotPriceBarClient({ regionCurrencyCode = "USD" }: { reg
 
   const items: DisplayItem[] = display.map((sp) => ({
     material: sp.material,
-    amount: isStale || conversionRate === null ? null : sp.price * conversionRate,
+    amount:
+      isStale || conversionRate === null ? null : sp.price * conversionRate,
   }))
 
   useEffect(() => {
@@ -87,7 +99,11 @@ export default function SpotPriceBarClient({ regionCurrencyCode = "USD" }: { reg
         <div className="hidden xsmall:flex items-center justify-center gap-14">
           {items.length > 0 ? (
             items.map((item) => (
-              <SpotPriceValue key={item.material} item={item} currencyCode={currencyCode} />
+              <SpotPriceValue
+                key={item.material}
+                item={item}
+                currencyCode={currencyCode}
+              />
             ))
           ) : (
             <span className="text-neutral-500">—</span>
@@ -112,7 +128,9 @@ export default function SpotPriceBarClient({ regionCurrencyCode = "USD" }: { reg
                 <span
                   key={item.material}
                   className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    index === activeIndex % items.length ? "bg-neutral-100" : "bg-neutral-700"
+                    index === activeIndex % items.length
+                      ? "bg-neutral-100"
+                      : "bg-neutral-700"
                   }`}
                 />
               ))}
