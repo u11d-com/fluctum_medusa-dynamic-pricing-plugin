@@ -3,22 +3,22 @@
  */
 export type SpotPriceResult = {
   /** Material symbol, e.g. "XAU", "XAG" */
-  material: string
+  material: string;
   /** Ask price (sell price offered by the market) */
-  ask: number
+  ask: number;
   /** Bid price (buy price offered by the market) */
-  bid: number
+  bid: number;
   /** Mid/current price — typically (ask + bid) / 2 */
-  price: number
-}
+  price: number;
+};
 
 /**
  * A price provider function. Receives the list of materials to fetch and
  * returns spot prices for each. Integrators can supply their own implementation.
  */
 export type PriceProviderFn = (
-  materials: string[]
-) => Promise<SpotPriceResult[]>
+  materials: string[],
+) => Promise<SpotPriceResult[]>;
 
 /**
  * A currency rate provider function. Receives the source currency and a list of
@@ -26,8 +26,8 @@ export type PriceProviderFn = (
  */
 export type CurrencyRateProviderFn = (
   from: string,
-  to: string[]
-) => Promise<Array<{ to: string; rate: number }>>
+  to: string[],
+) => Promise<Array<{ to: string; rate: number }>>;
 
 /**
  * Plugin configuration options passed in medusa-config.ts.
@@ -37,7 +37,7 @@ export type DynamicPricingOptions = {
    * Array of material symbols to track, e.g. ["XAU", "XAG"].
    * At least one material is required.
    */
-  materials: string[]
+  materials: string[];
 
   /**
    * How often (in seconds) the SSE endpoint pushes updated prices to clients.
@@ -47,13 +47,13 @@ export type DynamicPricingOptions = {
    * Must be between 1 and 3600.
    * @default 10
    */
-  fetchIntervalSeconds?: number
+  fetchIntervalSeconds?: number;
 
   /**
    * The price provider function used to fetch spot prices.
    * Use built-in providers (randomProvider, goldApiProvider) or supply your own.
    */
-  provider: PriceProviderFn
+  provider: PriceProviderFn;
 
   /**
    * The ISO-4217 currency code in which spot prices are provided by the price provider.
@@ -61,7 +61,7 @@ export type DynamicPricingOptions = {
    * region currency using the currencyConversion rates.
    * @default "USD"
    */
-  pricingCurrency?: string
+  pricingCurrency?: string;
 
   /**
    * Optional currency conversion configuration. When provided, the plugin will
@@ -70,34 +70,32 @@ export type DynamicPricingOptions = {
    */
   currencyConversion?: {
     /** Provider function that returns rates from pricingCurrency to each target currency */
-    provider: CurrencyRateProviderFn
+    provider: CurrencyRateProviderFn;
     /** How often (seconds) to refresh rates. @default 3600 */
-    refreshIntervalSeconds?: number
+    refreshIntervalSeconds?: number;
     /** List of target currency codes (ISO-4217 uppercase) to maintain rates for */
-    targetCurrencies: string[]
-  }
+    targetCurrencies: string[];
+  };
 
   /**
    * How long (in seconds) cart prices are locked once a user enters checkout.
-   * @default 120
+   * @default 600
    */
-  priceLockDurationSeconds?: number
-}
+  priceLockDurationSeconds?: number;
+};
 
 /**
  * Resolved plugin options with all defaults applied.
  */
 export type ResolvedDynamicPricingOptions = {
-  materials: string[]
-  fetchIntervalSeconds: number
-  provider: PriceProviderFn
-  pricingCurrency: string
-  currencyConversion:
-    | {
-        provider: CurrencyRateProviderFn
-        refreshIntervalSeconds: number
-        targetCurrencies: string[]
-      }
-    | null
-  priceLockDurationSeconds: number
-}
+  materials: string[];
+  fetchIntervalSeconds: number;
+  provider: PriceProviderFn;
+  pricingCurrency: string;
+  currencyConversion: {
+    provider: CurrencyRateProviderFn;
+    refreshIntervalSeconds: number;
+    targetCurrencies: string[];
+  } | null;
+  priceLockDurationSeconds: number;
+};

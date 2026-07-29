@@ -1,16 +1,17 @@
 "use client"
 
-import { Button, Heading } from "@modules/common/components/ui"
+import { Heading } from "@modules/common/components/ui"
 import CartTotals from "@modules/common/components/cart-totals"
-import { Divider } from "@modules/common/components/ui"
 import { useCartPricing } from "@lib/hooks/use-cart-pricing"
-import { lockCartPrices } from "@lib/data/cart"
+import { goToCheckout } from "@lib/data/cart"
 import { getCountryCodeFromParams } from "@lib/util/route"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslations } from "next-intl"
-import { useRouter, useParams } from "next/navigation"
-import { useState } from "react"
+import { useParams } from "next/navigation"
+import { useActionState } from "react"
 import { useCart } from "@modules/cart/context/cart-context"
+import { SubmitButton } from "@modules/checkout/components/submit-button"
+import ErrorMessage from "@modules/checkout/components/error-message"
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart
@@ -33,13 +34,11 @@ const Summary = ({ cart }: SummaryProps) => {
     effectiveCart,
     regionCurrencyCode,
   )
-  const router = useRouter()
   const params = useParams()
   const countryCode = getCountryCodeFromParams(params)
-  const [isLocking, setIsLocking] = useState(false)
   const step = getCheckoutStep(effectiveCart)
   const t = useTranslations("cart")
-  const tCheckout = useTranslations("checkout")
+  const [error, formAction] = useActionState(goToCheckout, null)
 
   const dynamicTotal =
     dynamicSubtotal > 0
@@ -47,18 +46,6 @@ const Summary = ({ cart }: SummaryProps) => {
         (effectiveCart.shipping_subtotal ?? 0) +
         (effectiveCart.tax_total ?? 0)
       : null
-
-  const handleCheckout = async () => {
-    if (!effectiveCart.id || !countryCode) return
-    setIsLocking(true)
-
-    try {
-      await lockCartPrices(effectiveCart.id, true)
-      router.push(`/${countryCode}/checkout?step=${step}`)
-    } catch {
-      setIsLocking(false)
-    }
-  }
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -70,14 +57,15 @@ const Summary = ({ cart }: SummaryProps) => {
         subtotalOverride={dynamicSubtotal > 0 ? dynamicSubtotal : null}
         totalOverride={dynamicTotal}
       />
-      <Button
-        className="w-full h-10"
-        onClick={handleCheckout}
-        disabled={isLocking}
-        data-testid="checkout-button"
-      >
-        {isLocking ? tCheckout("lockingPricesShort") : t("checkout")}
-      </Button>
+      <form action={formAction}>
+        <input type="hidden" name="cart_id" value={effectiveCart.id} />
+        <input type="hidden" name="country_code" value={countryCode ?? ""} />
+        <input type="hidden" name="step" value={step} />
+        <SubmitButton className="w-full h-10" data-testid="checkout-button">
+          {t("checkout")}
+        </SubmitButton>
+        <ErrorMessage error={error} data-testid="checkout-error-message" />
+      </form>
     </div>
   )
 }

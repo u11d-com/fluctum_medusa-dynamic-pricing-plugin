@@ -9,22 +9,36 @@ import CartTotals from "@modules/common/components/cart-totals"
 import { Divider } from "@modules/common/components/ui"
 import { lockCartPrices } from "@lib/data/cart"
 import { buildLockedPriceMap } from "@lib/util/dynamic-pricing"
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { HttpTypes } from "@medusajs/types"
 import type { LockedPriceMap } from "@u11d/medusa-dynamic-pricing/client"
 
 type Props = {
   cart: HttpTypes.StoreCart
+  initialLockedPrices: LockedPriceMap | null
+  initialExpiresAt: string | null
+  initialError: string | null
 }
 
-const CheckoutSummary = ({ cart }: Props) => {
+const CheckoutSummary = ({
+  cart,
+  initialLockedPrices,
+  initialExpiresAt,
+  initialError,
+}: Props) => {
   const t = useTranslations("checkout")
-  const [refreshResult, setRefreshResult] = useState<{
-    lockedPrices: LockedPriceMap
-    expiresAt: string
-  }>()
+  // Seeded from the checkout page's server-side lock (force=false, idempotent
+  // reuse) — no client-side fetch-on-mount is needed. This state only changes
+  // when the user explicitly clicks "Refresh prices" (force=true) below.
+  const [refreshResult, setRefreshResult] = useState<
+    { lockedPrices: LockedPriceMap; expiresAt: string } | undefined
+  >(
+    initialLockedPrices && initialExpiresAt
+      ? { lockedPrices: initialLockedPrices, expiresAt: initialExpiresAt }
+      : undefined,
+  )
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [refreshError, setRefreshError] = useState<string | null>(null)
+  const [refreshError, setRefreshError] = useState<string | null>(initialError)
 
   const lockedPrices = refreshResult?.lockedPrices ?? null
   const expiresAt = refreshResult?.expiresAt ?? null
@@ -44,42 +58,6 @@ const CheckoutSummary = ({ cart }: Props) => {
       setIsRefreshing(false)
     }
   }
-
-  // Lock prices on mount (fresh navigation, paste URL, browser refresh).
-  // Uses force=false so existing valid locks are reused when CheckoutSummary
-  // remounts after form-step redirects.
-  useEffect(() => {
-    if (!cart.id) return
-    let cancelled = false
-
-    const init = async () => {
-      try {
-        const result = await lockCartPrices(cart.id, false)
-        if (cancelled) return
-
-        const prices = buildLockedPriceMap(result.locks, cart.items ?? [])
-
-        if (!cancelled) {
-          setRefreshResult({
-            lockedPrices: prices,
-            expiresAt: result.expires_at,
-          })
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setRefreshError(
-            e instanceof Error ? e.message : t("failedToLockPrices"),
-          )
-        }
-      }
-    }
-
-    init()
-
-    return () => {
-      cancelled = true
-    }
-  }, [cart.id])
 
   const lockedSubtotal = useMemo(() => {
     if (!lockedPrices) return 0

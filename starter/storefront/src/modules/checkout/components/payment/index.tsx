@@ -85,14 +85,15 @@ const Payment = ({
       }
 
       if (!shouldInputCard) {
-        // Use hard navigation so the RSC re-fetches a fresh cart with payment_collection.
-        // router.push() hits the Next.js client Router Cache (even after router.refresh()),
-        // producing a stale cart prop in PaymentButton that shows "Select a payment method"
-        // instead of "Place order". window.location.assign forces a full page reload,
-        // guaranteeing the server returns the post-initiatePaymentSession cart.
-        window.location.assign(
-          pathname + "?" + createQueryString("step", "review"),
-        )
+        // Soft navigation to the review step. initiatePaymentSession() above
+        // calls revalidatePath() for the checkout route, which purges the
+        // client Router Cache entry for this URL, so router.push() is
+        // guaranteed to re-fetch a fresh cart with payment_collection instead
+        // of serving a stale cached RSC payload (no full-page reload/skeleton
+        // needed, unlike the previous window.location.assign() approach).
+        router.push(pathname + "?" + createQueryString("step", "review"), {
+          scroll: false,
+        })
         return
       }
     } catch (err) {

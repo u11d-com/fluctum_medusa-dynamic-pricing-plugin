@@ -4,9 +4,13 @@ import { sdk } from "@lib/config"
 import { getCheckboxValue, getFormString } from "@lib/util/form-data"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
-import type { LockPricesResult } from "@u11d/medusa-dynamic-pricing/client"
+import type {
+  LockPricesResult,
+  LockedPriceMap,
+} from "@u11d/medusa-dynamic-pricing/client"
+import { buildLockedPriceMap } from "@lib/util/dynamic-pricing"
 import {
   getAuthHeaders,
   getCacheOptions,
@@ -26,7 +30,7 @@ import { getLocale } from "./locale-actions"
 export async function retrieveCart(
   cartId?: string,
   fields?: string,
-  noCache?: boolean
+  noCache?: boolean,
 ) {
   const id = cartId || (await getCartId())
   fields ??=
@@ -74,7 +78,7 @@ export async function getOrSetCart(countryCode: string) {
     const cartResp = await sdk.store.cart.create(
       { region_id: region.id, locale: locale || undefined },
       {},
-      headers
+      headers,
     )
     cart = cartResp.cart
 
@@ -149,7 +153,7 @@ export async function addToCart({
         quantity,
       },
       {},
-      headers
+      headers,
     )
     .catch(medusaError)
 
@@ -197,7 +201,7 @@ export async function updateLineItem({
 }
 
 export async function deleteLineItem(
-  lineId: string
+  lineId: string,
 ): Promise<HttpTypes.StoreCart | null> {
   if (!lineId) {
     throw new Error("Missing lineItem ID when deleting line item")
@@ -248,7 +252,7 @@ export async function setShippingMethod({
 
 export async function initiatePaymentSession(
   cart: HttpTypes.StoreCart,
-  data: HttpTypes.StoreInitializePaymentSession
+  data: HttpTypes.StoreInitializePaymentSession,
 ) {
   const headers = {
     ...(await getAuthHeaders()),
@@ -259,6 +263,8 @@ export async function initiatePaymentSession(
     .then(async (resp) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag, "max")
+      revalidatePath("/[countryCode]/checkout", "page")
+
       return resp
     })
     .catch(medusaError)
@@ -321,7 +327,10 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
     return "Failed to set addresses"
   }
 
-  const checkoutCountryCode = getFormString(formData, "shipping_address.country_code")
+  const checkoutCountryCode = getFormString(
+    formData,
+    "shipping_address.country_code",
+  )
   redirect(`/${checkoutCountryCode}/checkout?step=delivery`)
 }
 
@@ -331,7 +340,10 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
  * When force=true: deletes old locks and creates fresh ones.
  * Returns lock info including the expiry timestamp.
  */
-export async function lockCartPrices(cartId: string, force = false): Promise<LockPricesResult> {
+export async function lockCartPrices(
+  cartId: string,
+  force = false,
+): Promise<LockPricesResult> {
   const query = force ? { force: "true" } : undefined
 
   return sdk.client.fetch<LockPricesResult>(
@@ -340,15 +352,80 @@ export async function lockCartPrices(cartId: string, force = false): Promise<Loc
       method: "POST",
       query,
       cache: "no-store",
-    }
+    },
   )
+}
+
+export type CartWithLock = {
+  cart: HttpTypes.StoreCart | null
+  lockedPrices: LockedPriceMap | null
+  expiresAt: string | null
+  lockError: string | null
+}
+
+/**
+ * Retrieves a cart (noCache, same as retrieveCart(cartId, undefined, true)) and
+ * locks its prices in one call. When force=false (default), reuses existing
+ * valid locks if present; when force=true, always creates fresh locks.
+ *
+ * If the lock request itself fails (e.g. transient provider/DB error), the
+ * error is captured in `lockError` rather than thrown, so callers (checkout
+ * page) can still render the cart/form and offer a manual retry instead of
+ * failing the whole page.
+ */
+export async function retrieveCartWithLock(
+  cartId?: string,
+  force = false,
+): Promise<CartWithLock> {
+  const cart = await retrieveCart(cartId, undefined, true)
+
+  if (!cart) {
+    return { cart: null, lockedPrices: null, expiresAt: null, lockError: null }
+  }
+
+  try {
+    const result = await lockCartPrices(cart.id, force)
+    const lockedPrices = buildLockedPriceMap(result.locks, cart.items ?? [])
+    return { cart, lockedPrices, expiresAt: result.expires_at, lockError: null }
+  } catch (e: unknown) {
+    const lockError = e instanceof Error ? e.message : "Failed to lock prices"
+    return { cart, lockedPrices: null, expiresAt: null, lockError }
+  }
+}
+
+/**
+ * Server action for the cart page's "Go to checkout" button. Always creates
+ * fresh price locks (force=true) — this is the one intentional, user-initiated
+ * "lock now" action — then redirects into checkout. Mirrors `setAddresses`:
+ * returns an error string on failure, redirects (outside try/catch) on success.
+ */
+export async function goToCheckout(currentState: unknown, formData: FormData) {
+  const cartId = getFormString(formData, "cart_id")
+  const countryCode = getFormString(formData, "country_code")
+  const step = getFormString(formData, "step")
+
+  if (!cartId) {
+    return "No cart found"
+  }
+
+  try {
+    await lockCartPrices(cartId, true)
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return e.message
+    }
+
+    return "Failed to lock prices"
+  }
+
+  redirect(`/${countryCode}/checkout?step=${step}`)
 }
 
 /**
  * Places an order for a cart. If no cart ID is provided, it will use the cart ID from the cookies.
  * Does NOT re-lock prices — prices are already locked on checkout entry
- * (via CheckoutSummary useEffect) and the validate hook checks lock validity
- * before completing the cart.
+ * (via the checkout page's server-side fetch) and the validate hook checks
+ * lock validity before completing the cart.
  * @param cartId - optional - The ID of the cart to place an order for.
  * @returns The cart object if the order was successful, or null if not.
  */
