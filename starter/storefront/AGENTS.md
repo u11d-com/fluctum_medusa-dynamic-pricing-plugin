@@ -17,30 +17,6 @@ This rule applies to all projects and repositories, not only this storefront.
 - Composed/domain components live outside `ui` and may include feature logic.
 - Always prefer imports from `@modules/common/components/ui` for primitive building blocks.
 
-## Canonical Primitive Imports
-
-Use these exports from `src/modules/common/components/ui/index.ts`:
-
-- `Text`
-- `Heading`
-- `Button`
-- `IconButton`
-- `Input`
-- `Label`
-- `Checkbox`
-- `Radio`
-- `RadioGroup`
-- `NativeSelect`
-- `Divider`
-- `Surface`
-- `Container`
-- `Badge`
-- `ChoiceCard`, `ChoiceCardButton`
-- `StatusNotice`
-- `EmptyState`
-- `Table`
-- `clx`
-
 ## Primitive vs Composed Decision Rule
 
 Use this decision tree before creating or moving a component:
@@ -51,24 +27,12 @@ Use this decision tree before creating or moving a component:
 ## Typography Rules
 
 - Prefer `Text` over raw typography tags/classes when rendering copy.
-- Use `Text` variants first:
-  - `body`
-  - `muted`
-  - `label`
-  - `caption`
-  - `error`
-  - `warning`
-  - `success`
-  - `price`
-  - `eyebrow`
+- Use `Text` variants first
 - Use `className` on `Text` only for layout/context tweaks (spacing, alignment, special case color/size).
 
 ## Heading Rules
 
 - `Heading` is primitive and size-based only.
-- API:
-  - `level?: "h1" | "h2" | "h3"`
-  - `size?: "sm" | "md" | "lg" | "xl" | "2xl"`
 - Do not add use-case variants (checkout/page/hero/etc.).
 - Put context-specific visual tweaks in call sites.
 
@@ -80,7 +44,7 @@ When styling text and headings:
 2. Primitive defaults
 3. Minimal `className` overrides
 
-Avoid adding legacy `txt-*`/`text-*-regular` patterns when an existing primitive variant already matches.
+Avoid adding `txt-*`/`text-*-regular` patterns when an existing primitive variant already matches.
 
 ## Form Primitive Rules
 
@@ -89,49 +53,10 @@ Avoid adding legacy `txt-*`/`text-*-regular` patterns when an existing primitive
 - Use `Checkbox`, `Radio`, and `RadioGroup` from `ui`.
 - Keep floating label behavior inside `ui/Input`; do not recreate per-feature input variants.
 
-## RSC / Client Boundary Rules
-
-- Keep `ui` primitives server-safe by default.
-- Only add `"use client"` to a primitive if absolutely required.
-- If interactivity is needed, keep client-only logic scoped to that file and avoid forcing server modules to become client modules.
-
-## Accessibility Baseline
-
-- Keep `aria-live="polite"` for dynamic cart count updates.
-- Provide accessible labels for icon-only controls.
-- Preserve keyboard accessibility and focus styles on interactive components.
-
 ## Test Contract
 
 - Preserve existing `data-testid` values unless explicitly asked to update tests.
 - For new interactive controls in cart/checkout/account flows, add stable `data-testid` values.
-
-## Disallowed Legacy Imports
-
-Do not import these removed primitive paths:
-
-- `@modules/common/components/input`
-- `@modules/common/components/checkbox`
-- `@modules/common/components/radio`
-- `@modules/common/components/native-select`
-- `@modules/common/components/divider`
-
-Always replace with `@modules/common/components/ui` exports.
-
-## Composed Components (Intentionally Outside `ui`)
-
-These remain outside `ui` because they encapsulate behavior/domain logic:
-
-- `@modules/common/components/delete-button` (cart mutation)
-- `@modules/common/components/cart-totals`
-- `@modules/common/components/line-item-*`
-- `@modules/common/components/interactive-link`
-- `@modules/common/components/localized-client-link`
-
-## Dynamic Pricing Safety
-
-- Do not change price lock semantics in checkout/cart flows unless explicitly requested.
-- Keep lock countdown/refresh UX behavior stable when touching related UI.
 
 ## Cart State (CartProvider Pattern)
 

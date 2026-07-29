@@ -12,39 +12,25 @@
 </p>
 
 <p align="center">
-  Real-time dynamic pricing for Medusa v2 — gold, silver, and any volatile-price asset.
+  Real-time dynamic pricing for Medusa — gold, silver, and any volatile-price asset.
 </p>
-
-<p align="center">
-<a href="https://github.com/u11d-com/fluctum_starter/generate"><img src="https://img.shields.io/badge/-Use%20this%20template-238636?style=for-the-badge&logo=github" alt="Use this template"/></a>
-<a href="https://cloud.medusajs.com"><img src="https://img.shields.io/badge/Deploy%20to-Medusa%20Cloud-7C3AED?style=for-the-badge" alt="Deploy to Medusa Cloud"/></a>
-<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"/></a>
-</p>
-
----
 
 **[→ Use this template on GitHub](https://github.com/u11d-com/fluctum_starter/generate)** to create your own repository pre-wired with the Fluctum dynamic pricing plugin.
 
----
-
 ## What's included
 
-- **Medusa v2 backend** (`backend/`) — pre-configured with [`@u11d/medusa-dynamic-pricing`](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing)
+- **Medusa backend** (`backend/`) — pre-configured with [`@u11d/medusa-dynamic-pricing`](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing)
 - **Next.js 16 storefront** (`storefront/`) — live SSE price bar, dynamic cart, price-locked checkout
 - **Docker Compose** — PostgreSQL 17 + Redis 8 for local development
 - **Turbo** monorepo (pnpm workspaces) with `dev` / `build` / `lint` / `test` tasks
 
 Prices update every few seconds from a live spot-price feed (goldapi.io or the built-in random provider for dev). They are displayed in real time via SSE and locked at checkout entry to protect both customer and merchant.
 
----
-
 ## Prerequisites
 
 - Node.js v24+
 - pnpm v11+ (`corepack enable` to get the version pinned in `package.json` automatically)
 - Docker & Docker Compose
-
----
 
 ## Quick start
 
@@ -62,14 +48,12 @@ pnpm install
 
 ```bash
 cp .env.template backend/.env
-# Edit backend/.env — set DATABASE_URL, REDIS_URL, JWT_SECRET, COOKIE_SECRET at minimum
 ```
 
 For the storefront:
 
 ```bash
 cp storefront/.env.template storefront/.env
-# Edit storefront/.env — set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY after running migrations
 ```
 
 ### 3. Start infrastructure
@@ -92,25 +76,36 @@ pnpm run backend:migrate
 pnpm run backend:create-admin
 ```
 
-Copy the **Publishable API key** from the admin panel (`http://localhost:9000/app` → Settings → API Keys) into `storefront/.env`:
-
-```
-NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
-```
-
-### 6. Start everything
+### 6. Start the backend
 
 ```bash
-pnpm run dev
+pnpm run backend:dev
 ```
 
 | Service     | URL                       |
 | ----------- | ------------------------- |
 | Backend API | http://localhost:9000     |
 | Admin panel | http://localhost:9000/app |
-| Storefront  | http://localhost:8000     |
 
----
+Log into the admin panel and confirm it loads correctly, then copy the **Publishable API key** (`http://localhost:9000/app` → Settings → API Keys) into `storefront/.env`:
+
+```
+NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
+```
+
+### 7. Start the storefront
+
+In a separate terminal, with the backend still running:
+
+```bash
+pnpm run storefront:dev
+```
+
+| Service    | URL                   |
+| ---------- | --------------------- |
+| Storefront | http://localhost:8000 |
+
+Once both are confirmed working, you can stop them and use `pnpm run dev` going forward to start backend + storefront together.
 
 ## Deploy to Medusa Cloud
 
@@ -118,30 +113,7 @@ pnpm run dev
 
 1. Push your repository to GitHub
 2. Go to [cloud.medusajs.com](https://cloud.medusajs.com) and connect your repo
-3. Set the environment variables listed in `.env.template`
-4. Deploy — Medusa Cloud handles migrations, scaling, and SSL automatically
-
----
-
-## Environment variables
-
-See [`.env.template`](.env.template) for the full list with descriptions.
-
-| Variable                         | Where      | Required   |
-| -------------------------------- | ---------- | ---------- |
-| `DATABASE_URL`                   | backend    | yes        |
-| `REDIS_URL`                      | backend    | yes        |
-| `JWT_SECRET`                     | backend    | yes        |
-| `COOKIE_SECRET`                  | backend    | yes        |
-| `STORE_CORS`                     | backend    | yes        |
-| `ADMIN_CORS`                     | backend    | yes        |
-| `AUTH_CORS`                      | backend    | yes        |
-| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | storefront | yes        |
-| `NEXT_PUBLIC_DEFAULT_REGION`     | storefront | yes        |
-| `MEDUSA_CLOUD_S3_HOSTNAME`       | backend    | cloud only |
-| `MEDUSA_CLOUD_S3_PATHNAME`       | backend    | cloud only |
-
----
+3. Deploy — Medusa Cloud handles migrations, scaling, and SSL automatically
 
 ## Plugin configuration
 
@@ -155,7 +127,7 @@ import { randomProvider, createGoldApiProvider } from "@u11d/medusa-dynamic-pric
   options: {
     materials: ["XAU", "XAG"],
     fetchIntervalSeconds: 10,
-    priceLockDurationSeconds: 120,
+    priceLockDurationSeconds: 600,
     provider: process.env.GOLD_API_KEY
       ? createGoldApiProvider({ apiKey: process.env.GOLD_API_KEY })
       : randomProvider,
@@ -163,20 +135,18 @@ import { randomProvider, createGoldApiProvider } from "@u11d/medusa-dynamic-pric
 }
 ```
 
-See the [plugin documentation](https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin) for all options.
-
----
+See the [plugin documentation](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing) for all options.
 
 ## Scripts
 
-| Script           | Description                            |
-| ---------------- | -------------------------------------- |
-| `pnpm run dev`   | Start backend + storefront in parallel |
-| `pnpm run build` | Build all packages                     |
-| `pnpm run lint`  | Lint all packages                      |
-| `pnpm run test`  | Run all tests                          |
-
----
+| Script                    | Description                                         |
+| ------------------------- | --------------------------------------------------- |
+| `pnpm run dev`            | Start backend + storefront in parallel              |
+| `pnpm run backend:dev`    | Start only the backend (useful for first-run setup) |
+| `pnpm run storefront:dev` | Start only the storefront                           |
+| `pnpm run build`          | Build all packages                                  |
+| `pnpm run lint`           | Lint all packages                                   |
+| `pnpm run test`           | Run all tests                                       |
 
 ## License
 

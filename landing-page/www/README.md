@@ -5,7 +5,7 @@ Marketing site for [Fluctum](https://fluctum.io) — the open-source real-time d
 ## What this app does
 
 - Presents Fluctum value proposition for mixed audiences (technical + business)
-- Drives primary conversion to demo (`https://demo.fluctum.io`)
+- Drives primary conversion to demo (`fluctum.medusajs.site`)
 - Supports secondary conversion to contact form, starter adoption, and GitHub
 - Ships static SEO metadata, sitemap, and robots definitions
 

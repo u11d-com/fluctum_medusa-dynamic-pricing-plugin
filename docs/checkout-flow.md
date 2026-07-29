@@ -6,15 +6,15 @@ Prices in the cart are dynamic — they update in real time via SSE. When a cust
 
 ## Price Lock Rules
 
-| Trigger | Lock behavior | `force` | Why |
-|---|---|---|---|
-| Click "Go to checkout" on cart page | Always creates fresh locks | `true` | Intentional user action — get current price |
-| Paste checkout URL / page refresh | Creates fresh locks if none exist | `false` | `useEffect` fires with `force=false`; no existing locks → fresh created |
-| Submit address form (`redirect()`) | Reuses existing locks | `false` | `redirect()` causes full page navigation → `CheckoutSummary` remounts → `useEffect` fires with `force=false` → existing valid locks reused |
-| Select delivery/payment (`router.push()`) | Prices do NOT change | — | Client-side navigation; `CheckoutSummary` stays mounted; `useEffect` never re-fires |
-| Click "Refresh prices" on checkout | Always creates fresh locks | `true` | Intentional user action |
-| Click "Place order" | Does NOT create locks | — | Reuses mount-time locks; validate hook checks they exist and are not expired |
-| Cart page (browsing) | No locks | — | SSE prices only; never locked |
+| Trigger                                   | Lock behavior                     | `force` | Why                                                                                                                                    |
+| ----------------------------------------- | --------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Click "Go to checkout" on cart page       | Always creates fresh locks        | `true`  | `goToCheckout` server action calls `lockCartPrices(id, true)` before redirecting                                                       |
+| Paste checkout URL / page refresh         | Creates fresh locks if none exist | `false` | `checkout/page.tsx` calls `retrieveCartWithLock(id, false)` server-side on every render; no existing locks → fresh created             |
+| Submit address form (`redirect()`)        | Reuses existing locks             | `false` | `redirect()` causes full page navigation → `checkout/page.tsx` re-runs → `retrieveCartWithLock(id, false)` reuses existing valid locks |
+| Select delivery/payment (`router.push()`) | Prices do NOT change              | —       | Client-side navigation; `checkout/page.tsx` doesn't re-run; `CheckoutSummary` stays mounted with the same props                        |
+| Click "Refresh prices" on checkout        | Always creates fresh locks        | `true`  | Intentional user action (`doLock` in `CheckoutSummary`, client → `lockCartPrices(id, true)`)                                           |
+| Click "Place order"                       | Does NOT create locks             | —       | Reuses the checkout page's server-side lock; validate hook checks it exists and is not expired                                         |
+| Cart page (browsing)                      | No locks                          | —       | SSE prices only; never locked                                                                                                          |
 
 ## Checkout Page Lock Lifecycle
 
@@ -22,26 +22,29 @@ Prices in the cart are dynamic — they update in real time via SSE. When a cust
                  ┌─────────────────────────────────────────────┐
                  │           Cart Page (SSE prices)            │
                  │                                             │
-                 │   user clicks "Go to checkout"              │
+                 │   user submits "Go to checkout" form        │
                  └─────────────────────┬───────────────────────┘
+                                       │ goToCheckout() server action
                                        │ lockCartPrices(id, force=true)
                                        │ → POST /price-lock?force=true
                                        │   fetches price DIRECTLY from provider
+                                       │ → redirect(`/checkout?step=...`)
                                        ▼
                  ┌─────────────────────────────────────────────┐
-                 │      /checkout (address step)               │
+                 │      /checkout (server component)           │
                  │                                             │
-                 │   CheckoutSummary mounts                    │
-                 │   useEffect → lockCartPrices(id, force=false)│
-                 │             → existing locks reused ✓       │
+                 │   checkout/page.tsx (force-dynamic) runs    │
+                 │   retrieveCartWithLock(id, force=false)     │
+                 │   → existing locks reused ✓                 │
+                 │   → renders CheckoutSummary with locked     │
+                 │     prices as props (no client fetch)       │
                  │                                             │
                  │   user submits address                      │
                  │   → setAddresses() server action            │
                  │   → redirect() ← FULL PAGE NAVIGATION       │
                  └─────────────────────┬───────────────────────┘
-                                       │ CheckoutSummary remounts
-                                       │ useEffect fires again
-                                       │ lockCartPrices(id, force=false)
+                                       │ checkout/page.tsx re-runs
+                                       │ retrieveCartWithLock(id, force=false)
                                        │ → existing locks still valid → reused ✓
                                        ▼
                  ┌─────────────────────────────────────────────┐
@@ -49,8 +52,9 @@ Prices in the cart are dynamic — they update in real time via SSE. When a cust
                  │                                             │
                  │   user selects shipping option              │
                  │   → router.push() ← CLIENT-SIDE NAV        │
+                 │   checkout/page.tsx does NOT re-run         │
                  │   CheckoutSummary STAYS MOUNTED             │
-                 │   useEffect does NOT re-fire                │
+                 │   with the same props                       │
                  └─────────────────────┬───────────────────────┘
                                        │ (same for payment step)
                                        ▼
@@ -81,21 +85,21 @@ When `force=true`, the step calls the configured provider directly — bypassing
 
 Each lock row captures the full pricing snapshot at lock time for auditability:
 
-| Column | Description |
-|---|---|
-| `cart_id` | The cart this lock belongs to |
-| `variant_id` | The specific variant being locked |
-| `material` | Material symbol (XAU, XAG, …) |
-| `weight_oz` | Variant weight in troy ounces |
-| `unit_price` | Computed final price (the locked price) |
-| `quantity` | Line item quantity at lock time |
-| `spot_price` | Raw spot price used in computation |
-| `spread_factor` | Rule spread_factor at lock time |
-| `spread_fixed` | Rule spread_fixed at lock time |
-| `premium_percentage` | Rule premium_percentage at lock time |
-| `premium_fixed` | Rule premium_fixed at lock time |
-| `locked_at` | When the lock was created |
-| `expires_at` | When the lock expires (`locked_at + priceLockDurationSeconds`) |
+| Column               | Description                                                    |
+| -------------------- | -------------------------------------------------------------- |
+| `cart_id`            | The cart this lock belongs to                                  |
+| `variant_id`         | The specific variant being locked                              |
+| `material`           | Material symbol (XAU, XAG, …)                                  |
+| `weight_oz`          | Variant weight in troy ounces                                  |
+| `unit_price`         | Computed final price (the locked price)                        |
+| `quantity`           | Line item quantity at lock time                                |
+| `spot_price`         | Raw spot price used in computation                             |
+| `spread_factor`      | Rule spread_factor at lock time                                |
+| `spread_fixed`       | Rule spread_fixed at lock time                                 |
+| `premium_percentage` | Rule premium_percentage at lock time                           |
+| `premium_fixed`      | Rule premium_fixed at lock time                                |
+| `locked_at`          | When the lock was created                                      |
+| `expires_at`         | When the lock expires (`locked_at + priceLockDurationSeconds`) |
 
 ## Lock Creation Implementation
 
@@ -110,7 +114,7 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
   // 1. Find all dynamically-priced variants in the cart
   // 2. Query cart_price_lock via raw Knex
   // 3. Reject if any variant has no lock or an expired lock
-})
+});
 ```
 
 The hook uses an `hookRegistered` module-level flag to prevent double-registration on hot-reload.
@@ -128,7 +132,10 @@ When `placeOrder()` is called from the storefront:
 
 ## Storefront Components
 
-- **`CheckoutSummary`** — client component that locks prices on mount via `useEffect`. Uses a `cancelled` closure flag for async safety under React Strict Mode double-mount. Stays mounted across delivery/payment steps.
+- **`retrieveCartWithLock(cartId, force)`** — server-only helper in `lib/data/cart.ts`. Fetches the cart and calls `lockCartPrices(cart.id, force)`, returning `{ cart, lockedPrices, expiresAt, lockError }`. Never throws — lock failures are captured in `lockError` so the page can still render. Called from `checkout/page.tsx` on every render (`force=false`, idempotent reuse).
+- **`goToCheckout(prevState, formData)`** — Next.js server action (`useActionState` convention, returns a plain `string | null` error) that always force-locks (`force=true`) before `redirect()`-ing to `/checkout`. Used by the cart page's "Go to checkout" form.
+- **`checkout/page.tsx`** — server component (`force-dynamic`) that resolves the cart + lock server-side via `retrieveCartWithLock` and passes `cart`, `initialLockedPrices`, `initialExpiresAt`, `initialError` down as props. Has a matching `loading.tsx` (`SkeletonCheckoutPage`) so Next.js shows a skeleton while this async server component resolves.
+- **`CheckoutSummary`** — purely presentational client component. Seeds its `refreshResult`/`refreshError` state from the `initial*` props — there is no client-side fetch-on-mount. The only client-triggered lock is `doLock()` (force=true) from the "Refresh prices" button. Stays mounted across delivery/payment steps.
 - **`PriceLockCountdown`** — displays time remaining until lock expiry, prompts user to refresh if needed.
 - **`ItemPrice`** — renders the locked price for checkout line items. Falls back to SSE price on cart page. Renders `"—"` when neither locked nor SSE price is available (never falls back to Medusa's `unit_price`).
 - **`lockCartPrices(cartId, force)`** — Next.js server action that calls the store API route.

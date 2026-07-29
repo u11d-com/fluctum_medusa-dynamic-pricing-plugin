@@ -12,7 +12,9 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "backend:migrate": "pnpm --filter @u11d/medusa-dynamic-pricing-backend run migrate",
-    "backend:create-admin": "pnpm --filter @u11d/medusa-dynamic-pricing-backend run create-admin"
+    "backend:create-admin": "pnpm --filter @u11d/medusa-dynamic-pricing-backend run create-admin",
+    "backend:dev": "pnpm --filter @u11d/medusa-dynamic-pricing-backend run dev",
+    "storefront:dev": "pnpm --filter @u11d/medusa-dynamic-pricing-storefront run dev"
   },
   "devDependencies": {
     "turbo": "^2"

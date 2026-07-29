@@ -116,19 +116,23 @@ dynamic-pricing-plugin/src/
 
 ```
 Cart page
-  → user clicks "Go to checkout"
-  → lockCartPrices(cartId, force=true)          ← always fresh
-      → POST /store/dynamic-pricing/carts/:id/price-lock?force=true
-          → lockCartPricesWorkflow
-              → JOIN link table + pricing_rule + spot_price
-              → DELETE old cart_price_lock rows
-              → INSERT new rows (raw Knex, bigNumber JSONB fields)
-              → cartModule.updateLineItems (update displayed prices)
-  → navigate to /checkout
+  → user submits "Go to checkout" form
+  → goToCheckout() server action
+      → lockCartPrices(cartId, force=true)      ← always fresh
+          → POST /store/dynamic-pricing/carts/:id/price-lock?force=true
+              → lockCartPricesWorkflow
+                  → JOIN link table + pricing_rule + spot_price
+                  → DELETE old cart_price_lock rows
+                  → INSERT new rows (raw Knex, bigNumber JSONB fields)
+                  → cartModule.updateLineItems (update displayed prices)
+      → redirect(`/checkout?step=...`)
 
-Checkout page (CheckoutSummary mounts)
-  → useEffect → lockCartPrices(cartId, force=false)   ← idempotent reuse
+checkout/page.tsx (server component, force-dynamic)
+  → retrieveCartWithLock(cartId, force=false)   ← idempotent reuse
       (creates fresh locks only if none exist)
+  → renders CheckoutSummary with resolved cart + locked prices as props
+      (no client-side fetch-on-mount; loading.tsx shows a skeleton
+       while this async server component resolves)
 
 User clicks "Place order"
   → completeCartWorkflow.hooks.validate

@@ -27,7 +27,7 @@
   <a href="https://docs.medusajs.com"><img src="https://img.shields.io/badge/Medusa-2.15%2B-9333ea.svg" alt="Medusa Version"/></a>
 </p>
 
-Fluctum is an open-source dynamic pricing plugin for [Medusa v2](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant. Created and maintained by [u11d](https://u11d.com).
+Fluctum is an open-source dynamic pricing plugin for [Medusa](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant. Created and maintained by [u11d](https://u11d.com).
 
 ## Table of Contents
 
@@ -46,25 +46,25 @@ Fluctum is an open-source dynamic pricing plugin for [Medusa v2](https://docs.me
 
 ## Start Here
 
-- **See the demo:** [demo.fluctum.io](https://demo.fluctum.io)
+- **See the demo:** [fluctum.medusajs.site](https://fluctum.medusajs.site)
 - **Contact the team:** [hello@u11d.com](mailto:hello@u11d.com)
-- **Use the starter:** [`starter/`](starter/)
+- **Use the starter:** [`github.com/u11d-com/fluctum_starter`](https://github.com/u11d-com/fluctum_starter)
 - **Install the plugin:** [npmjs.com/package/@u11d/medusa-dynamic-pricing](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing)
-- **Browse source:** [github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin](https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin)
+- **Browse plugin source:** [github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin](https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin)
 
 ## Repository Structure
 
 ```
 dynamic-pricing/
 ├── starter/
-│   ├── backend/          # @u11d/medusa-dynamic-pricing-backend — Medusa v2 backend (uses plugin via yalc)
-│   └── storefront/       # Next.js 16 storefront with live price bar + checkout flow
+│   ├── backend/
+│   └── storefront/
 ├── landing-page/
-│   ├── www/              # fluctum.io landing page (Next.js SSG)
-│   └── form-handler/     # Serverless form handler
-├── dynamic-pricing-plugin/  # @u11d/medusa-dynamic-pricing — the Medusa plugin
-├── docs/                 # Architecture docs, domain guides, ADRs
-├── docker-compose.yml    # PostgreSQL 17 + Redis 8 for local dev
+│   ├── www/
+│   └── form-handler/
+├── dynamic-pricing-plugin/
+├── docs/
+├── docker-compose.yml
 ├── turbo.json
 └── package.json
 ```
@@ -80,8 +80,8 @@ SSE endpoint → Storefront / Admin panel
 
 Storefront:
   Cart page       → live SSE prices (no locks)
-  "Go to checkout"→ lockCartPrices(force=true) → navigate
-  Checkout page   → lockCartPrices(force=false) on mount
+  "Go to checkout"→ goToCheckout server action → lockCartPrices(force=true) → redirect
+  Checkout page   → server component calls retrieveCartWithLock(force=false) on every render (idempotent)
   Place order     → completeCartWorkflow.hooks.validate → check locks exist + not expired
 ```
 
@@ -124,7 +124,6 @@ This starts PostgreSQL on port 5432 (db: `dynamic_pricing`) and Redis on port 63
 
 ```bash
 cp starter/backend/.env.template starter/backend/.env
-# Edit starter/backend/.env — set DATABASE_URL and REDIS_URL at minimum
 ```
 
 ### 4. Configure storefront
@@ -146,21 +145,32 @@ cd starter && pnpm run backend:migrate
 cd starter/backend && pnpm exec medusa user -e admin@example.com -p yourpassword
 ```
 
-Copy the **Publishable API key** from the admin panel (`http://localhost:9000/app` → Settings → API Keys) into `starter/storefront/.env.local`:
+### 7. Start the backend
+
+```bash
+cd starter && pnpm run backend:dev
+```
+
+- Backend: `http://localhost:9000`
+- Admin panel: `http://localhost:9000/app`
+
+Log into the admin panel and confirm it loads correctly, then copy the **Publishable API key** (`http://localhost:9000/app` → Settings → API Keys) into `starter/storefront/.env.local`:
 
 ```
 NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
 ```
 
-### 7. Start everything
+### 8. Start the storefront
+
+In a separate terminal, with the backend still running:
 
 ```bash
-cd starter && pnpm run dev
+cd starter && pnpm run storefront:dev
 ```
 
-- Backend: `http://localhost:9000`
-- Admin panel: `http://localhost:9000/app`
 - Storefront: `http://localhost:8000`
+
+Once both are confirmed working, you can stop them and use `pnpm run dev` (from `starter/`) going forward to start backend + storefront together.
 
 ### Resetting your local environment
 
@@ -170,7 +180,7 @@ Once set up, if you need a clean slate (schema changes, corrupted data, reproduc
 ./reset-db.sh
 ```
 
-This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `dynamic_pricing` database, runs migrations, creates the admin user, and **syncs the fresh publishable API key into `starter/storefront/.env`**. Restart the storefront afterwards — `NEXT_PUBLIC_*` env vars are baked in at process start, so an already-running storefront will keep using the stale key. See [`AGENTS.md`](AGENTS.md#local-development--fresh-environment-reset) for the full rationale.
+This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `dynamic_pricing` database, runs migrations, creates the admin user, and **syncs the fresh publishable API key into `starter/storefront/.env`**. Restart the storefront afterwards — `NEXT_PUBLIC_*` env vars are baked in at process start, so an already-running storefront will keep using the stale key.
 
 ## Environment Variables
 
@@ -235,6 +245,8 @@ There is no root package.json — run each project's scripts from its own direct
 | `pnpm run build`                | `starter/`                | Build backend + storefront                                                                                                                                        |
 | `pnpm run backend:migrate`      | `starter/`                | Run Medusa DB migrations (also seeds initial data)                                                                                                                |
 | `pnpm run backend:create-admin` | `starter/`                | Create the default admin user                                                                                                                                     |
+| `pnpm run backend:dev`          | `starter/`                | Start only the backend (useful for first-run setup, before the storefront has an API key)                                                                         |
+| `pnpm run storefront:dev`       | `starter/`                | Start only the storefront                                                                                                                                         |
 | `pnpm run build`                | `dynamic-pricing-plugin/` | Build the plugin (`medusa plugin:build`)                                                                                                                          |
 | `pnpm exec yalc push`           | `dynamic-pricing-plugin/` | Push the built plugin to all yalc-linked consumers                                                                                                                |
 | `pnpm run test:unit`            | `dynamic-pricing-plugin/` | Run plugin unit tests                                                                                                                                             |

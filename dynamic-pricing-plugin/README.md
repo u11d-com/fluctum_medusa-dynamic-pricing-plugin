@@ -23,14 +23,18 @@ A [Medusa](https://docs.medusajs.com) plugin for real-time dynamic pricing in Me
 
 ## Features
 
-- **Live spot prices** — scheduled job fetches ask/bid/spot prices from a configurable provider on every `fetchIntervalSeconds` interval
-- **Real-time delivery** — Server-Sent Events (SSE) push prices to the storefront and admin panel without polling
+- **Live spot prices** — scheduled job fetches ask/bid/spot prices from a configurable provider
+- **Real-time delivery** — Server-Sent Events (SSE) push prices to the storefront and admin panel
 - **Pricing rules** — named rules with spread factor, spread fixed, premium percentage, and premium fixed; assigned per product variant
-- **Per-variant material + weight** — each variant carries a material symbol (XAU, XAG, …) and weight in troy ounces via a module link
+- **Per-variant material + weight** — each variant carries a material symbol (XAU, XAG, …) and weight via a module link
 - **Checkout price locks** — prices are locked when the customer enters checkout; `force=true` creates fresh locks and `force=false` reuses valid locks, both using the latest spot prices stored in DB
 - **Admin panel** — config overview, pricing-rule CRUD, live spot-price dashboard, historical prices, variant/product assignment widgets
 - **Currency conversion** — optional conversion rates stored in DB and applied in the pricing formula
 - **Built-in providers** — `randomProvider` (sinusoidal drift, for dev/testing), `createGoldApiProvider` (goldapi.io), `createStaticRatesProvider` and `exchangeRateHostProvider` for currency conversion
+
+## Demo
+
+See it in action: [fluctum.medusajs.site](https://fluctum.medusajs.site) — a live storefront with real-time spot prices and price-locked checkout.
 
 ## Installation
 
@@ -50,7 +54,7 @@ export default defineConfig({
       options: {
         materials: ["XAU", "XAG"],
         fetchIntervalSeconds: 10,
-        priceLockDurationSeconds: 120,
+        priceLockDurationSeconds: 600,
         provider: randomProvider,
       },
     },
@@ -67,7 +71,7 @@ export default defineConfig({
 | `provider`                 | `PriceProviderFn`           | required | Function that returns spot prices for a list of materials                                                                                              |
 | `pricingCurrency`          | `string`                    | `"USD"`  | ISO-4217 currency code in which `provider` returns spot prices                                                                                         |
 | `currencyConversion`       | `CurrencyConversionOptions` | `null`   | Optional block: `{ provider: CurrencyRateProviderFn, refreshIntervalSeconds?: number, targetCurrencies: string[] }`. Enables multi-currency conversion |
-| `priceLockDurationSeconds` | `number`                    | `120`    | How long a price lock is valid during checkout                                                                                                         |
+| `priceLockDurationSeconds` | `number`                    | `600`    | How long a price lock is valid during checkout                                                                                                         |
 
 ## Pricing Formula
 
@@ -89,7 +93,7 @@ Prices are stored and returned as decimal numbers (not cents). The `computeFinal
 
 ## Store API Routes
 
-All routes are under `/store/dynamic-pricing/` unless noted.
+All routes are under `/store/dynamic-pricing/`.
 
 | Method | Path                    | Description                                                                                       |
 | ------ | ----------------------- | ------------------------------------------------------------------------------------------------- |
@@ -98,42 +102,18 @@ All routes are under `/store/dynamic-pricing/` unless noted.
 | POST   | `/carts/:id/price-lock` | Lock prices for a cart; `?force=true` always creates fresh locks (from latest DB spot prices)     |
 | GET    | `/variant-pricing`      | Variant pricing details (rule + material + weight) for one or more `?variant_id=` values          |
 | GET    | `/currency-rates`       | Latest FX rates relative to `pricingCurrency`; used as an SSE-fallback polling source             |
-| GET    | `/plugin`               | Liveness check — top-level `/store/plugin` (not nested under `/dynamic-pricing/`)                 |
 
 ## Admin API Routes
 
-All routes are under `/admin/dynamic-pricing/` unless noted.
+All routes are under `/admin/dynamic-pricing/`.
 
-| Method          | Path                         | Description                                                                       |
-| --------------- | ---------------------------- | --------------------------------------------------------------------------------- |
-| GET             | `/config`                    | Plugin config (read-only)                                                         |
-| GET/POST        | `/pricing-rules`             | List / create pricing rules                                                       |
-| GET/DELETE      | `/pricing-rules/:id`         | Get / delete a pricing rule                                                       |
-| GET/POST/DELETE | `/variants/:id/pricing-rule` | Assign / read / remove a pricing rule from a variant                              |
-| POST            | `/products/:id/pricing-rule` | Bulk-assign a rule to all variants in a product                                   |
-| GET             | `/spot-prices`               | Historical spot prices with pagination                                            |
-| GET             | `/sse`                       | Admin SSE stream                                                                  |
-| POST            | `/seed`                      | Seed sample products via `seedProductsWorkflow`                                   |
-| GET             | `/plugin`                    | Liveness check — top-level `/admin/plugin` (not nested under `/dynamic-pricing/`) |
-
-## Exports
-
-```ts
-import {
-  randomProvider,
-  createGoldApiProvider,
-  createStaticRatesProvider,
-  exchangeRateHostProvider,
-  seedProductsWorkflow,
-  DYNAMIC_PRICING_MODULE,
-} from "@u11d/medusa-dynamic-pricing";
-import {
-  computeFinalPrice,
-  PricingFactors,
-} from "@u11d/medusa-dynamic-pricing/client";
-import { lockCartPricesWorkflow } from "@u11d/medusa-dynamic-pricing/workflows";
-```
-
-## Development
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) for local setup, build workflow, and testing instructions.
+| Method          | Path                         | Description                                          |
+| --------------- | ---------------------------- | ---------------------------------------------------- |
+| GET             | `/config`                    | Plugin config (read-only)                            |
+| GET/POST        | `/pricing-rules`             | List / create pricing rules                          |
+| GET/DELETE      | `/pricing-rules/:id`         | Get / delete a pricing rule                          |
+| GET/POST/DELETE | `/variants/:id/pricing-rule` | Assign / read / remove a pricing rule from a variant |
+| POST            | `/products/:id/pricing-rule` | Bulk-assign a rule to all variants in a product      |
+| GET             | `/spot-prices`               | Historical spot prices with pagination               |
+| GET             | `/sse`                       | Admin SSE stream                                     |
+| POST            | `/seed`                      | Seed sample products via `seedProductsWorkflow`      |

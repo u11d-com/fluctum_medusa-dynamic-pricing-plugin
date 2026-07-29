@@ -188,7 +188,7 @@ type DynamicPricingOptions = {
   materials: string[]; // required, e.g. ["XAU", "XAG"]
   fetchIntervalSeconds?: number; // default 10
   provider: PriceProviderFn; // required
-  priceLockDurationSeconds?: number; // default 120
+  priceLockDurationSeconds?: number; // default 600
 };
 ```
 

@@ -30,13 +30,6 @@ Configure the following environment variables in the Medusa Cloud dashboard:
 | `MEDUSA_CLOUD_S3_HOSTNAME`       | S3 hostname for file storage                            |
 | `MEDUSA_CLOUD_S3_PATHNAME`       | S3 pathname for file storage                            |
 
-## Custom Domain Hookup
-
-To use `demo.fluctum.io`:
-
-1. Add the domain in the Medusa Cloud project settings.
-2. Update the `STORE_CORS` and `NEXT_PUBLIC_MEDUSA_BACKEND_URL` to reflect the custom domain.
-
 ## Plugin Dependency
 
 The demo backend pulls `@u11d/medusa-dynamic-pricing` from npm as a standard dependency. After a new plugin release is published, trigger a redeploy in Medusa Cloud to pick up the updated version.

@@ -4,10 +4,10 @@
 
 ## Project Overview
 
-An open-source dynamic pricing framework built on top of MedusaJS. Targets precious metals e-commerce (gold, silver, etc.) where prices update every few seconds. The framework consists of:
+An open-source dynamic pricing framework built on top of MedusaJS. Targets precious metals e-commerce (gold, silver, etc.) or another industry where prices update every few seconds. The framework consists of:
 
 - **`dynamic-pricing-plugin/`** — Medusa plugin (`@u11d/medusa-dynamic-pricing`) containing all dynamic pricing logic
-- **`starter/backend/`** — Medusa backend starter (uses the plugin via yalc during development)
+- **`starter/backend/`** — Medusa backend starter (uses the plugin)
 - **`starter/storefront/`** — Next.js 16 storefront with live SSE price bar, dynamic-pricing cart, and price-locked checkout
 
 ---
@@ -15,20 +15,20 @@ An open-source dynamic pricing framework built on top of MedusaJS. Targets preci
 ## Repository Structure
 
 ```
-dynamic-pricing/                    ← monorepo root
+dynamic-pricing/                ← monorepo root
 ├── starter/
-│   ├── backend/                   ← @u11d/medusa-dynamic-pricing-backend — Medusa backend starter
-│   └── storefront/                ← Next.js 16 storefront (live prices + checkout)
+│   ├── backend/                ← @u11d/medusa-dynamic-pricing-backend — Medusa backend starter
+│   └── storefront/             ← Next.js 16 storefront (live prices + checkout)
 ├── landing-page/
-│   ├── www/                       ← fluctum.io landing page
-│   └── form-handler/              ← Serverless form handler
-├── dynamic-pricing-plugin/        ← @u11d/medusa-dynamic-pricing — Medusa plugin
-├── docker-compose.yml             ← PostgreSQL 17 + Redis 8 for local dev
-├── reset-db.sh                    ← authoritative local-env reset script (see below)
-└── AGENTS.md                      ← this file
+│   ├── www/                    ← fluctum.io landing page
+│   └── form-handler/           ← Serverless form handler
+├── dynamic-pricing-plugin/     ← @u11d/medusa-dynamic-pricing — Medusa plugin
+├── docker-compose.yml          ← PostgreSQL 17 + Redis 8 for local dev
+├── reset-db.sh                 ← authoritative local-env reset script (see below)
+└── AGENTS.md                   ← this file
 ```
 
-Plugin is linked to backend via yalc (`.yalc/` in backend). Workflow for local dev: build plugin → yalc push → backend picks it up.
+Plugin is linked to backend via yalc (`.yalc/` in backend) in local development. Workflow for local dev: `build plugin` → `yalc push` → backend picks it up. Released starter backed uses plugin code published in NPM.
 
 ---
 
@@ -59,64 +59,56 @@ Usage:
 2. `./reset-db.sh`
 3. `cd starter && pnpm run dev` again
 
-Manual reset (`docker compose down -v`, dropping the DB by hand, running migrate + seed separately) is a supported fallback ONLY IF you also manually re-sync the publishable key into `starter/storefront/.env` and restart the storefront. In practice: use `./reset-db.sh`.
-
 ---
 
 ## Business Domain
 
 ### Pricing Formula
 
-```
-final_price = weight × material_spot_price × factor × currency_conversion
-```
-
-- `weight` — product variant attribute, always in troy ounces
-- `material_spot_price` — fetched from provider (e.g. XAU, XAG), stored in DB
-- `factor` — composed of: `spread_factor` (multiplier, default 1), `spread_fixed` (additive, default 0), `premium_percentage` (%, default 0), `premium_fixed` (additive, default 0)
-- `currency_conversion` — conversion rate (default 1)
+See [pricing-formula.md](./docs/pricing-formula.md) for details about pricing formula details.
 
 **We do NOT override Medusa prices in cart.** Prices are calculated dynamically on the frontend using SSE spot prices.
 
 ### Cart / Checkout Flow
 
-- While items are in cart, prices update in real time via SSE
-- When user clicks "Go to checkout", prices are **locked** (force-realculated) before navigating to checkout page
-- On first checkout page load, prices are locked again via `useEffect` in `CheckoutSummary`
-- During checkout form steps (address, delivery, payment), prices do NOT refresh — `CheckoutSummary` stays mounted
-- `placeOrder()` does NOT re-lock prices — the mount-time lock is reused. The validate hook (`config-loader.ts`) checks that locks still exist and haven't expired at order completion.
+- While items are in cart, prices update in real time via SSE; the prices do not come from Medusa cart. Medusa cart provides products with weight and spread factor data only. Storefront builds the final price using Medusa cart data and other dynamic values (metal spot prices) received via SSE.
+- When the user clicks "Go to checkout" (a server action, `goToCheckout` in `lib/data/cart.ts`), prices are **locked** (force-recalculated, `force=true`) before redirecting to the checkout page.
+- The checkout page (`checkout/page.tsx`) is a server component (`force-dynamic`). On every request it calls `retrieveCartWithLock(cartId, force=false)`, which locks prices idempotently — reusing any existing valid lock, or creating one if none exists (covers pasted checkout URLs and browser refreshes). The resolved cart + locked prices + lock expiry are passed down as props; `CheckoutSummary` is a purely presentational client component seeded from these props — there is no client-side fetch-on-mount.
+- During checkout form steps (delivery, payment), prices do NOT refresh — those steps use client-side navigation (`router.push()`) so the checkout page does not re-render and `CheckoutSummary` stays mounted with the same props.
+- Submitting the address step uses `redirect()` in a server action, causing a full page navigation — this re-runs `checkout/page.tsx`, which calls `retrieveCartWithLock(cartId, force=false)` again and transparently reuses the existing lock (same idempotent codepath as a page refresh).
+- `placeOrder()` does NOT re-lock prices — the checkout page's server-side lock is reused. The validate hook (`config-loader.ts`) checks that locks still exist and haven't expired at order completion.
 - Admin panel order placement is blocked (store only)
 
 ### Price Refreshing Rules
 
 These rules govern when price locks are created or reused:
 
-| Action                                      | Lock behavior                             | Why                                                                                                                             |
-| ------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Action                                      | Lock behavior                             | Why                                                                                                                             |
-| ---                                         | ---                                       | ---                                                                                                                             |
-| Click "Refresh prices" on checkout          | Always creates fresh locks (`force=true`) | Intentional user action                                                                                                         |
-| Click "Go to checkout" on cart page         | Always creates fresh locks (`force=true`) | Cart page calls `lockCartPrices(id, true)` before navigating                                                                    |
-| Paste checkout URL or page refresh          | Creates fresh locks if none exist         | `useEffect` calls `lockCartPrices(id, false)` — no existing locks → fresh created                                               |
-| Submit address (`redirect()`)               | Reuses existing locks (`force=false`)     | `redirect()` causes full page navigation → `CheckoutSummary` remounts → `useEffect` calls `force=false` → existing locks reused |
-| Select delivery / payment (`router.push()`) | Prices do NOT change                      | Client-side navigation, `CheckoutSummary` stays mounted and `useEffect` doesn't re-fire                                         |
-| Click "Place order"                         | Does NOT create locks                     | Uses mount-time locks; validate hook checks they still exist and haven't expired                                                |
-| Cart page                                   | Dynamic SSE prices (never locked)         | Real-time spot price display                                                                                                    |
+| Action                                      | Lock behavior                             | Why                                                                                                                                |
+| ------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Click "Refresh prices" on checkout          | Always creates fresh locks (`force=true`) | Intentional user action (`doLock` in `CheckoutSummary`, client → `lockCartPrices(id, true)`)                                       |
+| Click "Go to checkout" on cart page         | Always creates fresh locks (`force=true`) | `goToCheckout` server action calls `lockCartPrices(id, true)` before redirecting                                                   |
+| Paste checkout URL or page refresh          | Creates fresh locks if none exist         | `checkout/page.tsx` calls `retrieveCartWithLock(id, false)` server-side on every render — no existing locks → fresh created        |
+| Submit address (`redirect()`)               | Reuses existing locks (`force=false`)     | `redirect()` triggers full page navigation → `checkout/page.tsx` re-runs → `retrieveCartWithLock(id, false)` reuses existing locks |
+| Select delivery / payment (`router.push()`) | Prices do NOT change                      | Client-side navigation only — `checkout/page.tsx` doesn't re-run, `CheckoutSummary` stays mounted with the same props              |
+| Click "Place order"                         | Does NOT create locks                     | Uses the checkout page's server-side lock; validate hook checks it still exists and hasn't expired                                 |
+| Cart page                                   | Dynamic SSE prices (never locked)         | Real-time spot price display                                                                                                       |
 
-**Key architectural constraint**: The address form uses `redirect()` in a server action (`setAddresses`), which triggers a full page navigation. This causes `CheckoutSummary` to remount, losing React state. Therefore, the `useEffect` calls `lockCartPrices(id, false)` — without `force`, the step idempotently reuses any existing valid locks, preserving prices across the redirect. The delivery and payment steps use `router.push()` (client-side navigation), so `CheckoutSummary` stays mounted and its `useEffect` never re-fires.
+- add checkout summary page :: static data stored in medusa data (what exactly)
+
+**Key architectural constraint**: The address form uses `redirect()` in a server action (`setAddresses`), which triggers a full page navigation. This re-runs `checkout/page.tsx` server-side, which calls `retrieveCartWithLock(id, force=false)` — without `force`, this idempotently reuses any existing valid locks, preserving prices across the redirect. The delivery and payment steps use `router.push()` (client-side navigation), so `checkout/page.tsx` doesn't re-run and `CheckoutSummary` stays mounted with the same props.
 
 ---
 
 ## Plugin Configuration (`@u11d/medusa-dynamic-pricing`)
 
-Options defined in `medusa-config.ts` `plugins` array:
+Plugin options defined in `medusa-config.ts` `plugins` array:
 
 | Option                     | Description                                                                                                                                                                                                   | Default  |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | `materials`                | Array of material symbols, e.g. `["XAU", "XAG"]`                                                                                                                                                              | required |
 | `fetchIntervalSeconds`     | How often to fetch/generate spot prices                                                                                                                                                                       | `10`     |
-| `provider`                 | Price provider function/identifier                                                                                                                                                                            | required |
-| `priceLockDurationSeconds` | How long prices are locked during checkout                                                                                                                                                                    | `120`    |
+| `provider`                 | Price provider function                                                                                                                                                                                       | required |
+| `priceLockDurationSeconds` | How long prices are locked during checkout                                                                                                                                                                    | `600`    |
 | `pricingCurrency`          | Currency code in which the provider returns spot prices                                                                                                                                                       | `"USD"`  |
 | `currencyConversion`       | Optional block: `{ provider: CurrencyRateProviderFn, refreshIntervalSeconds?: number, targetCurrencies: string[] }`. When set, a scheduled job refreshes FX rates and the lock step applies them at checkout. | `null`   |
 
@@ -157,173 +149,6 @@ Built-in providers exported from plugin:
 
 - `PricingRule` ↔ Medusa `ProductVariant` (variant has one pricing rule + material symbol + weight)
 
----
-
-## Development Plan
-
-### Step 0 — Environment Verification ✅ (current)
-
-Verify plugin setup, backend setup, docker-compose, yalc link.
-
-### Step 1 — Plugin Configuration
-
-- Define plugin options interface
-- Register plugin module with typed config
-- Validate config at startup
-
-### Step 2 — Random Price Provider + Scheduled Job
-
-- `RandomPriceProvider` implementing provider interface
-- `GoldApiPriceProvider` stub
-- Scheduled job that calls provider every `fetchIntervalSeconds`
-- Stores results in `SpotPrice` table
-- Prices correlated to time (sinusoidal drift)
-- Fields: `ask`, `bid`, `price` (current/mid)
-
-### Step 3 — Admin Page: Plugin Config Overview
-
-- Read-only page in Medusa admin showing current plugin config (materials, interval, provider name, lock duration)
-
-### Step 4 — Historical Prices Module
-
-- `SpotPrice` data model with migrations
-- Module service (list, latest per material)
-
-### Step 5 — Admin Page: Historical Prices
-
-- Admin page showing current and historical spot prices per material
-- Auto-refresh or SSE-driven
-
-### Step 6 — Pricing Rules + Product Variant Linking
-
-- `PricingRule` data model
-- CRUD API for pricing rules
-- Module link: variant → pricing rule + material + weight
-- Admin UI: manage pricing rules, assign to variants
-- Pricing tiers (volume-based or customer-tier discounts) — TBD
-
-### Step 7 — Server-Sent Events (SSE)
-
-- Store SSE endpoint publishing current spot prices every `fetchIntervalSeconds`
-- Admin SSE endpoint for admin panel live updates
-
-### Step 8 — Checkout / Order Flow ✅ (current)
-
-- `CartPriceLock` data model (`modules/dynamic-pricing/models/cart-price-lock.ts`) with migration
-- `createCartPriceLocksStep` — workflow step that fetches cart items → variant links → spot prices → deletes old locks → creates new records via raw knex insert (bypasses ORM caching)
-- `lockCartPricesWorkflow` — wraps the step
-- Store API route `POST /store/dynamic-pricing/carts/:id/price-lock` — triggers the workflow
-- `config-loader.ts` — registers `completeCartWorkflow.hooks.validate` hook that queries `cart_price_lock` via knex, rejects missing or expired locks (idempotent via `hookRegistered` flag)
-- Storefront `lockCartPrices()` server action; `placeOrder()` calls `lockCartPrices(id, true)` before `cart.complete()`
-- `CheckoutSummary` (client component) locks prices on mount via `useEffect` — stays mounted across form step changes
-- Cart page `Summary` calls `lockCartPrices(id, true)` before navigating to checkout
-- Integration tests: 8 tests covering lock creation, recalc on fresh spot, missing API key, completion with lock, rejection without lock, rejection with expired lock, multi-currency conversion (PLN cart)
-- **Fixes applied during implementation:**
-  - Raw knex insert must populate `raw_*` JSONB columns for `model.bigNumber()` fields
-  - `generateEntityId(undefined, "cplock")` — single-arg call treated as existing ID; must pass `undefined` explicitly
-  - Test resources need `Date.now()` suffix when `disableAutoTeardown: true` to avoid handle collisions
-  - Payment module (`@medusajs/medusa/payment`) must be registered in `medusa-config.ts` modules list for cart completion to work in tests
-  - System payment provider container key is `pp_system_default` (not `"system"`) — use `provider_id: "pp_system_default"` for test payment sessions
-  - `force` parameter moved from request body to query parameter (`?force=true`) — `req.body` not reliably parsed in Medusa API routes
-  - `ItemPrice` renders `"—"` when neither locked nor SSE price is available (never falls back to Medusa's default `unit_price`)
-  - Lock creation moved from server component (`page.tsx`) to client component (`CheckoutSummary` `useEffect`) because every form step transition causes a full server component re-render
-  - `force=true` vs `force=false` controls lock **reuse**, not the price source. Both always call `pricingModule.getLatestSpotPrices(materials)` which is a pure DB `DISTINCT ON (material) ORDER BY created_at DESC` read. There are no provider calls during lock creation.
-
-### Step 9 — Storefront Reactivity & UX Polish ✅
-
-**Cart reactivity (CartProvider pattern):**
-
-- `starter/storefront/src/modules/cart/context/cart-context.tsx` — client-side cart state via `useState`. Exports `CartProvider` + `useCart()`.
-- `CartProvider` wraps the `(main)` layout (`starter/storefront/src/app/[countryCode]/(main)/layout.tsx`) and receives `initialCart` from the server-fetched RSC cart.
-- `useCart()` returns `{ cart, addToCart, updateLineItem, deleteLineItem }`. Returns a **no-op context** (not throw) when used outside `CartProvider` — safe for checkout page components.
-- Cart mutations (`cart.ts`) return `Promise<HttpTypes.StoreCart | null>` (calls `retrieveCart(cartId)` after mutating). `CartProvider` calls `setCart(updated)` on success.
-- Success toasts fired inside `CartProvider`: "Added to cart", "Cart updated", "Item removed from cart".
-- `ItemsTemplate` (`cart/templates/items.tsx`) converted to `"use client"` + `useCart()` so Item children receive live `item` props from context — without this, cart page item list never updates after mutations.
-- `starter/storefront/src/modules/layout/components/cart-button/index.tsx` deleted; `Nav` renders `<CartDropdown />` directly (no Suspense fallback needed).
-
-**Pricing display rules (no Medusa fallback prices):**
-
-- `LineItemPrice` shows `"—"` when `price` prop is `undefined` (never falls back to `item.total`).
-- `CartTotals` accepts `null` for `subtotalOverride`/`totalOverride` → renders `"—"` instead of Medusa fallback values.
-- Cart dropdown subtotal: `dynamicSubtotal > 0 ? dynamicSubtotal : null` — shows `"—"` while SSE loads.
-- Cart page Summary / Checkout Summary: same null-passthrough pattern.
-- Checkout preview items: no SSE fallback (`cart` prop removed from `<Item>` in `preview.tsx`) — locked prices or `"—"` only.
-- Order page items always use Medusa finalized prices (`price={item.total ?? 0}` passed explicitly to `LineItemPrice`).
-- `SpotPriceBarClient` never returns `null`; renders placeholder `"—"` prices while SSE is loading so the bar never jumps in/out.
-
-**Checkout page architecture constraints:**
-
-- Checkout is in the `(checkout)` route group — NOT wrapped in `CartProvider`. `useCart()` returns no-op there.
-- `checkout/page.tsx` has `export const dynamic = "force-dynamic"` and calls `retrieveCart(undefined, undefined, true)` (the third arg is `noCache: boolean`) to bypass Next.js data cache.
-- After `initiatePaymentSession`, use `window.location.assign(url)` (hard navigation) — never `router.push()`. The reason: `revalidateTag` + `router.push()` have a race where the client Router Cache serves stale RSC before the server data cache invalidation propagates. Hard reload guarantees the RSC re-renders with fresh `cart.payment_collection`.
-- `retrieveCart(cartId?, fields?, noCache?)` — the third `noCache` parameter, when `true`, passes `cache: "no-store"` and skips `next` tag options entirely.
-- Shipping step: separate `isSettingMethod` state for the API call vs `isLoading` for the navigation. Only "Continue to payment" click sets `isLoading`; selecting a radio option sets `isSettingMethod` (disables radio while API runs, but does NOT put the button into loading state).
-- Review step: `previousStepsCompleted` skips `cart.payment_collection` check when `isOpen=true` (URL already has `step=review`, which only happens after `initiatePaymentSession` succeeded).
-
-**Product card improvements:**
-
-- `ProductCard` accepts optional `variantLabel?: string` prop — rendered right-aligned on the same row as the product title.
-- `ProductPreview` passes `variantLabel={cheapestVariantTitle}` computed from `computeCheapestVariant()`.
-- `computeCheapestVariant(variants, pricingData, spotPrices)` in `lib/util/dynamic-pricing.ts` returns `{ variant, price } | null`.
-- AddToCartButton in product cards uses cheapest variant's ID (not `firstVariantId`).
-
-**UI consistency:**
-
-- `Button` primitive: `isLoading` shows an SVG spinner (not the `loadingText` string).
-- `order-completed-template.tsx`: uses `Surface` with `gap-y-6 p-6` (matches cart page).
-- Billing address checkbox: centered with `flex justify-center` + `accent-brand-primary` tick color.
-
-**Seed data:**
-
-- Product year variant `"Random"` renamed to `"Random Year"` in `seed-products.ts`. Takes effect after next `./reset-db.sh`.
-
-**E2E tests (Playwright):**
-
-- `starter/storefront/e2e/cart-reactivity.spec.ts` — 6 tests covering: badge update (product page), badge update (landing page), quantity change, increment/decrement, remove item, remove one of multiple. All 6 pass.
-- `starter/storefront/e2e/checkout-flow.spec.ts` — 7 tests covering: add + quantity update, add from landing, remove from cart, price check, full checkout flow, refresh prices, page refresh preserves locks. All 7 pass.
-- Playwright config (`playwright.config.ts`): `timeout: 90_000`, `expect.timeout: 10_000`, `retries: 1`, `reuseExistingServer: true`.
-
-### Step 11 — Multi-Region Support ✅
-
-**Plugin extensions:**
-
-- `pricingCurrency` option (default `"USD"`) — currency in which the provider returns spot prices
-- `currencyConversion` config block — optional `CurrencyRateProviderFn`, `refreshIntervalSeconds` (default 3600), `targetCurrencies[]`
-- `CurrencyRate` data model + migration — stores FX rates (from → to) with `DISTINCT ON` read pattern
-- `createStaticRatesProvider` — dev/seed provider (pre-defined rates map)
-- `exchangeRateHostProvider` — live FX provider (no API key)
-- `refreshCurrencyRatesWorkflow` + scheduled job (hourly cron, no-op when `currencyConversion` is null)
-- `CartPriceLock` extended with `currency_code` (text) + `conversion_rate` (bigNumber) fields + migration
-- Lock step: reads `cart.currency_code`, looks up FX rate from DB, passes `currencyConversion` to `computeFinalPrice()`, stores `currency_code` + `conversion_rate` on each lock row
-- SSE `sse/route.ts`: sends `currency-rates` event on connect — `{ rates: { [CURRENCY_CODE]: number } }` keyed by UPPERCASE ISO3
-
-**Seed (21 regions):**
-US (USD), Canada (CAD), Mexico (MXN), Brazil (BRL), Argentina (ARS), Europe (EUR, 20 Eurozone countries), United Kingdom (GBP), Denmark (DKK), Sweden (SEK), Poland (PLN), Czechia (CZK), Hungary (HUF), Romania (RON), Nigeria (NGN), South Africa (ZAR), Japan (JPY), South Korea (KRW), UAE (AED), Saudi Arabia (SAR), Qatar (QAR), Kuwait (KWD). Each region has Standard + Express shipping. FX rates seeded from USD baseline.
-
-**Storefront:**
-
-- `SpotPriceContext` extended with `rates: Record<string, number>` — populated from `currency-rates` SSE event
-- `computeVariantDynamicPrice`, `computeCartItemDynamicPrice`, `computeCheapestVariant`, `computeProductDynamicPrice` — all accept `conversionRate: number = 1`
-- `SpotPriceBarClient` — de-hardcoded from USD; uses `cart.currency_code` + `rates[currencyCode]` for display
-- `product-price/index.tsx`, `preview-price.client.tsx` — same `conversionRate` pattern via `useCart()` + `useSpotPrices()`
-- `getRegion(countryCode)` — returns `null` for unknown countries (removed silent `"us"` fallback)
-- `updateRegion(countryCode, currentPath)` server action — now calls `removeCartId()` on region switch (drop cart, start fresh)
-- `CountrySelect` component (`modules/layout/components/country-select/index.tsx`) — `useParams()` + `usePathname()` + `useTransition()`, triggers `updateRegion`
-- Footer updated with async `listRegions()` + `<CountrySelect>` in "Region" column
-
-**Tests:**
-
-- `config.unit.spec.ts` — 17 new tests for `pricingCurrency` (6) and `currencyConversion` (11). 75/75 unit tests pass.
-- `checkout-flow.spec.ts` — 3 new assertions on `currency_code`/`conversion_rate` for USD cart + new multi-currency PLN integration test. 8 tests total.
-
-### Step 10 — Order Details in Admin
-
-- Admin widget showing dynamic pricing breakdown on order detail page (material, spot price at lock time, weight, factor, final price)
-
----
-
----
-
 ## Performance & Scalability Guidelines
 
 This project targets production workloads under high traffic. All code must follow these rules:
@@ -363,15 +188,12 @@ Run E2E tests: `pnpm exec playwright test --project=chromium` from `starter/stor
 
 ## Process Rules
 
-1. **Approval gate**: After each numbered step, implementation stops and waits for Michał's manual testing, code review, and explicit approval before proceeding.
-2. **Build verification**: Run `pnpm run build` (in `starter/`) or `pnpm run build` (`medusa plugin:build`, in `dynamic-pricing-plugin/`) after every change. Do not mark a step complete until build succeeds.
-3. **Migrations**: Every new data model requires a migration. Run migrations before testing.
-4. **Plugin → backend sync**: After plugin changes, run `pnpm exec yalc push` in `dynamic-pricing-plugin/`. `.yalc/` directories are gitignored — after a fresh clone or deleting yalc state, `yalc push` auto-pushes to any project with an existing `yalc.lock` entry; for a NEW consumer, run `pnpm dlx yalc add @u11d/medusa-dynamic-pricing` from within that consumer's directory. Then restart backend.
-   - **Critical order when seeding files change**: `pnpm run build` → `pnpm exec yalc push` → `./reset-db.sh`. The reset script runs the compiled plugin code from `.yalc/`/`node_modules` at reset time. If you run the reset before `yalc push`, the old compiled seed runs and the DB is seeded incorrectly. Tests will appear to pass if the running DB was manually patched, masking the broken seed.
-5. **No PUT/PATCH**: Only GET, POST, DELETE HTTP methods.
-6. **Workflows for mutations**: All data mutations go through Medusa workflows.
-7. **No Medusa price overrides**: We never write to Medusa's price tables for dynamic pricing.
-8. **Price storage**: Prices stored as-is (not in cents).
+1. **Build verification**: Run `pnpm run build` (in `starter/`) or `pnpm run build` (`medusa plugin:build`, in `dynamic-pricing-plugin/`) after every change. Do not mark a step complete until build succeeds.
+2. **Migrations**: Every new data model requires a migration. Run migrations before testing.
+3. **Plugin → backend sync**: After plugin changes, run `pnpm exec yalc push` in `dynamic-pricing-plugin/`.
+4. **Workflows for mutations**: All data mutations go through Medusa workflows.
+5. **No Medusa price overrides**: We never write to Medusa's price tables for dynamic pricing.
+6. **Price storage**: Prices stored as-is (not in cents).
 
 ---
 
