@@ -35,7 +35,10 @@ const Item = ({ item, currencyCode }: ItemProps) => {
         <div className="!pr-0 flex flex-col items-end h-full justify-center">
           <div className="flex gap-x-1 ">
             <Text as="span" variant="muted">
-              <Text as="span" data-testid="product-quantity">{item.quantity}</Text>x{" "}
+              <Text as="span" variant="muted" data-testid="product-quantity">
+                {item.quantity}
+              </Text>
+              x{" "}
             </Text>
             <LineItemUnitPrice
               item={item}

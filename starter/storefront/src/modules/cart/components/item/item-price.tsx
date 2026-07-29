@@ -25,12 +25,14 @@ const ItemPrice = ({ item, type, currencyCode, lockedPrice, cart }: Props) => {
     return (
       <>
         {type === "full" && (
-          <Table.Cell className="hidden small:table-cell">
+          <Table.Cell className="hidden small:table-cell min-w-24">
             <span className="text-gray-400 text-sm">—</span>
           </Table.Cell>
         )}
-        <Table.Cell className="!pr-0">
-          <span className="flex flex-col items-end h-full justify-center text-gray-400 text-sm">—</span>
+        <Table.Cell className="!pr-0 min-w-24">
+          <span className="flex flex-col items-end h-full justify-center text-gray-400 text-sm">
+            —
+          </span>
         </Table.Cell>
       </>
     )
@@ -39,7 +41,7 @@ const ItemPrice = ({ item, type, currencyCode, lockedPrice, cart }: Props) => {
   return (
     <>
       {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
+        <Table.Cell className="hidden small:table-cell min-w-24">
           <LineItemUnitPrice
             item={item}
             style="tight"
@@ -48,7 +50,7 @@ const ItemPrice = ({ item, type, currencyCode, lockedPrice, cart }: Props) => {
           />
         </Table.Cell>
       )}
-      <Table.Cell className="!pr-0">
+      <Table.Cell className="!pr-0 min-w-24">
         <span
           className={clx("!pr-0", {
             "flex flex-col items-end h-full justify-center": type === "preview",

@@ -77,6 +77,7 @@ const Item = ({
   }
 
   const decreaseDisabled = updating || parseInt(inputValue, 10) <= 1
+  const increaseDisabled = updating
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
@@ -107,7 +108,7 @@ const Item = ({
       </Table.Cell>
 
       {type === "full" && (
-        <Table.Cell>
+        <Table.Cell className="min-w-40">
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <div className="flex items-center border border-ui-border-base rounded">
@@ -136,8 +137,8 @@ const Item = ({
               <button
                 type="button"
                 aria-label={t("increaseQuantity")}
-                className="cursor-pointer w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100"
-                disabled={updating}
+                className={`${increaseDisabled ? "cursor-not-allowed" : "cursor-pointer"} w-8 h-8 flex items-center justify-center text-ui-fg-base hover:bg-gray-100 disabled:opacity-30`}
+                disabled={increaseDisabled}
                 onClick={() => changeQuantity(parseInt(inputValue, 10) + 1)}
                 data-testid="product-increment-button"
               >
