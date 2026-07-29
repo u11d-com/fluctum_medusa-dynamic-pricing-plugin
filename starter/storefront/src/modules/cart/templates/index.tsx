@@ -31,7 +31,7 @@ const CartTemplate = ({
                 <ItemsTemplate cart={cart} />
               </Surface>
               <div className="relative">
-                <div className="flex flex-col gap-y-8 sticky top-12">
+                <div className="flex flex-col gap-y-8">
                   {cart && cart.region && (
                     <>
                       <Surface className="p-6">
