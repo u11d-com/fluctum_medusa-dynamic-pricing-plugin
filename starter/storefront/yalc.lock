@@ -1,9 +1,0 @@
-{
-  "version": "v1",
-  "packages": {
-    "@u11d/medusa-dynamic-pricing": {
-      "signature": "721ac53d8511d5da1b56bc6675d219a4",
-      "file": true
-    }
-  }
-}
