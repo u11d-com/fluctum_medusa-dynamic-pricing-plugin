@@ -46,7 +46,7 @@ const DeleteButton = ({
         data-testid={dataTestId}
       >
         {isDeleting ? <Spinner className="animate-spin" /> : <Trash />}
-        <span>{children}</span>
+        {children && <span>{children}</span>}
       </Button>
     </div>
   )
