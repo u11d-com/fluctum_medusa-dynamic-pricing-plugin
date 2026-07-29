@@ -16,7 +16,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
 
-export default async function PageLayout(props: { children: React.ReactNode; params: Promise<{ countryCode: string }> }) {
+export default async function PageLayout(props: {
+  children: React.ReactNode
+  params: Promise<{ countryCode: string }>
+}) {
   const { countryCode } = await props.params
   const region = await getRegion(countryCode)
   const regionCurrencyCode = region?.currency_code?.toUpperCase() ?? "USD"
@@ -33,8 +36,10 @@ export default async function PageLayout(props: { children: React.ReactNode; par
 
   return (
     <CartProvider initialCart={cart} regionCurrencyCode={regionCurrencyCode}>
-      <SpotPriceBarClient regionCurrencyCode={regionCurrencyCode} />
-      <Nav />
+      <div className="sticky top-0 inset-x-0 z-50">
+        <SpotPriceBarClient regionCurrencyCode={regionCurrencyCode} />
+        <Nav />
+      </div>
       {customer && cart && (
         <CartMismatchBanner customer={customer} cart={cart} />
       )}

@@ -8,7 +8,7 @@ export default async function Nav() {
   const t = await getTranslations("nav")
 
   return (
-    <header className="sticky top-0 inset-x-0 z-50 h-16 mx-auto border-b duration-200 bg-black border-white/10">
+    <header className="h-16 mx-auto border-b duration-200 bg-black border-white/10">
       <nav className="content-container flex items-center justify-between w-full h-full text-small-regular">
         <div className="flex items-center h-full w-40">
           <LocalizedClientLink
