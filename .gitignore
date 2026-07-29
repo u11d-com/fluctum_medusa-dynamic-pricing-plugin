@@ -64,6 +64,7 @@ Thumbs.db
 
 # Yalc (plugin build files)
 .yalc
+.yalc.lock
 
 # Agent state / session metadata (Sisyphus, Prometheus, etc.)
 .omo/
