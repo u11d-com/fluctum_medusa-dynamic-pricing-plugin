@@ -105,11 +105,22 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 24
+          registry-url: "https://registry.npmjs.org/"
 
       - name: Refresh lockfile
         run: |
           cd /tmp/fluctum_starter
           pnpm install --lockfile-only
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # This job only bumps one already-published, already-vetted dependency
+          # (our own plugin) against a lockfile copied from our own trusted monorepo,
+          # so pnpm's 24h minimumReleaseAge delay (default in v11) is unnecessary here.
+          # It requires full (not abbreviated) registry metadata per package, which is
+          # what caused the 429 flood and the "supply-chain policy check" failure.
+          pnpm_config_minimum_release_age: "0"
+          pnpm_config_fetch_retries: "5"
+          pnpm_config_fetch_retry_mintimeout: "20000"
 
       - name: Validate synced lockfile
         run: |
