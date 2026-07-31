@@ -118,7 +118,7 @@ cd starter && pnpm install && cd ..
 docker compose up -d
 ```
 
-This starts PostgreSQL on port 5432 (db: `dynamic_pricing`) and Redis on port 6379.
+This starts PostgreSQL on port 5432 (db: `fluctum`) and Redis on port 6379.
 
 ### 3. Configure backend
 
@@ -180,7 +180,7 @@ Once set up, if you need a clean slate (schema changes, corrupted data, reproduc
 ./reset-db.sh
 ```
 
-This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `dynamic_pricing` database, runs migrations, creates the admin user, and **syncs the fresh publishable API key into `starter/storefront/.env`**. Restart the storefront afterwards — `NEXT_PUBLIC_*` env vars are baked in at process start, so an already-running storefront will keep using the stale key.
+This runs [`reset-db.sh`](reset-db.sh) which drops and recreates the `fluctum` database, runs migrations, creates the admin user, and **syncs the fresh publishable API key into `starter/storefront/.env`**. Restart the storefront afterwards — `NEXT_PUBLIC_*` env vars are baked in at process start, so an already-running storefront will keep using the stale key.
 
 ## Environment Variables
 

@@ -40,9 +40,9 @@ This is a common failure mode: manually dropping the DB or running `docker compo
 
 The `reset-db.sh` script at the repo root does everything in one atomic operation (there is no root `package.json`, so it's run directly, not via a package-manager script):
 
-1. Terminates active Postgres connections to `dynamic_pricing`
-2. `DROP DATABASE dynamic_pricing`
-3. `CREATE DATABASE dynamic_pricing`
+1. Terminates active Postgres connections to `fluctum`
+2. `DROP DATABASE fluctum`
+3. `CREATE DATABASE fluctum`
 4. `pnpm run backend:migrate` (from `starter/`, also runs the initial data seed)
 5. `pnpm run backend:create-admin` (from `starter/`, creates the default admin user)
 6. Reads the freshly-generated publishable API key and updates `starter/storefront/.env` in place

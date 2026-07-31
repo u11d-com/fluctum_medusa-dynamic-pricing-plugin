@@ -80,7 +80,7 @@ jobs:
           cp starter/package.json /tmp/fluctum_starter/
           cp starter/pnpm-lock.yaml /tmp/fluctum_starter/
           cp starter/pnpm-workspace.yaml /tmp/fluctum_starter/
-          cp starter/docker-compose.yml /tmp/fluctum_starter/
+          cp docker-compose.yml /tmp/fluctum_starter/
           cp starter/.gitignore /tmp/fluctum_starter/
           cp starter/turbo.json /tmp/fluctum_starter/
           mkdir -p /tmp/fluctum_starter/.github/workflows

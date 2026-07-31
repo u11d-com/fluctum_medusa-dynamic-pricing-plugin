@@ -30,7 +30,7 @@ cd starter && pnpm install && cd ..
 docker compose up -d
 ```
 
-PostgreSQL will be available at `localhost:5432` (db: `dynamic_pricing`).  
+PostgreSQL will be available at `localhost:5432` (db: `fluctum`).  
 Redis will be available at `localhost:6379`.
 
 ### 3. Configure the backend
@@ -42,7 +42,7 @@ cp starter/backend/.env.template starter/backend/.env
 Edit `starter/backend/.env`:
 
 ```bash
-DATABASE_URL=postgres://postgres:@localhost:5432/dynamic_pricing
+DATABASE_URL=postgres://postgres:@localhost:5432/fluctum
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=supersecret
 COOKIE_SECRET=supersecret

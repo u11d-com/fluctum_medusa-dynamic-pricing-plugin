@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Database configuration
-DB_NAME="dynamic_pricing"
+DB_NAME="fluctum"
 DB_USER="postgres"
 DB_PASSWORD="postgres"
 DB_HOST="localhost"
