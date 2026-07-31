@@ -75,11 +75,11 @@ Prices in the cart are dynamic — they update in real time via SSE. When a cust
 
 ```
 POST /store/dynamic-pricing/carts/:id/price-lock
-     ?force=true   — always create fresh locks (fetches from provider directly)
+     ?force=true   — always delete + recreate locks
      ?force=false  — idempotent: only creates if no valid locks exist
 ```
 
-When `force=true`, the step calls the configured provider directly — bypassing the cached DB spot price — so the customer always gets the most current price.
+Both `force=true` and `force=false` read spot prices from the DB (`getLatestSpotPrices`), not a live provider call — see [ADR 0005](adr/0005-provider-direct-fetch-on-force-lock.md#update-2026-reverted). `force` only controls whether existing lock rows are reused or recreated; staleness is bounded by `fetchIntervalSeconds` (default 10s) regardless of `force`.
 
 ## Lock Data (`CartPriceLock`)
 

@@ -86,7 +86,7 @@ final_price   = after_premium + spread_fixed + premium_fixed
 
 ### Price Locks — Never Change Semantics Without Explicit Request
 
-- `force=true` → always fetches from provider directly (not DB cache); creates new locks
+- `force=true` → always deletes and recreates locks (spot prices still read from the DB cache via `getLatestSpotPrices`, not a direct provider call — see [ADR 0005](../docs/adr/0005-provider-direct-fetch-on-force-lock.md#update-2026-reverted))
 - `force=false` → idempotent: reuses existing valid locks; only creates if none exist
 - The validate hook in `config-loader.ts` runs at order completion; must always reject missing/expired locks
 - `hookRegistered` flag prevents double-registration — do not remove it
