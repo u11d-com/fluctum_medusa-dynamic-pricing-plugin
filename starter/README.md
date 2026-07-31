@@ -41,13 +41,20 @@ Click **[Use this template](https://github.com/u11d-com/fluctum_starter/generate
 ```bash
 git clone https://github.com/u11d-com/fluctum_starter.git my-store
 cd my-store
+```
+
+### 2. Install dependencies
+
+Install workspace dependencies:
+
+```bash
 pnpm install
 ```
 
-### 2. Configure environment variables
+### 3. Configure environment variables
 
 ```bash
-cp .env.template backend/.env
+cp backend/.env.template backend/.env
 ```
 
 For the storefront:
@@ -56,7 +63,7 @@ For the storefront:
 cp storefront/.env.template storefront/.env
 ```
 
-### 3. Start infrastructure
+### 4. Start infrastructure
 
 ```bash
 docker compose up -d
@@ -64,19 +71,19 @@ docker compose up -d
 
 PostgreSQL will be available on port `5432` (database: `fluctum`) and Redis on port `6379`.
 
-### 4. Run migrations (also seeds initial data)
+### 5. Run migrations (also seeds initial data)
 
 ```bash
 pnpm run backend:migrate
 ```
 
-### 5. Create admin user
+### 6. Create admin user
 
 ```bash
 pnpm run backend:create-admin
 ```
 
-### 6. Start the backend
+### 7. Start the backend
 
 ```bash
 pnpm run backend:dev
@@ -93,7 +100,7 @@ Log into the admin panel and confirm it loads correctly, then copy the **Publish
 NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
 ```
 
-### 7. Start the storefront
+### 8. Start the storefront
 
 In a separate terminal, with the backend still running:
 
