@@ -36,6 +36,10 @@ A [Medusa](https://docs.medusajs.com) plugin for real-time dynamic pricing in Me
 
 See it in action: [fluctum.medusajs.site](https://fluctum.medusajs.site) — a live storefront with real-time spot prices and price-locked checkout.
 
+## Quick Start
+
+For a full walkthrough — installing the plugin, configuring a price provider, and wiring up the storefront — see our blog post: [Dynamic Pricing for Medusa: Building Fluctum](https://u11d.com/blog/medusa-dynamic-pricing-fluctum).
+
 ## Installation
 
 ```bash
