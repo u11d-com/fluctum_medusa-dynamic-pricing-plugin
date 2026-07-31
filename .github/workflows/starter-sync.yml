@@ -106,6 +106,8 @@ jobs:
         with:
           node-version: 24
           registry-url: "https://registry.npmjs.org/"
+          cache: "pnpm"
+          cache-dependency-path: /tmp/fluctum_starter/pnpm-lock.yaml
 
       - name: Refresh lockfile
         run: |
