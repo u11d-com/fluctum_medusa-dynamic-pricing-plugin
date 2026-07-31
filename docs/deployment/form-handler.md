@@ -34,6 +34,14 @@ The following environment variables are required for deployment. These should be
 
 > Note: `ALLOWED_ORIGIN` is managed via the `serverless.yml` CORS configuration.
 
+## Frontend Integration (reCAPTCHA Enterprise)
+
+The landing page (`landing-page/www/`) loads the reCAPTCHA Enterprise JS API and executes it on form submission to obtain a `captchaToken`, which is sent alongside the form payload (`email`, `name`, `message`, `acceptPrivacyPolicy`, `captchaToken`) to this service.
+
+- The frontend's `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` **must equal** this service's `CAPTCHA_SITE_KEY` — they identify the same reCAPTCHA Enterprise site key, just consumed by different sides (public JS API vs. server-side assessment call).
+- The action name executed client-side (`contact_form`) must match the `captcha.action` value configured in `serverless.yml`.
+- If `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` is unset on the frontend, no token is generated and requests will fail server-side `reCAPTCHA check failed` (`10002`) if `captcha` is configured here — keep both in sync or disable both.
+
 ## Deployment Commands
 
 ### Development

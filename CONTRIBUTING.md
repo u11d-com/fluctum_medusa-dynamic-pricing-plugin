@@ -11,7 +11,7 @@
 
 ### 1. Clone & install
 
-This repo has **no root package.json** — every project (`dynamic-pricing-plugin/`, `starter/`, `landing-page/www/`, `landing-page/form-handler/`, `infra/landing-page/`) is an independent pnpm project. For backend/storefront development:
+This repo has **no root package.json** — every project (`dynamic-pricing-plugin/`, `starter/`, `landing-page/www/`, `infra/landing-page/`) is an independent pnpm project. `landing-page/form-handler/` is the one exception and uses npm instead. For backend/storefront development:
 
 ```bash
 git clone https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin.git

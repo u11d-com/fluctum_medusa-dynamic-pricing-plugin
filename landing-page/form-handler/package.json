@@ -1,13 +1,12 @@
 {
   "name": "fluctum-form-handler",
   "version": "1.0.0",
-  "packageManager": "pnpm@11.13.1",
+  "packageManager": "npm@11.6.2",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "deploy:dev": "serverless deploy --stage dev",
-    "deploy:prod": "serverless deploy --stage prod"
+    "deploy": "serverless deploy"
   },
   "author": "u11d.com",
   "dependencies": {

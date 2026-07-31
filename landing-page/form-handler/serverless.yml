@@ -6,9 +6,9 @@ useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs24.x
+  runtime: nodejs20.x
   region: eu-west-1
-  stage: ${opt:stage, 'dev'}
+  stage: prod
   httpApi:
     cors:
       allowedOrigins:

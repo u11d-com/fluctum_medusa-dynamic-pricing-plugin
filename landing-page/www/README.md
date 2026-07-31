@@ -29,11 +29,14 @@ pnpm run start
 
 ## Environment variables
 
-| Variable                  | Description                                         | Required |
-| ------------------------- | --------------------------------------------------- | -------- |
-| `NEXT_PUBLIC_WEBFORM_URL` | Contact form endpoint (serverless form handler URL) | no       |
+| Variable                         | Description                                                                             | Required |
+| -------------------------------- | --------------------------------------------------------------------------------------- | -------- |
+| `NEXT_PUBLIC_WEBFORM_URL`        | Contact form endpoint (serverless form handler URL)                                     | no       |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Google reCAPTCHA Enterprise site key (must match the form handler's `CAPTCHA_SITE_KEY`) | no       |
 
 If `NEXT_PUBLIC_WEBFORM_URL` is missing, the form gracefully falls back to a simulated success flow.
+
+If `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` is missing, the reCAPTCHA script is not loaded and no `captchaToken` is sent — only safe to omit if the form handler's `captcha` config is also disabled.
 
 ## SEO and analytics
 

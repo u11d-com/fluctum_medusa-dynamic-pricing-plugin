@@ -25,6 +25,43 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 
+declare global {
+  interface Window {
+    grecaptcha?: {
+      enterprise: {
+        ready: (callback: () => void) => void;
+        execute: (
+          siteKey: string,
+          options: { action: string },
+        ) => Promise<string>;
+      };
+    };
+  }
+}
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+const RECAPTCHA_ACTION = "contact_form";
+
+function getRecaptchaToken(): Promise<string | undefined> {
+  if (
+    !RECAPTCHA_SITE_KEY ||
+    typeof window === "undefined" ||
+    !window.grecaptcha
+  ) {
+    return Promise.resolve(undefined);
+  }
+
+  const siteKey = RECAPTCHA_SITE_KEY;
+  return new Promise((resolve, reject) => {
+    window.grecaptcha!.enterprise.ready(() => {
+      window
+        .grecaptcha!.enterprise.execute(siteKey, { action: RECAPTCHA_ACTION })
+        .then(resolve)
+        .catch(reject);
+    });
+  });
+}
+
 export default function HomeClient() {
   const [formStatus, setFormStatus] = useState<
     "idle" | "submitting" | "success" | "error"
@@ -69,11 +106,6 @@ export default function HomeClient() {
     setFormStatus("submitting");
 
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      message: formData.get("message"),
-    };
 
     try {
       const endpoint = process.env.NEXT_PUBLIC_WEBFORM_URL;
@@ -82,6 +114,21 @@ export default function HomeClient() {
         setTimeout(() => setFormStatus("success"), 1000);
         return;
       }
+
+      const captchaToken = await getRecaptchaToken();
+      if (RECAPTCHA_SITE_KEY && !captchaToken) {
+        throw new Error(
+          "Unable to verify you're not a robot. Please try again.",
+        );
+      }
+
+      const data = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        message: formData.get("message"),
+        acceptPrivacyPolicy: formData.get("acceptPrivacyPolicy") === "on",
+        ...(captchaToken ? { captchaToken } : {}),
+      };
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -878,6 +925,23 @@ export default function HomeClient() {
                     required
                     className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all resize-none"
                   ></textarea>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="acceptPrivacyPolicy"
+                    name="acceptPrivacyPolicy"
+                    required
+                    className="mt-1 h-4 w-4 rounded border-theme-input accent-[#7c3aed]"
+                  />
+                  <label
+                    htmlFor="acceptPrivacyPolicy"
+                    className="text-sm text-theme-muted"
+                  >
+                    I agree that my information may be used to respond to my
+                    inquiry. *
+                  </label>
                 </div>
 
                 {formStatus === "error" && (

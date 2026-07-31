@@ -58,14 +58,15 @@ cdk deploy
 
 In your GitHub repo settings → Secrets and variables → Actions → New repository secret:
 
-| Secret Name                  | Value                 | Source                                                          |
-| ---------------------------- | --------------------- | --------------------------------------------------------------- |
-| `AWS_ACCESS_KEY_ID`          | IAM user access key   | Create IAM user with `S3FullAccess` + `CloudFrontFullAccess`    |
-| `AWS_SECRET_ACCESS_KEY`      | IAM user secret       | From IAM user creation                                          |
-| `AWS_REGION`                 | `us-east-1`           | Or your chosen region                                           |
-| `S3_BUCKET`                  | Bucket name           | CDK output `BucketName`                                         |
-| `CLOUDFRONT_DISTRIBUTION_ID` | Distribution ID       | CDK output `DistributionId`                                     |
-| `NEXT_PUBLIC_WEBFORM_URL`    | Form handler endpoint | From `serverless info` (see [form-handler.md](form-handler.md)) |
+| Secret Name                      | Value                         | Source                                                                                     |
+| -------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `AWS_ACCESS_KEY_ID`              | IAM user access key           | Create IAM user with `S3FullAccess` + `CloudFrontFullAccess`                               |
+| `AWS_SECRET_ACCESS_KEY`          | IAM user secret               | From IAM user creation                                                                     |
+| `AWS_REGION`                     | `us-east-1`                   | Or your chosen region                                                                      |
+| `S3_BUCKET`                      | Bucket name                   | CDK output `BucketName`                                                                    |
+| `CLOUDFRONT_DISTRIBUTION_ID`     | Distribution ID               | CDK output `DistributionId`                                                                |
+| `NEXT_PUBLIC_WEBFORM_URL`        | Form handler endpoint         | From `serverless info` (see [form-handler.md](form-handler.md))                            |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA Enterprise site key | Must match `CAPTCHA_SITE_KEY` on the form handler (see [form-handler.md](form-handler.md)) |
 
 ### Step 4: Create IAM User for GitHub Actions
 

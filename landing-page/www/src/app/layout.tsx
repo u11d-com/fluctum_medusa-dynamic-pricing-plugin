@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const lato = Lato({
@@ -7,6 +8,8 @@ const lato = Lato({
   weight: ["400", "700", "900"],
   subsets: ["latin"],
 });
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fluctum.io"),
@@ -67,6 +70,12 @@ export default function RootLayout({
           src="https://cloud.umami.is/script.js"
           data-website-id="2ff4ceee-0a6a-4df6-a7d5-8da593de3cae"
         />
+        {RECAPTCHA_SITE_KEY && (
+          <Script
+            src={`https://www.google.com/recaptcha/enterprise.js?render=${RECAPTCHA_SITE_KEY}`}
+            strategy="afterInteractive"
+          />
+        )}
       </head>
       <body className={`${lato.variable} antialiased`}>{children}</body>
     </html>
