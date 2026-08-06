@@ -27,7 +27,7 @@
   <a href="https://docs.medusajs.com"><img src="https://img.shields.io/badge/Medusa-2.15%2B-9333ea.svg" alt="Medusa Version"/></a>
 </p>
 
-Fluctum is an open-source dynamic pricing plugin for [Medusa](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant. Created and maintained by [u11d](https://u11d.com).
+[Fluctum](https://fluctum.io) is an open-source dynamic pricing plugin for [Medusa](https://docs.medusajs.com) — built for precious metals (gold, silver bullion) but architected for any volatile-price asset. Prices update every few seconds from live spot-price feeds, are displayed in real time via SSE on the storefront, and are locked at checkout entry to protect both customer and merchant. Created and maintained by [u11d](https://u11d.com).
 
 ## Table of Contents
 
