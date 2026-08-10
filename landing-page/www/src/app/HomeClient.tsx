@@ -23,7 +23,9 @@ import {
   ExternalLink,
   Package,
   Link as LinkIcon,
+  ChevronDown,
 } from "lucide-react";
+import { faqs } from "./faq-data";
 
 declare global {
   interface Window {
@@ -182,6 +184,7 @@ export default function HomeClient() {
     { name: "How it works", href: "#how-it-works" },
     { name: "Use cases", href: "#use-cases" },
     { name: "Deployment", href: "#deployment" },
+    { name: "FAQ", href: "#faq" },
   ];
 
   const footerLinks = [
@@ -556,7 +559,7 @@ export default function HomeClient() {
                 </ul>
               </div>
 
-              <div className="p-8 border w-128 border-theme-base rounded-2xl bg-theme-code shadow-2xl relative overflow-hidden">
+              <div className="p-8 border w-full max-w-lg lg:w-128 border-theme-base rounded-2xl bg-theme-code shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#7c3aed] to-transparent opacity-50"></div>
                 <h4 className="text-theme-faint text-sm font-mono mb-4 border-b border-theme-base pb-4">
                   Formula Engine
@@ -842,6 +845,33 @@ export default function HomeClient() {
               </a>
               .
             </p>
+          </div>
+        </section>
+
+        <section
+          id="faq"
+          className="py-24 px-6 bg-theme-subtle border-t border-white/5 "
+        >
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
+              Frequently asked questions
+            </h2>
+            <div className="space-y-4">
+              {faqs.map((faq) => (
+                <details
+                  key={faq.question}
+                  className="group border border-theme-base rounded-xl bg-theme-card open:border-[#7c3aed]/40 transition-colors"
+                >
+                  <summary className="flex items-center justify-between gap-4 cursor-pointer p-6 text-lg font-semibold text-theme-base marker:content-none [&::-webkit-details-marker]:hidden">
+                    {faq.question}
+                    <ChevronDown className="w-5 h-5 text-[#7c3aed] flex-shrink-0 transition-transform group-open:rotate-180" />
+                  </summary>
+                  <p className="px-6 pb-6 text-theme-muted leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
           </div>
         </section>
 

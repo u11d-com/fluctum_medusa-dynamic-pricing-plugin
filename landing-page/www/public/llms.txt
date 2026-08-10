@@ -1,0 +1,21 @@
+# Fluctum
+
+> Open-source, real-time dynamic pricing plugin for Medusa. Streams live spot prices to storefronts over Server-Sent Events and locks checkout prices for order validation. Built for precious metals, industrial metals, and any catalog where market prices move constantly.
+
+Fluctum is maintained by [u11d](https://u11d.com) and licensed under MIT. It ships as three connected, open-source components: a Medusa plugin, a backend starter, and a storefront starter.
+
+## Key facts
+
+- License: MIT (free, self-hostable)
+- npm package: `@u11d/medusa-dynamic-pricing`
+- Runtime platform: [Medusa](https://medusajs.com) v2
+- Price delivery: Server-Sent Events (SSE)
+- Checkout behavior: prices are locked from the latest stored spot price for a configurable window and validated again before order completion
+
+## Links
+
+- [Live demo](https://fluctum.medusajs.site/us)
+- [Plugin source (GitHub)](https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin)
+- [Backend + storefront starter (GitHub)](https://github.com/u11d-com/fluctum_starter)
+- [npm package](https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing)
+- [Contact](mailto:hello@u11d.com)

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
 import Script from "next/script";
+import StructuredData from "./StructuredData";
 import "./globals.css";
 
 const lato = Lato({
@@ -64,7 +65,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/fluctum-logo-full.svg" type="image/svg+xml" />
+        <link rel="icon" href="/fluctum-logo-square.svg" type="image/svg+xml" />
+        <StructuredData />
         <script
           defer
           src="https://cloud.umami.is/script.js"
