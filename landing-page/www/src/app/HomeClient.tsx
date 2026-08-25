@@ -202,6 +202,10 @@ export default function HomeClient() {
     },
     { name: "Medusa", href: "https://medusajs.com" },
     { name: "Deploy Medusa", href: "https://deploymedusa.com" },
+    {
+      name: "LinkedIn",
+      href: "https://www.linkedin.com/showcase/fluctum-dynamic-pricing",
+    },
   ];
 
   return (
