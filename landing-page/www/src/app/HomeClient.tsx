@@ -24,6 +24,9 @@ import {
   Package,
   Link as LinkIcon,
   ChevronDown,
+  Briefcase,
+  Wrench,
+  GitMerge,
 } from "lucide-react";
 import { faqs } from "./faq-data";
 
@@ -184,6 +187,7 @@ export default function HomeClient() {
     { name: "How it works", href: "#how-it-works" },
     { name: "Use cases", href: "#use-cases" },
     { name: "Deployment", href: "#deployment" },
+    { name: "Partnership", href: "#partnership" },
     { name: "FAQ", href: "#faq" },
   ];
 
@@ -853,9 +857,60 @@ export default function HomeClient() {
         </section>
 
         <section
-          id="faq"
-          className="py-24 px-6 bg-theme-subtle border-t border-white/5 "
+          id="partnership"
+          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
         >
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-16 text-center max-w-4xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
+                More Than a Plugin: Your Technology Partner
+              </h2>
+              <p className="text-xl text-theme-muted leading-relaxed">
+                While Fluctum provides a powerful engine for dynamic pricing,
+                our real value lies in partnership. We help organizations
+                design, build, and integrate complete commerce solutions for
+                high-volatility markets.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+                <Briefcase className="w-10 h-10 text-[#7c3aed] mb-6" />
+                <h3 className="text-xl font-bold text-theme-base mb-3">
+                  Holistic Process Design
+                </h3>
+                <p className="text-theme-muted leading-relaxed">
+                  We start by understanding your entire operation—from inventory
+                  and ERP to WMS and fulfillment—to design a seamless data flow.
+                </p>
+              </div>
+              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+                <Wrench className="w-10 h-10 text-[#7c3aed] mb-6" />
+                <h3 className="text-xl font-bold text-theme-base mb-3">
+                  Custom Solution Development
+                </h3>
+                <p className="text-theme-muted leading-relaxed">
+                  We build custom storefronts, back-office tools, and middleware
+                  to solve your unique business challenges, using Fluctum as a
+                  core component.
+                </p>
+              </div>
+              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
+                <GitMerge className="w-10 h-10 text-[#7c3aed] mb-6" />
+                <h3 className="text-xl font-bold text-theme-base mb-3">
+                  Seamless Systems Integration
+                </h3>
+                <p className="text-theme-muted leading-relaxed">
+                  Our expertise lies in connecting disparate systems into a
+                  cohesive, scalable commerce architecture that grows with your
+                  business.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="py-24 px-6 border-t border-white/5 ">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
               Frequently asked questions
@@ -866,7 +921,7 @@ export default function HomeClient() {
                   key={faq.question}
                   className="group border border-theme-base rounded-xl bg-theme-card open:border-[#7c3aed]/40 transition-colors"
                 >
-                  <summary className="flex items-center justify-between gap-4 cursor-pointer p-6 text-lg font-semibold text-theme-base marker:content-none [&::-webkit-details-marker]:hidden">
+                  <summary className="flex items-center justify-between gap-4 cursor-pointer p-4 text-lg font-semibold text-theme-base marker:content-none [&::-webkit-details-marker]:hidden">
                     {faq.question}
                     <ChevronDown className="w-5 h-5 text-[#7c3aed] flex-shrink-0 transition-transform group-open:rotate-180" />
                   </summary>
@@ -881,7 +936,7 @@ export default function HomeClient() {
 
         <section
           id="contact"
-          className="py-24 bg-theme-base px-6 border-t border-white/5"
+          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
         >
           <div className="max-w-4xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
