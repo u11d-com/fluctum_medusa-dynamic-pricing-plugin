@@ -72,8 +72,7 @@ export default function HomeClient() {
     "idle" | "submitting" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("hero");
+
 
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   useEffect(() => {
@@ -154,42 +153,9 @@ export default function HomeClient() {
     }
   };
 
-  useEffect(() => {
-    let cancelled = false;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (cancelled) return;
-        const visibleSections = entries.filter((entry) => entry.isIntersecting);
-        if (visibleSections.length > 0) {
-          visibleSections.sort(
-            (a, b) => b.intersectionRatio - a.intersectionRatio,
-          );
-          setActiveSection(visibleSections[0].target.id);
-        }
-      },
-      { rootMargin: "-100px 0px -40% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
 
-    const sections = document.querySelectorAll("section[id]");
-    sections.forEach((section) => observer.observe(section));
 
-    return () => {
-      cancelled = true;
-      observer.disconnect();
-    };
-  }, []);
-
-  const navLinks = [
-    { name: "Fluctum", href: "#fluctum" },
-    { name: "Customization", href: "#customization" },
-    { name: "Integrations", href: "#integrations" },
-    { name: "How it works", href: "#how-it-works" },
-    { name: "Use cases", href: "#use-cases" },
-    { name: "Deployment", href: "#deployment" },
-    { name: "Partnership", href: "#partnership" },
-    { name: "FAQ", href: "#faq" },
-  ];
 
   const footerLinks = [
     {
@@ -219,7 +185,6 @@ export default function HomeClient() {
           <Link
             href="#hero"
             className="flex-shrink-0"
-            onClick={() => setIsMobileMenuOpen(false)}
             data-umami-event="logo_click"
           >
             <Image
@@ -231,24 +196,7 @@ export default function HomeClient() {
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-sm font-medium transition-colors ${
-                  activeSection === link.href.slice(1)
-                    ? "text-[#7c3aed] drop-shadow-[0_0_8px_rgba(124,58,237,0.8)]"
-                    : "text-theme-muted hover:text-theme-base"
-                }`}
-                data-umami-event="nav_link"
-                data-umami-event-section={link.href.slice(1)}
-                data-umami-event-location="header"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
+
 
           <div className="hidden lg:flex items-center gap-4">
             <button
@@ -281,73 +229,10 @@ export default function HomeClient() {
             </Link>
           </div>
 
-          <button
-            className="lg:hidden p-2 text-theme-base opacity-80 hover:text-theme-base"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            data-umami-event="toggle_mobile_menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+
         </div>
 
-        {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 w-full bg-theme-base border-b border-theme-base p-6 flex flex-col gap-4 shadow-2xl">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-lg font-medium ${
-                  activeSection === link.href.slice(1)
-                    ? "text-[#7c3aed]"
-                    : "text-theme-base opacity-80"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-                data-umami-event="nav_link"
-                data-umami-event-section={link.href.slice(1)}
-                data-umami-event-location="mobile-menu"
-              >
-                {link.name}
-              </Link>
-            ))}
 
-            <div className="pt-4 border-t border-theme-base flex flex-col gap-3">
-              <a
-                href="https://fluctum.medusajs.site/us"
-                target="_blank"
-                rel="noreferrer"
-                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-base font-semibold text-center flex items-center justify-center gap-2 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-                data-umami-event="cta_see_demo"
-                data-umami-event-location="mobile-menu"
-              >
-                See Demo
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              <Link
-                href="#contact"
-                className="w-full px-5 py-3 bg-[#7c3aed] text-white rounded-lg font-semibold text-center transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-                data-umami-event="cta_contact_us"
-                data-umami-event-location="mobile-menu"
-              >
-                Contact us
-              </Link>
-              <button
-                onClick={toggleTheme}
-                className="w-full px-5 py-3 border border-theme-base rounded-lg text-theme-muted hover:text-theme-base flex items-center justify-center gap-2 transition-colors"
-                data-umami-event="toggle_theme"
-                data-umami-event-location="mobile-menu"
-              >
-                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-                Toggle Theme
-              </button>
-            </div>
-          </div>
-        )}
       </header>
 
       <main>
