@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Sun,
@@ -311,21 +310,7 @@ export default function HomeClient() {
   return (
     <div className="min-h-screen font-sans text-fg overflow-x-clip">
       <header className="fixed top-0 inset-x-0 z-50 bg-bg/85 backdrop-blur border-b border-line">
-        <div className="max-w-7xl mx-auto h-14 px-4 sm:px-6 flex items-center justify-between">
-          <Link
-            href="#hero"
-            className="flex-shrink-0"
-            data-umami-event="logo_click"
-          >
-            <Image
-              src="/fluctum-logo-full.svg"
-              width={105}
-              height={48}
-              alt="Fluctum Logo"
-              className="w-auto h-5"
-            />
-          </Link>
-
+        <div className="max-w-7xl mx-auto h-14 px-4 sm:px-6 flex items-center justify-end">
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
@@ -829,14 +814,7 @@ export default function HomeClient() {
       </main>
 
       <footer className="border-t border-line bg-panel">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <Image
-            src="/fluctum-logo-full.svg"
-            width={100}
-            height={46}
-            alt="Fluctum Logo"
-            className="w-auto h-6"
-          />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex justify-center">
           <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-xs uppercase tracking-wider text-faint">
             {footerLinks.map((link) => (
               <a
