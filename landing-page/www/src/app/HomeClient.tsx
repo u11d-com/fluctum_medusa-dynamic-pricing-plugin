@@ -460,7 +460,7 @@ export default function HomeClient() {
               {features.map((item) => (
                 <div
                   key={item.title}
-                  className="panel panel-hover brk p-6 flex gap-5 reveal"
+                  className="panel brk p-6 flex gap-5 reveal"
                 >
                   <item.icon className="w-7 h-7 text-acc shrink-0" />
                   <div>
@@ -544,7 +544,7 @@ export default function HomeClient() {
               {integrations.map((item) => (
                 <div
                   key={item.name}
-                  className="bg-panel panel-hover p-6 flex items-start gap-4 reveal"
+                  className="bg-panel p-6 flex items-start gap-4 reveal"
                 >
                   <div className="w-11 h-11 border border-line flex items-center justify-center shrink-0">
                     <item.icon className="w-5 h-5 text-acc" />
@@ -602,7 +602,7 @@ export default function HomeClient() {
               {useCases.map((item) => (
                 <div
                   key={item.title}
-                  className="panel panel-hover brk p-7 flex flex-col min-h-64 reveal"
+                  className="panel brk p-7 flex flex-col min-h-64 reveal"
                 >
                   <item.icon className="w-7 h-7 text-acc" />
                   <h3 className="text-2xl font-bold mt-auto mb-2 pt-10">
@@ -671,7 +671,7 @@ export default function HomeClient() {
               {partnership.map((item) => (
                 <div
                   key={item.title}
-                  className="panel panel-hover brk p-8 reveal"
+                  className="panel brk p-8 reveal"
                 >
                   <item.icon className="w-7 h-7 text-acc mb-6" />
                   <h3 className="text-xl font-bold mb-3">{item.title}</h3>
