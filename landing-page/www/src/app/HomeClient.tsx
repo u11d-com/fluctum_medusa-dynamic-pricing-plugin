@@ -7,14 +7,13 @@ import {
   Sun,
   Moon,
   ArrowRight,
-  BarChart3,
+  ArrowUpRight,
+  ChartColumn,
   Database,
   Globe,
   Server,
   Zap,
-  Menu,
-  X,
-  Code2,
+  CodeXml,
   Box,
   ShieldCheck,
   Paintbrush,
@@ -23,11 +22,13 @@ import {
   ExternalLink,
   Package,
   Link as LinkIcon,
-  ChevronDown,
   Briefcase,
   Wrench,
   GitMerge,
+  Cloud,
+  HardDrive,
 } from "lucide-react";
+import CandleChart from "./CandleChart";
 import { faqs } from "./faq-data";
 
 declare global {
@@ -67,42 +68,196 @@ function getRecaptchaToken(): Promise<string | undefined> {
   });
 }
 
+const features = [
+  {
+    icon: Box,
+    title: "Medusa-native",
+    desc: "Built as a Medusa plugin; drops into any Medusa project seamlessly.",
+  },
+  {
+    icon: CodeXml,
+    title: "Open source",
+    desc: "MIT license, community-first; fork and extend freely to fit your business.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Production-ready",
+    desc: "SSE streams, price locking, and checkout validation - all built in and battle-tested.",
+  },
+];
+
+const customizationPoints = [
+  {
+    icon: Paintbrush,
+    text: "Use any framework: Next.js, SvelteKit, Remix, or plain HTML.",
+  },
+  {
+    icon: Database,
+    text: "The plugin provides the data and logic; your design team provides the UI.",
+  },
+  {
+    icon: Globe,
+    text: "Our demo uses Next.js 16 + Tailwind, but you can build a Vue app, React Native mobile app, or even an in-store kiosk interface.",
+  },
+];
+
+const integrations = [
+  {
+    icon: ChartColumn,
+    name: "GoldAPI.io / nFusion",
+    desc: "Live precious metals spot prices",
+  },
+  {
+    icon: CreditCard,
+    name: "Stripe / PayPal",
+    desc: "Native Medusa payment providers",
+  },
+  {
+    icon: Package,
+    name: "ShipStation / InPost",
+    desc: "Automated fulfillment and shipping",
+  },
+  {
+    icon: DollarSign,
+    name: "Avalara / TaxJar",
+    desc: "Automated tax calculation",
+  },
+  {
+    icon: Zap,
+    name: "Mailchimp / SendGrid",
+    desc: "Transactional emails and marketing",
+  },
+  {
+    icon: LinkIcon,
+    name: "Odoo / Base",
+    desc: "ERP sync via custom API",
+  },
+];
+
+const steps = [
+  {
+    title: "Connect a provider",
+    desc: "Plug in GoldAPI.io, your ERP, or a custom feed. Fluctum constantly ingests the latest spot prices.",
+  },
+  {
+    title: "Prices flow via SSE",
+    desc: "Every storefront client receives live spot prices over a single persistent Server-Sent Events connection.",
+  },
+  {
+    title: "Checkout locks the price",
+    desc: "When the buyer proceeds, Fluctum creates locks from the latest spot prices stored in your database for your configured window (for example, 2 or 10 minutes), then validates them at order completion.",
+  },
+];
+
+const useCases = [
+  {
+    icon: Database,
+    title: "Precious Metals",
+    desc: "Gold and silver bullion dealers needing sub-second spot accuracy.",
+  },
+  {
+    icon: ChartColumn,
+    title: "Industrial Metals",
+    desc: "Copper, platinum, and palladium wholesale operations.",
+  },
+  {
+    icon: Server,
+    title: "B2B & ERP-driven",
+    desc: "Live catalog pricing synced directly with internal inventory systems.",
+  },
+  {
+    icon: Globe,
+    title: "FX-Sensitive Goods",
+    desc: "High-value items that require constant currency conversion adjustments.",
+  },
+];
+
+const deployments = [
+  {
+    icon: Cloud,
+    title: "Medusa Cloud",
+    desc: "One-click deployment on Medusa's official managed infrastructure. Optimized for scale.",
+    href: "https://cloud.medusajs.com",
+    event: "cta_deploy_medusa_cloud",
+  },
+  {
+    icon: HardDrive,
+    title: "Self-Hosted",
+    desc: "Full control on your own AWS, GCP, or bare metal infrastructure.",
+    href: "https://deploymedusa.com",
+    event: "cta_deploy_self_hosted",
+  },
+];
+
+const partnership = [
+  {
+    icon: Briefcase,
+    title: "Holistic Process Design",
+    desc: "We start by understanding your entire operation—from inventory and ERP to WMS and fulfillment—to design a seamless data flow.",
+  },
+  {
+    icon: Wrench,
+    title: "Custom Solution Development",
+    desc: "We build custom storefronts, back-office tools, and middleware to solve your unique business challenges, using Fluctum as a core component.",
+  },
+  {
+    icon: GitMerge,
+    title: "Seamless Systems Integration",
+    desc: "Our expertise lies in connecting disparate systems into a cohesive, scalable commerce architecture that grows with your business.",
+  },
+];
+
+const footerLinks = [
+  {
+    name: "GitHub repo",
+    href: "https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin",
+  },
+  {
+    name: "Starter",
+    href: "https://github.com/u11d-com/fluctum_starter",
+  },
+  {
+    name: "NPM package",
+    href: "https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing",
+  },
+  { name: "Medusa", href: "https://medusajs.com" },
+  { name: "Deploy Medusa", href: "https://deploymedusa.com" },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/showcase/fluctum-dynamic-pricing",
+  },
+];
+
+const h2 = "text-4xl md:text-6xl font-bold tracking-tight";
+const linkAcc = "text-acc underline underline-offset-4";
+
 export default function HomeClient() {
   const [formStatus, setFormStatus] = useState<
     "idle" | "submitting" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   useEffect(() => {
-    let cancelled = false;
-    const syncTheme = () => {
-      if (!cancelled) {
-        setTheme(
-          document.documentElement.classList.contains("dark")
-            ? "dark"
-            : "light",
-        );
-      }
-    };
-    syncTheme();
-    return () => {
-      cancelled = true;
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.1 },
+    );
+    document
+      .querySelectorAll(".reveal")
+      .forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   const toggleTheme = () => {
-    const isDark = document.documentElement.classList.contains("dark");
-    if (isDark) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      setTheme("light");
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-      setTheme("dark");
-    }
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
   };
 
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -153,35 +308,10 @@ export default function HomeClient() {
     }
   };
 
-
-
-
-
-  const footerLinks = [
-    {
-      name: "GitHub repo",
-      href: "https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin",
-    },
-    {
-      name: "Starter",
-      href: "https://github.com/u11d-com/fluctum_starter",
-    },
-    {
-      name: "NPM package",
-      href: "https://www.npmjs.com/package/@u11d/medusa-dynamic-pricing",
-    },
-    { name: "Medusa", href: "https://medusajs.com" },
-    { name: "Deploy Medusa", href: "https://deploymedusa.com" },
-    {
-      name: "LinkedIn",
-      href: "https://www.linkedin.com/showcase/fluctum-dynamic-pricing",
-    },
-  ];
-
   return (
-    <div className="min-h-screen font-sans bg-theme-base text-theme-base">
-      <header className="fixed top-0 w-full border-b border-theme-base bg-theme-header backdrop-blur-md z-50">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div className="min-h-screen font-sans text-fg overflow-x-clip">
+      <header className="fixed top-0 inset-x-0 z-50 bg-bg/85 backdrop-blur border-b border-line">
+        <div className="max-w-7xl mx-auto h-14 px-4 sm:px-6 flex items-center justify-between">
           <Link
             href="#hero"
             className="flex-shrink-0"
@@ -192,182 +322,133 @@ export default function HomeClient() {
               width={105}
               height={48}
               alt="Fluctum Logo"
-              className="w-auto h-6 md:h-8"
+              className="w-auto h-5"
             />
           </Link>
 
-
-
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg border border-theme-base text-theme-muted hover:text-theme-base transition-colors"
+              className="w-9 h-9 flex items-center justify-center btn-ghost text-muted hover:text-fg"
               aria-label="Toggle theme"
               data-umami-event="toggle_theme"
               data-umami-event-location="header"
             >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              <Sun className="w-4 h-4 hidden dark:block" />
+              <Moon className="w-4 h-4 dark:hidden" />
             </button>
             <a
               href="https://fluctum.medusajs.site/us"
               target="_blank"
               rel="noreferrer"
-              className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors text-sm flex items-center gap-2"
+              className="hidden sm:flex items-center gap-2 h-9 px-4 btn-ghost font-mono text-xs uppercase tracking-wider"
               data-umami-event="cta_see_demo"
               data-umami-event-location="header"
             >
               See Demo
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <Link
               href="#contact"
-              className="px-5 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors text-sm"
+              className="flex items-center h-9 px-4 btn-acc font-mono text-xs uppercase tracking-wider font-bold"
               data-umami-event="cta_contact_us"
               data-umami-event-location="header"
             >
               Contact us
             </Link>
           </div>
-
-
         </div>
-
-
       </header>
 
       <main>
-        <section
-          id="hero"
-          className="pt-80 pb-48 px-6 relative overflow-hidden"
-        >
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            <svg
-              viewBox="0 0 1200 400"
-              className="absolute bottom-0 left-0 w-full h-full"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0,300 L0,320 L100,290 L200,310 L300,260 L400,240 L500,200 L600,180 L700,150 L800,130 L900,110 L1000,80 L1100,60 L1200,40 L1200,400 L0,400 Z"
-                fill="url(#chartFill)"
-              />
-              <path
-                d="M0,320 L100,290 L200,310 L300,260 L400,240 L500,200 L600,180 L700,150 L800,130 L900,110 L1000,80 L1100,60 L1200,40"
-                fill="none"
-                stroke="url(#chartLine)"
-                strokeWidth="2"
-              />
-              {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100].map(
-                (x, i) => {
-                  const y = [
-                    290, 310, 260, 240, 200, 180, 150, 130, 110, 80, 60,
-                  ][i];
-                  return (
-                    <line
-                      key={x}
-                      x1={x}
-                      y1={y - 20}
-                      x2={x}
-                      y2={y + 20}
-                      stroke="#7c3aed"
-                      strokeWidth="1.5"
-                      strokeOpacity="0.25"
-                    />
-                  );
-                },
-              )}
-              <defs>
-                <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="chartLine" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.5" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#7c3aed]/15 rounded-full blur-[100px] pointer-events-none z-0"></div>
-          <div className="relative z-10 max-w-4xl mx-auto text-center">
-            <h1 className="text-7xl md:text-8xl font-extrabold text-theme-base tracking-tight mb-4 leading-none">
-              Fluctum
-            </h1>
-            <p className="text-2xl md:text-3xl font-light text-theme-base opacity-70 mb-12 tracking-wide">
-              Real-Time Dynamic Pricing for Medusa
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href="https://fluctum.medusajs.site/us"
-                target="_blank"
-                rel="noreferrer"
-                className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-theme-base text-theme-base font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-                data-umami-event="cta_see_demo"
-                data-umami-event-location="hero"
-              >
-                See Demo
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              <Link
-                href="#contact"
-                className="w-full sm:w-auto px-8 py-4 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold rounded-lg transition-colors flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.3)]"
-                data-umami-event="cta_contact_us"
-                data-umami-event-location="hero"
-              >
-                Contact Us
-              </Link>
+        <section id="hero" className="pt-28 sm:pt-32 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-6 panel brk p-8 md:p-12 flex flex-col justify-center reveal">
+              <h1 className="text-7xl sm:text-8xl xl:text-9xl font-bold tracking-[-0.06em] leading-[0.85] mb-6">
+                Fluctum
+              </h1>
+              <p className="text-2xl md:text-3xl font-medium text-muted tracking-tight mb-10">
+                Real-Time Dynamic Pricing for Medusa
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href="https://fluctum.medusajs.site/us"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="h-12 px-6 btn-ghost font-mono text-sm uppercase tracking-wider flex items-center justify-center gap-2"
+                  data-umami-event="cta_see_demo"
+                  data-umami-event-location="hero"
+                >
+                  See Demo
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <Link
+                  href="#contact"
+                  className="h-12 px-6 btn-acc font-mono text-sm uppercase tracking-wider font-bold flex items-center justify-center gap-2"
+                  data-umami-event="cta_contact_us"
+                  data-umami-event-location="hero"
+                >
+                  Contact Us
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              <p className="font-mono text-xs text-faint mt-6 leading-relaxed">
+                Open source plugin, starter backend, and starter storefront.
+                <a
+                  href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`${linkAcc} ml-1`}
+                  data-umami-event="link_github_plugin"
+                  data-umami-event-location="hero"
+                >
+                  See more
+                </a>
+              </p>
             </div>
-            <p className="text-sm text-theme-faint mt-4">
-              Open source plugin, starter backend, and starter storefront.
-              <a
-                href="https://github.com/u11d-com/fluctum_medusa-dynamic-pricing-plugin"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[#7c3aed] hover:underline ml-1"
-                data-umami-event="link_github_plugin"
-                data-umami-event-location="hero"
-              >
-                See more
-              </a>
-            </p>
+
+            <div className="lg:col-span-6 panel brk flex flex-col reveal">
+              <div className="flex items-center gap-3 px-4 h-10 border-b border-line">
+                <span className="w-2 h-2 rounded-full bg-up shadow-[0_0_10px_var(--up)]" />
+                <span className="ml-auto flex gap-1.5">
+                  <span className="w-2 h-2 bg-line" />
+                  <span className="w-2 h-2 bg-line" />
+                  <span className="w-2 h-2 bg-line" />
+                </span>
+              </div>
+              <div className="relative flex-1 min-h-72 scan overflow-hidden">
+                <CandleChart />
+              </div>
+            </div>
           </div>
         </section>
 
-        <section
-          id="fluctum"
-          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
-                What is Fluctum?
-              </h2>
-              <p className="text-xl text-theme-muted leading-relaxed mb-6">
+        <section id="fluctum" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7 panel p-8 md:p-10 reveal">
+              <h2 className={`${h2} mb-8`}>What is Fluctum?</h2>
+              <p className="text-xl text-muted leading-relaxed mb-6">
                 Fluctum is an open-source dynamic pricing plugin for{" "}
                 <a
                   href="https://medusajs.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[#7c3aed] hover:underline"
+                  className={linkAcc}
                 >
                   Medusa
                 </a>{" "}
                 stores. It is built for precious metals and any catalog where
                 market prices move constantly. Fluctum ships as three connected
                 components:{" "}
-                <strong className="text-theme-base">
-                  Medusa{"\u00A0"}plugin
-                </strong>
-                ,{" "}
-                <strong className="text-theme-base">
-                  backend{"\u00A0"}starter
-                </strong>
-                , and{" "}
-                <strong className="text-theme-base">
-                  storefront{"\u00A0"}starter
+                <strong className="text-fg">Medusa{" "}plugin</strong>,{" "}
+                <strong className="text-fg">backend{" "}starter</strong>,
+                and{" "}
+                <strong className="text-fg">
+                  storefront{" "}starter
                 </strong>
                 . Teams can launch quickly, then customize deeply in TypeScript.
               </p>
-              <p className="text-lg text-theme-faint leading-relaxed">
+              <p className="text-lg text-faint leading-relaxed">
                 You keep the full Medusa platform benefits: multi-region,
                 multi-currency, promotions, customer management, localized
                 taxes, shipping, and payments. Fluctum adds real-time SSE price
@@ -375,362 +456,194 @@ export default function HomeClient() {
                 completion.
               </p>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <Box className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-theme-base mb-3">
-                  Medusa-native
-                </h3>
-
-                <p className="text-theme-muted leading-relaxed">
-                  Built as a Medusa{"\u00A0"}plugin; drops into any Medusa
-                  {"\u00A0"}project seamlessly.
-                </p>
-              </div>
-              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <Code2 className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-theme-base mb-3">
-                  Open source
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  MIT license, community-first; fork and extend freely to fit
-                  your business.
-                </p>
-              </div>
-              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <ShieldCheck className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-theme-base mb-3">
-                  Production-ready
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  SSE streams, price locking, and checkout validation - all
-                  built in and battle-tested.
-                </p>
-              </div>
+            <div className="lg:col-span-5 grid gap-6">
+              {features.map((item) => (
+                <div
+                  key={item.title}
+                  className="panel panel-hover brk p-6 flex gap-5 reveal"
+                >
+                  <item.icon className="w-7 h-7 text-acc shrink-0" />
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">{item.title}</h3>
+                    <p className="text-muted">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section
-          id="customization"
-          className="py-24 px-6 border-t border-white/5"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
-              <div>
-                <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
-                  Make It Your Own
-                </h2>
-                <p className="text-xl text-theme-muted leading-relaxed mb-6">
-                  Medusa separates backend from frontend - your storefront can
-                  look exactly the way you want.
-                </p>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-start gap-3">
-                    <Paintbrush className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
-                    <span className="text-theme-base opacity-80">
-                      Use any framework: Next.js, SvelteKit, Remix, or plain
-                      HTML.
-                    </span>
+        <section id="customization" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-6">
+            <div className="panel p-8 md:p-10 reveal">
+              <h2 className={`${h2} mb-6`}>Make It Your Own</h2>
+              <p className="text-xl text-muted leading-relaxed mb-8">
+                Medusa separates backend from frontend - your storefront can
+                look exactly the way you want.
+              </p>
+              <ul className="space-y-px bg-line border border-line">
+                {customizationPoints.map((item) => (
+                  <li key={item.text} className="flex gap-4 p-5 bg-panel">
+                    <item.icon className="w-5 h-5 text-acc shrink-0 mt-0.5" />
+                    <span className="opacity-85">{item.text}</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Database className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
-                    <span className="text-theme-base opacity-80">
-                      The plugin provides the data and logic; your design team
-                      provides the UI.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Globe className="w-6 h-6 text-[#7c3aed] flex-shrink-0" />
-                    <span className="text-theme-base opacity-80">
-                      Our demo uses Next.js{"\u00A0"}16 + Tailwind, but you can
-                      build a Vue app, React Native mobile app, or even an
-                      in-store kiosk interface.
-                    </span>
-                  </li>
-                </ul>
-              </div>
+                ))}
+              </ul>
+            </div>
 
-              <div className="p-8 border w-full max-w-lg lg:w-128 border-theme-base rounded-2xl bg-theme-code shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#7c3aed] to-transparent opacity-50"></div>
-                <h4 className="text-theme-faint text-sm font-mono mb-4 border-b border-theme-base pb-4">
+            <div className="brk bg-[#08080b] border border-white/10 text-[#ededf2] flex flex-col reveal">
+              <div className="flex items-center h-10 px-4 border-b border-white/10">
+                <h4 className="font-mono text-xs uppercase tracking-[.15em] text-[#a78bfa]">
                   Formula Engine
                 </h4>
-                <pre className="text-sm font-mono text-theme-base opacity-80 overflow-x-auto whitespace-pre-wrap">
-                  <code className="block mb-2">
-                    <span className="text-[#7c3aed]">const</span>{" "}
-                    <span className="text-blue-300">final_price</span> ={" "}
+              </div>
+              <div className="flex-1 grid grid-cols-[3rem_1fr] font-mono text-base md:text-lg leading-[2.4] py-6">
+                <div
+                  className="text-right pr-4 text-white/20 select-none"
+                  aria-hidden="true"
+                >
+                  1<br />2<br />3<br />4<br />5
+                </div>
+                <pre className="pl-4 border-l border-white/10 font-mono whitespace-pre-wrap">
+                  <code className="block">
+                    <span className="text-[#a78bfa]">const</span>{" "}
+                    <span className="text-[#34d399]">final_price</span>{" "}
+                    <span className="text-white/40">=</span>
                   </code>
-                  <code className="block pl-4 mb-1">
-                    weight <span className="text-theme-base/40">×</span>
+                  <code className="block pl-6">
+                    weight <span className="text-[#fbbf24]">×</span>
                   </code>
-                  <code className="block pl-4 mb-1">
-                    spot_price <span className="text-theme-base/40">×</span>
+                  <code className="block pl-6">
+                    spot_price <span className="text-[#fbbf24]">×</span>
                   </code>
-                  <code className="block pl-4 mb-1">
-                    factor <span className="text-theme-base/40">×</span>
+                  <code className="block pl-6">
+                    factor <span className="text-[#fbbf24]">×</span>
                   </code>
-                  <code className="block pl-4">fx_rate;</code>
+                  <code className="block pl-6">
+                    fx_rate<span className="text-white/40">;</span>
+                    <span className="blink text-[#a78bfa]" aria-hidden="true">
+                      ▌
+                    </span>
+                  </code>
                 </pre>
               </div>
             </div>
           </div>
         </section>
 
-        <section
-          id="integrations"
-          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-16 text-center max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
-                Integrations
-              </h2>
-              <p className="text-xl text-theme-muted leading-relaxed">
+        <section id="integrations" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-6 items-end mb-10 reveal">
+              <h2 className={h2}>Integrations</h2>
+              <p className="text-xl text-muted leading-relaxed">
                 Since Fluctum is built on Medusa, you inherit the entire Medusa
                 ecosystem out of the box.
               </p>
             </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {[
-                {
-                  icon: BarChart3,
-                  name: "GoldAPI.io / nFusion",
-                  desc: "Live precious metals spot prices",
-                },
-                {
-                  icon: CreditCard,
-                  name: "Stripe / PayPal",
-                  desc: "Native Medusa payment providers",
-                },
-                {
-                  icon: Package,
-                  name: "ShipStation / InPost",
-                  desc: "Automated fulfillment and shipping",
-                },
-                {
-                  icon: DollarSign,
-                  name: "Avalara / TaxJar",
-                  desc: "Automated tax calculation",
-                },
-                {
-                  icon: Zap,
-                  name: "Mailchimp / SendGrid",
-                  desc: "Transactional emails and marketing",
-                },
-                {
-                  icon: LinkIcon,
-                  name: "Odoo / Base",
-                  desc: "ERP sync via custom API",
-                },
-              ].map((item, i) => (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-line border border-line mb-8">
+              {integrations.map((item) => (
                 <div
-                  key={i}
-                  className="p-6 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all flex items-start gap-4"
+                  key={item.name}
+                  className="bg-panel panel-hover p-6 flex items-start gap-4 reveal"
                 >
-                  <div className="w-12 h-12 rounded-lg bg-[#7c3aed]/10 flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-6 h-6 text-[#7c3aed]" />
+                  <div className="w-11 h-11 border border-line flex items-center justify-center shrink-0">
+                    <item.icon className="w-5 h-5 text-acc" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-theme-base mb-1">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-theme-faint">{item.desc}</p>
+                    <h3 className="text-lg font-bold">{item.name}</h3>
+                    <p className="font-mono text-xs text-faint mt-1">
+                      {item.desc}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
-
-            <div className="text-center">
-              <a
-                href="https://medusajs.com/plugins/"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-theme-muted hover:text-theme-base transition-colors"
-                data-umami-event="link_medusa_plugins"
-              >
-                ...and hundreds more via Medusa Plugins{" "}
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
+            <a
+              href="https://medusajs.com/plugins/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 font-mono text-sm text-muted hover:text-acc transition-colors"
+              data-umami-event="link_medusa_plugins"
+            >
+              ...and hundreds more via Medusa Plugins{" "}
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </section>
 
-        <section
-          id="how-it-works"
-          className="py-24 px-6 border-t border-white/5"
-        >
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
+        <section id="how-it-works" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className={`${h2} mb-10 reveal`}>
               Built for real-time commerce
             </h2>
-
-            <div className="grid md:grid-cols-3 gap-12">
-              <div className="relative p-6 rounded-2xl border border-transparent transition-colors">
-                <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
-                  1
-                </div>
-                <h3 className="text-2xl font-bold text-theme-base mb-4 relative z-10">
-                  Connect a provider
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  Plug in GoldAPI.io, your ERP, or a custom feed. Fluctum
-                  constantly ingests the latest spot prices.
-                </p>
-              </div>
-              <div className="relative p-6 rounded-2xl border border-transparent transition-colors">
-                <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
-                  2
-                </div>
-                <h3 className="text-2xl font-bold text-theme-base mb-4 relative z-10">
-                  Prices flow via SSE
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  Every storefront client receives live spot prices over a
-                  single persistent Server-Sent Events connection.
-                </p>
-              </div>
-              <div className="relative p-6 rounded-2xl border border-transparent transition-colors">
-                <div className="text-[#7c3aed] text-6xl font-black opacity-20 absolute -top-4 -left-2">
-                  3
-                </div>
-                <h3 className="text-2xl font-bold text-theme-base mb-4 relative z-10">
-                  Checkout locks the price
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  When the buyer proceeds, Fluctum creates locks from the latest
-                  spot prices stored in your database for your configured window
-                  (for example, 2 or 10{"\u00A0"}minutes), then validates them
-                  at order completion.
-                </p>
-              </div>
+            <div className="grid md:grid-cols-3 gap-px bg-line border border-line">
+              {steps.map((step, i) => {
+                const isLast = i === steps.length - 1;
+                return (
+                  <div key={step.title} className="bg-panel p-8 reveal">
+                    <div
+                      className={`font-mono text-5xl font-bold mb-8 ${isLast ? "text-up" : "text-acc"}`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3">{step.title}</h3>
+                    <p className="text-muted leading-relaxed">{step.desc}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section
-          id="use-cases"
-          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
-        >
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16">
-              Where Fluctum fits
-            </h2>
-
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <div className="mt-1">
-                  <Database className="text-[#7c3aed]" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-theme-base mb-2">
-                    Precious Metals
+        <section id="use-cases" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className={`${h2} mb-10 reveal`}>Where Fluctum fits</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {useCases.map((item) => (
+                <div
+                  key={item.title}
+                  className="panel panel-hover brk p-7 flex flex-col min-h-64 reveal"
+                >
+                  <item.icon className="w-7 h-7 text-acc" />
+                  <h3 className="text-2xl font-bold mt-auto mb-2 pt-10">
+                    {item.title}
                   </h3>
-                  <p className="text-theme-muted">
-                    Gold and silver bullion dealers needing sub-second spot
-                    accuracy.
-                  </p>
+                  <p className="text-muted">{item.desc}</p>
                 </div>
-              </div>
-              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <div className="mt-1">
-                  <BarChart3 className="text-[#7c3aed]" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-theme-base mb-2">
-                    Industrial Metals
-                  </h3>
-                  <p className="text-theme-muted">
-                    Copper, platinum, and palladium wholesale operations.
-                  </p>
-                </div>
-              </div>
-              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <div className="mt-1">
-                  <Server className="text-[#7c3aed]" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-theme-base mb-2">
-                    B2B & ERP-driven
-                  </h3>
-                  <p className="text-theme-muted">
-                    Live catalog pricing synced directly with internal inventory
-                    systems.
-                  </p>
-                </div>
-              </div>
-              <div className="p-8 bg-theme-card border border-theme-base rounded-xl flex items-start gap-4 hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <div className="mt-1">
-                  <Globe className="text-[#7c3aed]" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-theme-base mb-2">
-                    FX-Sensitive Goods
-                  </h3>
-                  <p className="text-theme-muted">
-                    High-value items that require constant currency conversion
-                    adjustments.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section id="deployment" className="py-24 px-6 border-t border-white/5">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
-              Deploy your way
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <a
-                href="https://cloud.medusajs.com"
-                target="_blank"
-                rel="noreferrer"
-                className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
-                data-umami-event="cta_deploy_medusa_cloud"
-              >
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-theme-base">
-                    Medusa Cloud
-                  </h3>
-                  <ExternalLink className="w-5 h-5 text-theme-muted flex-shrink-0" />
-                </div>
-                <p className="text-theme-muted flex-grow">
-                  One-click deployment on Medusa&apos;s official managed
-                  infrastructure. Optimized for scale.
-                </p>
-              </a>
-
-              <a
-                href="https://deploymedusa.com"
-                target="_blank"
-                rel="noreferrer"
-                className="p-10 border border-theme-base rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col h-full hover:border-[#7c3aed]/30 transition-all"
-                data-umami-event="cta_deploy_self_hosted"
-              >
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-theme-base">
-                    Self-Hosted
-                  </h3>
-                  <ExternalLink className="w-5 h-5 text-theme-muted flex-shrink-0" />
-                </div>
-                <p className="text-theme-muted flex-grow">
-                  Full control on your own AWS, GCP, or bare metal
-                  infrastructure.
-                </p>
-              </a>
+        <section id="deployment" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className={`${h2} mb-10 reveal`}>Deploy your way</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {deployments.map((item) => (
+                <a
+                  key={item.title}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group panel panel-hover brk p-10 flex flex-col reveal"
+                  data-umami-event={item.event}
+                >
+                  <div className="flex justify-between items-start mb-16">
+                    <item.icon className="w-8 h-8 text-acc" />
+                    <ArrowUpRight className="w-6 h-6 text-muted group-hover:text-acc transition-colors" />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-3">{item.title}</h3>
+                  <p className="text-muted text-lg">{item.desc}</p>
+                </a>
+              ))}
             </div>
-            <p className="text-center text-theme-faint mt-8">
+            <p className="font-mono text-sm text-faint mt-8">
               Want a fast implementation path? Start from our
               <a
                 href="https://github.com/u11d-com/fluctum_starter"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#7c3aed] hover:underline ml-1"
+                className={`${linkAcc} ml-1`}
                 data-umami-event="link_starter"
                 data-umami-event-location="deployment"
               >
@@ -741,245 +654,212 @@ export default function HomeClient() {
           </div>
         </section>
 
-        <section
-          id="partnership"
-          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-16 text-center max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
-                More Than a Plugin: Your Technology Partner
+        <section id="partnership" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="panel p-8 md:p-12 mb-6 reveal">
+              <h2 className={`${h2} mb-6 max-w-4xl`}>
+                More Than a Plugin: Your Technology Partner
               </h2>
-              <p className="text-xl text-theme-muted leading-relaxed">
+              <p className="text-xl text-muted leading-relaxed max-w-3xl">
                 While Fluctum provides a powerful engine for dynamic pricing,
-                our real value lies in partnership. We help organizations
+                our real value lies in partnership. We help organizations
                 design, build, and integrate complete commerce solutions for
                 high-volatility markets.
               </p>
             </div>
-
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <Briefcase className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-theme-base mb-3">
-                  Holistic Process Design
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  We start by understanding your entire operation—from inventory
-                  and ERP to WMS and fulfillment—to design a seamless data flow.
-                </p>
-              </div>
-              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <Wrench className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-theme-base mb-3">
-                  Custom Solution Development
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  We build custom storefronts, back-office tools, and middleware
-                  to solve your unique business challenges, using Fluctum as a
-                  core component.
-                </p>
-              </div>
-              <div className="p-8 border border-theme-base rounded-xl bg-theme-card hover:border-[#7c3aed]/40 hover:bg-white/5 transition-all">
-                <GitMerge className="w-10 h-10 text-[#7c3aed] mb-6" />
-                <h3 className="text-xl font-bold text-theme-base mb-3">
-                  Seamless Systems Integration
-                </h3>
-                <p className="text-theme-muted leading-relaxed">
-                  Our expertise lies in connecting disparate systems into a
-                  cohesive, scalable commerce architecture that grows with your
-                  business.
-                </p>
-              </div>
+              {partnership.map((item) => (
+                <div
+                  key={item.title}
+                  className="panel panel-hover brk p-8 reveal"
+                >
+                  <item.icon className="w-7 h-7 text-acc mb-6" />
+                  <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                  <p className="text-muted leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section id="faq" className="py-24 px-6 border-t border-white/5 ">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-16 text-center">
+        <section id="faq" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+            <h2 className={`${h2} lg:col-span-4 lg:sticky lg:top-24 reveal`}>
               Frequently asked questions
             </h2>
-            <div className="space-y-4">
+            <div className="lg:col-span-8 flex flex-col gap-px bg-line border border-line">
               {faqs.map((faq) => (
-                <details
-                  key={faq.question}
-                  className="group border border-theme-base rounded-xl bg-theme-card open:border-[#7c3aed]/40 transition-colors"
-                >
-                  <summary className="flex items-center justify-between gap-4 cursor-pointer p-4 text-lg font-semibold text-theme-base marker:content-none [&::-webkit-details-marker]:hidden">
-                    {faq.question}
-                    <ChevronDown className="w-5 h-5 text-[#7c3aed] flex-shrink-0 transition-transform group-open:rotate-180" />
+                <details key={faq.question} className="faq bg-panel reveal">
+                  <summary className="flex items-start gap-4 cursor-pointer p-5 list-none">
+                    <span className="font-semibold text-lg flex-1 leading-snug">
+                      {faq.question}
+                    </span>
+                    <span
+                      className="faq-sign font-mono text-xl text-acc leading-none w-5 text-center"
+                      aria-hidden="true"
+                    />
                   </summary>
-                  <p className="px-6 pb-6 text-theme-muted leading-relaxed">
-                    {faq.answer}
-                  </p>
+                  <div className="faq-body">
+                    <div className="overflow-hidden">
+                      <p className="px-5 pb-5 text-muted leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
                 </details>
               ))}
             </div>
           </div>
         </section>
 
-        <section
-          id="contact"
-          className="py-24 bg-theme-subtle px-6 border-t border-white/5"
-        >
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-theme-base mb-6">
-              Ready to ship live pricing?
-            </h2>
-            <p className="text-xl text-theme-muted">
-              Get in touch to discuss end-to-end implementation support or reach
-              out at{" "}
-              <a
-                href="mailto:hello@u11d.com"
-                className="text-[#7c3aed] hover:underline"
-                data-umami-event="link_email_contact"
-              >
-                hello@u11d.com
-              </a>
-              .
-            </p>
-          </div>
-
-          <div className="max-w-xl mx-auto">
-            {formStatus === "success" ? (
-              <div className="p-8 border border-green-500/30 bg-green-500/10 rounded-xl text-center">
-                <h3 className="text-2xl font-bold text-theme-base mb-2">
-                  Message Received
-                </h3>
-                <p className="text-theme-base opacity-70">
-                  We&apos;ll get back to you shortly.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleContactSubmit} className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-theme-base opacity-80 mb-2"
-                  >
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-theme-base opacity-80 mb-2"
-                  >
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-theme-base opacity-80 mb-2"
-                  >
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    required
-                    className="w-full px-4 py-3 bg-theme-input border border-theme-input rounded-lg text-theme-base focus:outline-none focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed] transition-all resize-none"
-                  ></textarea>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    id="acceptPrivacyPolicy"
-                    name="acceptPrivacyPolicy"
-                    required
-                    className="mt-1 h-4 w-4 rounded border-theme-input accent-[#7c3aed]"
-                  />
-                  <label
-                    htmlFor="acceptPrivacyPolicy"
-                    className="text-sm text-theme-muted"
-                  >
-                    I agree that my information may be used to respond to my
-                    inquiry. *
-                  </label>
-                </div>
-
-                {formStatus === "error" && (
-                  <div className="p-4 border border-red-500/30 bg-red-500/10 rounded-lg text-red-400 text-sm">
-                    {errorMessage}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={formStatus === "submitting"}
-                  className="w-full px-8 py-4 bg-[#7c3aed] hover:bg-[#6d28d9] disabled:bg-[#7c3aed]/50 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
-                  data-umami-event="form_contact_submit"
+        <section id="contact" className="py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto panel brk grid lg:grid-cols-2 reveal">
+            <div className="p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-line">
+              <h2 className={`${h2} mb-6`}>Ready to ship live pricing?</h2>
+              <p className="text-xl text-muted leading-relaxed">
+                Get in touch to discuss end-to-end implementation support or
+                reach out at{" "}
+                <a
+                  href="mailto:hello@u11d.com"
+                  className={linkAcc}
+                  data-umami-event="link_email_contact"
                 >
-                  {formStatus === "submitting" ? "Sending..." : "Send Message"}
-                </button>
-              </form>
-            )}
+                  hello@u11d.com
+                </a>
+                .
+              </p>
+            </div>
+
+            <div className="p-8 md:p-12 bg-panel-2">
+              {formStatus === "success" ? (
+                <div className="h-full p-8 border border-up/40 bg-up/10 flex flex-col justify-center text-center">
+                  <h3 className="text-2xl font-bold mb-2">Message Received</h3>
+                  <p className="text-muted">
+                    We&apos;ll get back to you shortly.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleContactSubmit} className="space-y-5">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block font-mono text-xs uppercase tracking-wider text-muted mb-2"
+                    >
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      className="inp"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block font-mono text-xs uppercase tracking-wider text-muted mb-2"
+                    >
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      className="inp"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="block font-mono text-xs uppercase tracking-wider text-muted mb-2"
+                    >
+                      Message *
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      required
+                      className="inp resize-none"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="acceptPrivacyPolicy"
+                      name="acceptPrivacyPolicy"
+                      required
+                      className="mt-1 h-4 w-4 accent-acc"
+                    />
+                    <label
+                      htmlFor="acceptPrivacyPolicy"
+                      className="text-sm text-muted"
+                    >
+                      I agree that my information may be used to respond to my
+                      inquiry. *
+                    </label>
+                  </div>
+
+                  {formStatus === "error" && (
+                    <div className="p-4 border border-down/40 bg-down/10 text-down text-sm">
+                      {errorMessage}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={formStatus === "submitting"}
+                    className="w-full h-14 btn-acc font-mono uppercase tracking-wider font-bold"
+                    data-umami-event="form_contact_submit"
+                  >
+                    {formStatus === "submitting"
+                      ? "Sending..."
+                      : "Send Message"}
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         </section>
       </main>
 
-      <footer className="py-12 border-t border-theme-base">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
-            <div className="flex items-center gap-6">
-              <Image
-                src="/fluctum-logo-full.svg"
-                width={100}
-                height={46}
-                alt="Fluctum Logo"
-                className="w-auto h-7"
-              />
-            </div>
-            <nav className="flex flex-wrap items-center justify-center text-sm text-theme-faint">
-              {footerLinks.map((link, index) => (
-                <div key={link.name} className="flex items-center">
-                  {index > 0 && (
-                    <span className="mx-3 text-theme-dimmer" aria-hidden="true">
-                      •
-                    </span>
-                  )}
-                  <a
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-theme-base transition-colors"
-                    data-umami-event="footer_link"
-                    data-umami-event-name={link.name}
-                  >
-                    {link.name}
-                  </a>
-                </div>
-              ))}
-            </nav>
-          </div>
-          <p className="text-center text-theme-dimmer text-sm">
-            © {new Date().getFullYear()} Fluctum by{" "}
-            <a href="https://u11d.com" target="_blank">
-              u11d
-            </a>
-            . All rights reserved.
-          </p>
+      <footer className="border-t border-line bg-panel">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <Image
+            src="/fluctum-logo-full.svg"
+            width={100}
+            height={46}
+            alt="Fluctum Logo"
+            className="w-auto h-6"
+          />
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-xs uppercase tracking-wider text-faint">
+            {footerLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-acc transition-colors"
+                data-umami-event="footer_link"
+                data-umami-event-name={link.name}
+              >
+                {link.name}
+              </a>
+            ))}
+          </nav>
         </div>
+        <p className="text-center font-mono text-xs text-faint pb-8">
+          © {new Date().getFullYear()} Fluctum by{" "}
+          <a href="https://u11d.com" target="_blank">
+            u11d
+          </a>
+          . All rights reserved.
+        </p>
       </footer>
     </div>
   );

@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
-import { Lato } from "next/font/google";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import StructuredData from "./StructuredData";
 import "./globals.css";
 
-const lato = Lato({
-  variable: "--font-lato",
-  weight: ["400", "700", "900"],
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+});
+
+// Runs before first paint: restores the saved theme (dark by default) and
+// flags JS availability so scroll-reveal content stays visible without JS.
+const themeInitScript = `(function(){var d=document.documentElement;d.classList.add("js");try{if(localStorage.getItem("theme")==="light")d.classList.remove("dark")}catch(e){}})()`;
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -63,8 +73,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} dark scroll-smooth`}
+      suppressHydrationWarning
+    >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link rel="icon" href="/fluctum-logo-square.svg" type="image/svg+xml" />
         <StructuredData />
         <script
@@ -79,7 +94,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={`${lato.variable} antialiased`}>{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
