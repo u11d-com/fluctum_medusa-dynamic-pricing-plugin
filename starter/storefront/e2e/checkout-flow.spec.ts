@@ -76,7 +76,7 @@ test.describe("Checkout flow", () => {
 
     const addBtn = page.getByTestId("add-to-cart-button").first()
     await expect(addBtn).toBeVisible()
-    await expect(addBtn).toHaveText("Add")
+    await expect(addBtn).toHaveText("Add to cart")
 
     const productTitle = await page.getByTestId("product-title").first().textContent()
     expect(productTitle).not.toBeNull()
@@ -299,13 +299,16 @@ test.describe("Checkout flow", () => {
 
     await page.goto("/checkout")
     await page.waitForURL(/\/checkout/)
+    // Scope to the summary: right after reload the page can briefly hold a
+    // second (hidden) copy of the totals outside the checkout container.
+    const summary = page.getByTestId("checkout-container")
     // Wait for checkout summary to lock prices and display items
     await expect(page.getByTestId("product-price").first()).toBeVisible({ timeout: 30000 })
 
     // --- Capture both item price and totals ---
     const priceBefore = await page.getByTestId("product-price").first().textContent()
-    const totalBefore = await getDataValue(page.getByTestId("cart-total"))
-    const subtotalBefore = await getDataValue(page.getByTestId("cart-subtotal"))
+    const totalBefore = await getDataValue(summary.getByTestId("cart-total"))
+    const subtotalBefore = await getDataValue(summary.getByTestId("cart-subtotal"))
     expectCurrencyFormat(priceBefore)
     expect(totalBefore).toBeGreaterThan(0)
 
@@ -318,10 +321,10 @@ test.describe("Checkout flow", () => {
     const priceAfter = await page.getByTestId("product-price").first().textContent()
     expect(priceAfter).toBe(priceBefore)
 
-    const totalAfter = await getDataValue(page.getByTestId("cart-total"))
+    const totalAfter = await getDataValue(summary.getByTestId("cart-total"))
     expect(totalAfter).toBe(totalBefore)
 
-    const subtotalAfter = await getDataValue(page.getByTestId("cart-subtotal"))
+    const subtotalAfter = await getDataValue(summary.getByTestId("cart-subtotal"))
     expect(subtotalAfter).toBe(subtotalBefore)
   })
 })

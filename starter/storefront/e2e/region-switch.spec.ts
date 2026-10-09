@@ -65,7 +65,8 @@ async function addRecommendedProduct(page: Page) {
   const addButton = page.getByTestId("add-to-cart-button").last()
   await expect(addButton).toBeVisible()
   await addButton.click()
-  await expect(page.getByTestId("nav-cart-link")).toContainText("Cart (1)", {
+  // Match the count only — the label is localized ("Cart", "Koszyk", ...)
+  await expect(page.getByTestId("nav-cart-link")).toContainText("(1)", {
     timeout: 15_000,
   })
 }
