@@ -1,6 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { DYNAMIC_PRICING_MODULE } from "../../../../modules/dynamic-pricing"
 import DynamicPricingModuleService from "../../../../modules/dynamic-pricing/service"
+import { getCachedLatestSpotPrices } from "../../../../utils/latest-prices-cache"
 
 /**
  * GET /store/dynamic-pricing/spot-prices
@@ -21,9 +22,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const rawMaterial = req.query.material
   const material = typeof rawMaterial === "string" ? rawMaterial.toUpperCase() : undefined
-  const materials = material ? [material] : undefined
-
-  const rows = await service.getLatestSpotPrices(materials)
+  const latest = await getCachedLatestSpotPrices(service)
+  const rows = material ? latest.filter((sp) => sp.material === material) : latest
 
   res.json({
     spot_prices: rows.map((sp) => ({

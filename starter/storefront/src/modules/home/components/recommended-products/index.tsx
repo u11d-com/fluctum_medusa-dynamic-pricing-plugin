@@ -1,5 +1,8 @@
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { listSpotPrices } from "@lib/data/spot-prices"
+import { getVariantPricingData } from "@lib/data/variant-pricing"
+import { collectVariantIds } from "@lib/util/dynamic-pricing"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Text } from "@modules/common/components/ui"
 
@@ -28,6 +31,14 @@ export default async function RecommendedProducts({
     return null
   }
 
+  // Fetch pricing once for all cards — otherwise each ProductPreview issues
+  // its own spot-prices + variant-pricing request.
+  const allVariantIds = collectVariantIds(products.flatMap((product) => product.variants ?? []))
+  const [spotPrices, pricingData] = await Promise.all([
+    listSpotPrices().catch(() => []),
+    getVariantPricingData(allVariantIds).catch(() => ({})),
+  ])
+
   return (
     <div className="relative overflow-hidden bg-black pt-16 small:pt-20 pb-16 small:pb-20">
       {/* Mask decorative background */}
@@ -49,6 +60,8 @@ export default async function RecommendedProducts({
                 region={region}
                 isFeatured
                 showAddToCart
+                spotPrices={spotPrices}
+                pricingData={pricingData}
               />
             </li>
           ))}

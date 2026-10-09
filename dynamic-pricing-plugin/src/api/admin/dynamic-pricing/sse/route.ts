@@ -25,7 +25,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   res.flushHeaders()
 
   const id = randomUUID()
-  sseManager.add(id, res)
+  sseManager.add(id, res, req.scope)
 
   // Send current prices immediately on connect so the client doesn't have
   // to wait up to fetchIntervalSeconds for the first data

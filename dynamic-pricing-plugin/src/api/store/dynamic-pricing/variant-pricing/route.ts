@@ -43,16 +43,16 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     return res.status(400).json({ error: "At least one variant_id is required" })
   }
 
-  // In-memory cache: load all link+rule rows once, filter in-memory
-  const cached = cache.get()
-  const allRows: LinkRow[] = cached ?? await (async () => {
+  // In-memory cache: load all link+rule rows once, filter in-memory.
+  // Single-flight so a cache expiry under load triggers one query, not one per request.
+  const allRows = await cache.getOrLoad(() => {
     const service = req.scope.resolve<DynamicPricingModuleService>(DYNAMIC_PRICING_MODULE)
     const knex = service.getKnex()
 
-    const rows = await knex(LINK_TABLE)
+    return knex(LINK_TABLE)
       .join("pricing_rule", `${LINK_TABLE}.pricing_rule_id`, "pricing_rule.id")
       .whereNull(`${LINK_TABLE}.deleted_at`)
-      .select(
+      .select<LinkRow[]>(
         `${LINK_TABLE}.product_variant_id`,
         `${LINK_TABLE}.material`,
         `${LINK_TABLE}.weight_oz`,
@@ -61,10 +61,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         "pricing_rule.premium_percentage",
         "pricing_rule.premium_fixed"
       )
-
-    cache.set(rows)
-    return rows
-  })()
+  })
 
   const variantSet = new Set(variantIds)
 

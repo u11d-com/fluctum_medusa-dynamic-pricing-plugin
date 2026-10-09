@@ -10,7 +10,7 @@ export type SaveSpotPricesStepInput = {
 
 /**
  * Persists spot price results to the SpotPrice table and broadcasts
- * the new prices to all connected SSE clients.
+ * the new prices to all connected SSE clients (across processes via Redis).
  */
 export const saveSpotPricesStep = createStep(
   "save-spot-prices-step",
@@ -28,15 +28,18 @@ export const saveSpotPricesStep = createStep(
       }))
     )
 
-    // Broadcast using the DB-assigned created_at so the timestamp is accurate
-    sseManager.broadcast(
+    // Broadcast using the DB-assigned created_at so the timestamp is accurate.
+    // Goes through Redis pub/sub so SSE clients on every server process get it
+    // (this step runs in the worker).
+    await sseManager.publish(
       saved.map((sp) => ({
         material: sp.material,
         price: Number(sp.price),
         ask: Number(sp.ask),
         bid: Number(sp.bid),
         timestamp: new Date(sp.created_at).toISOString(),
-      }))
+      })),
+      container
     )
 
     return new StepResponse(undefined)

@@ -4,6 +4,7 @@ import sseManager from "../../../../utils/sse-manager"
 import { DYNAMIC_PRICING_MODULE } from "../../../../modules/dynamic-pricing"
 import DynamicPricingModuleService from "../../../../modules/dynamic-pricing/service"
 import { getPluginOptions } from "../../../../modules/dynamic-pricing/options-store"
+import { getCachedLatestRates, getCachedLatestSpotPrices } from "../../../../utils/latest-prices-cache"
 
 /**
  * GET /store/dynamic-pricing/sse
@@ -23,7 +24,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   res.flushHeaders()
 
   const id = randomUUID()
-  sseManager.add(id, res)
+  sseManager.add(id, res, req.scope)
 
   const options = getPluginOptions()
 
@@ -32,7 +33,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     const service = req.scope.resolve<DynamicPricingModuleService>(
       DYNAMIC_PRICING_MODULE
     )
-    const current = await service.getLatestSpotPrices()
+    const current = await getCachedLatestSpotPrices(service)
     if (current.length > 0) {
       const payload = current.map((sp) => ({
         material: sp.material,
@@ -45,7 +46,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     }
 
     // Send current currency rates so the client can apply conversion immediately
-    const rates = await service.getLatestRates(options.pricingCurrency)
+    const rates = await getCachedLatestRates(service, options.pricingCurrency)
     const ratesPayload: Record<string, number> = {}
     for (const row of rates) {
       ratesPayload[row.to_currency.toUpperCase()] = row.rate

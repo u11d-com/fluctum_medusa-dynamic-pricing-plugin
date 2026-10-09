@@ -127,6 +127,8 @@ Built-in providers exported from plugin:
 
 - `id`, `material` (XAU/XAG), `ask`, `bid`, `price` (mid/current), `timestamp`
 - Used for both current and historical values
+- History is downsampled hourly by the `prune-spot-prices` job: all rows < 24 h, one per material per hour up to 30 days, one per material per day beyond
+- "Latest per material" reads must use the per-material LATERAL `LIMIT 1` lookup (`getLatestSpotPrices`), never `DISTINCT ON` over the whole table
 
 ### `PricingRule`
 
@@ -163,7 +165,7 @@ This project targets production workloads under high traffic. All code must foll
 
 5. **Re-render discipline** — Keep state as local as possible. Use `useMemo`/`useCallback` only when profiling shows benefit. Prefer plain functions over callbacks in event handlers. Avoid creating new object/array references in render for non-memoized children.
 
-6. **SSE > polling** — Real-time updates use SSE (single TCP connection, server-push). Fall back to polling only on connection failure. Never use WebSockets for one-way price broadcasts.
+6. **SSE > polling** — Real-time updates use SSE (single TCP connection, server-push). Fall back to polling only on connection failure. Never use WebSockets for one-way price broadcasts. SSE clients live in the HTTP server processes while the fetch job runs in the worker, so updates are fanned out via Redis pub/sub (`sseManager.publish`, channel `dynamic-pricing:spot-prices`, using `projectConfig.redisUrl`; in-process fallback without Redis).
 
 7. **Cache strategy** — Medusa `force-cache` with cache tags for GET endpoints. Revalidate tags on mutations. Storefront server actions should use `fetch` with appropriate cache headers, not raw in-memory caches.
 

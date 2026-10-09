@@ -5,6 +5,7 @@ import SpotPrice from "./models/spot-price"
 import PricingRule from "./models/pricing-rule"
 import CartPriceLock from "./models/cart-price-lock"
 import CurrencyRate from "./models/currency-rate"
+import { getPluginOptions } from "./options-store"
 
 type SpotPriceRow = {
   id: string
@@ -48,25 +49,33 @@ class DynamicPricingModuleService extends MedusaService({
     return this.manager_.getKnex()
   }
 
+  /**
+   * Latest spot price per material.
+   *
+   * Uses one LIMIT 1 index probe per material (LATERAL join over
+   * IDX_spot_price_material_created_at) instead of `DISTINCT ON`, which has to
+   * walk the whole index. spot_price is append-only and grows by
+   * `materials.length` rows every fetch interval, so DISTINCT ON degrades
+   * linearly with table age and eventually exhausts the connection pool.
+   */
   async getLatestSpotPrices(materials?: string[]): Promise<SpotPriceRow[]> {
+    const symbols = materials && materials.length > 0 ? materials : getPluginOptions().materials
+    if (symbols.length === 0) return []
+
     const knex = this.manager_.getKnex()
-
-    let query = knex
-      .select("*")
-      .from(
-        knex
-          .select(knex.raw("DISTINCT ON (material) *"))
-          .from("spot_price")
-          .whereNull("deleted_at")
-          .orderByRaw("material, created_at DESC")
-          .as("latest")
-      )
-
-    if (materials && materials.length > 0) {
-      query = query.whereIn("material", materials)
-    }
-
-    const rows: SpotPriceRow[] = await query
+    const { rows } = await knex.raw<{ rows: SpotPriceRow[] }>(
+      `SELECT sp.*
+         FROM unnest(?::text[]) AS m(material)
+         CROSS JOIN LATERAL (
+           SELECT *
+             FROM spot_price
+            WHERE spot_price.material = m.material
+              AND spot_price.deleted_at IS NULL
+            ORDER BY spot_price.created_at DESC
+            LIMIT 1
+         ) sp`,
+      [symbols]
+    )
 
     return rows.map((row) => ({
       ...row,
@@ -76,31 +85,74 @@ class DynamicPricingModuleService extends MedusaService({
     }))
   }
 
+  /**
+   * Thins out spot price history (downsampling). Keeps:
+   *   - every row from the last 24 hours,
+   *   - the latest row per material per hour for 24 h – 30 days,
+   *   - the latest row per material per day for anything older.
+   *
+   * Idempotent: re-running only removes rows that crossed a tier boundary
+   * since the last run. The tier flag is part of the partition key so an hour
+   * bucket and a day bucket starting at the same midnight never merge.
+   *
+   * Returns the number of deleted rows.
+   */
+  async pruneSpotPrices(): Promise<number> {
+    const knex = this.manager_.getKnex()
+    const result = await knex.raw<{ rowCount: number | null }>(
+      `DELETE FROM spot_price
+        WHERE id IN (
+          SELECT id FROM (
+            SELECT id,
+                   row_number() OVER (
+                     PARTITION BY material,
+                                  created_at < now() - interval '30 days',
+                                  date_trunc(
+                                    CASE WHEN created_at < now() - interval '30 days' THEN 'day' ELSE 'hour' END,
+                                    created_at
+                                  )
+                     ORDER BY deleted_at NULLS FIRST, created_at DESC
+                   ) AS rn
+              FROM spot_price
+             WHERE created_at < now() - interval '24 hours'
+          ) ranked
+          WHERE rn > 1
+        )`
+    )
+    return result.rowCount ?? 0
+  }
+
   async deleteCartPriceLocksByCart(cartId: string): Promise<void> {
     const knex = this.manager_.getKnex()
     await knex("cart_price_lock").where("cart_id", cartId).delete()
   }
 
+  /**
+   * Latest rate per (fromCurrency → toCurrency) pair. Same LATERAL index-probe
+   * strategy as getLatestSpotPrices (IDX_currency_rate_pair_created_at).
+   * Defaults to the configured `currencyConversion.targetCurrencies`.
+   */
   async getLatestRates(fromCurrency: string, toCurrencies?: string[]): Promise<CurrencyRateRow[]> {
+    const targets = toCurrencies && toCurrencies.length > 0
+      ? toCurrencies
+      : getPluginOptions().currencyConversion?.targetCurrencies ?? []
+    if (targets.length === 0) return []
+
     const knex = this.manager_.getKnex()
-
-    let query = knex
-      .select("*")
-      .from(
-        knex
-          .select(knex.raw("DISTINCT ON (from_currency, to_currency) *"))
-          .from("currency_rate")
-          .whereNull("deleted_at")
-          .where("from_currency", fromCurrency)
-          .orderByRaw("from_currency, to_currency, created_at DESC")
-          .as("latest")
-      )
-
-    if (toCurrencies && toCurrencies.length > 0) {
-      query = query.whereIn("to_currency", toCurrencies)
-    }
-
-    const rows: CurrencyRateRow[] = await query
+    const { rows } = await knex.raw<{ rows: CurrencyRateRow[] }>(
+      `SELECT cr.*
+         FROM unnest(?::text[]) AS t(to_currency)
+         CROSS JOIN LATERAL (
+           SELECT *
+             FROM currency_rate
+            WHERE currency_rate.from_currency = ?
+              AND currency_rate.to_currency = t.to_currency
+              AND currency_rate.deleted_at IS NULL
+            ORDER BY currency_rate.created_at DESC
+            LIMIT 1
+         ) cr`,
+      [targets, fromCurrency]
+    )
 
     return rows.map((row) => ({ ...row, rate: Number(row.rate) }))
   }
