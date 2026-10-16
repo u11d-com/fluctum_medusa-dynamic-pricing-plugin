@@ -4,6 +4,7 @@ import { Text } from "@modules/common/components/ui"
 import { getTranslations } from "next-intl/server"
 import { listRegions } from "@lib/data/regions"
 import CountrySelect from "@modules/layout/components/country-select"
+import { POLICY_PAGES } from "@lib/store-policies"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
@@ -32,6 +33,25 @@ export default async function Footer() {
               {t("tagline")}
             </Text>
           </div>
+
+          <nav
+            aria-label={t("customerService")}
+            className="flex flex-col gap-y-3"
+          >
+            <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
+              {t("customerService")}
+            </span>
+            {POLICY_PAGES.map((page) => (
+              <LocalizedClientLink
+                key={page.path}
+                href={page.path}
+                className="text-white/50 hover:text-white transition-colors text-sm"
+                data-testid={`footer-${page.key}-link`}
+              >
+                {t(page.key)}
+              </LocalizedClientLink>
+            ))}
+          </nav>
 
           <div className="flex flex-col gap-y-3">
             <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
@@ -89,7 +109,7 @@ export default async function Footer() {
             <span className="text-[10px] uppercase tracking-widest text-white/25 font-medium">
               {t("region")}
             </span>
-            <CountrySelect regions={regions ?? []} />
+            <CountrySelect regions={regions ?? []} label={t("region")} />
           </div>
         </div>
 

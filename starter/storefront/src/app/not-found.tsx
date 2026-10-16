@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function NotFound() {
   const t = await getTranslations('common')
   return (
-    <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
+    <main className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
       <Heading level="h1" size="lg" className="text-ui-fg-base">{t('pageNotFound')}</Heading>
       <Text>
         {t('pageNotFoundBody')}
@@ -24,6 +24,6 @@ export default async function NotFound() {
           color="var(--fg-interactive)"
         />
       </Link>
-    </div>
+    </main>
   )
 }

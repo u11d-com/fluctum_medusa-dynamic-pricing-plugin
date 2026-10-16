@@ -98,10 +98,48 @@ async function getCountryCode(
   return countryCode
 }
 
+const PRODUCT_PATH = /^\/([a-z]{2})\/products\/([^/.]+)(\.md)?$/
+
+/** True when the client prefers Markdown over HTML (e.g. `Accept: text/markdown`). */
+function prefersMarkdown(request: NextRequest) {
+  const accept = request.headers.get("accept") ?? ""
+  const markdown = accept.indexOf("text/markdown")
+  const html = accept.indexOf("text/html")
+  return markdown !== -1 && (html === -1 || markdown < html)
+}
+
+/**
+ * Serves the Markdown version of product pages for `<product>.md` URLs and
+ * for product URLs requested with `Accept: text/markdown`.
+ */
+function productMarkdownResponse(request: NextRequest) {
+  const match = request.nextUrl.pathname.match(PRODUCT_PATH)
+  if (!match) {
+    return null
+  }
+
+  const [, countryCode, handle, mdSuffix] = match
+  if (!mdSuffix && !prefersMarkdown(request)) {
+    return null
+  }
+
+  const url = request.nextUrl.clone()
+  url.pathname = `/api/markdown/products/${countryCode}/${handle}`
+  return NextResponse.rewrite(url)
+}
+
+/** Paths served for the visitor's region without a redirect (agent-facing entry points). */
+const REWRITE_WITHOUT_COUNTRY = /^\/(search$|buy\/)/
+
 /**
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
+  const markdownResponse = productMarkdownResponse(request)
+  if (markdownResponse) {
+    return markdownResponse
+  }
+
   if (request.nextUrl.pathname.includes(".")) {
     const requestHeaders = new Headers(request.headers)
     const earlyCountry = request.nextUrl.pathname.split("/")[1]?.toLowerCase() || DEFAULT_REGION
@@ -122,20 +160,27 @@ export async function middleware(request: NextRequest) {
   const urlHasCountry = firstPathSegment === country.toLowerCase()
 
   if (urlHasCountry) {
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set("x-locale", locale)
+    const response = NextResponse.next({ request: { headers: requestHeaders } })
     if (!cacheIdCookie) {
-      const requestHeaders = new Headers(request.headers)
-      requestHeaders.set("x-locale", locale)
-      const response = NextResponse.next({
-        request: { headers: requestHeaders },
-      })
       response.cookies.set("_medusa_cache_id", cacheId, {
         maxAge: 60 * 60 * 24,
       })
-      return response
     }
+    // Product URLs return Markdown for `Accept: text/markdown`.
+    if (PRODUCT_PATH.test(request.nextUrl.pathname)) {
+      response.headers.set("Vary", "Accept")
+    }
+    return response
+  }
+
+  if (REWRITE_WITHOUT_COUNTRY.test(request.nextUrl.pathname)) {
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set("x-locale", locale)
-    return NextResponse.next({ request: { headers: requestHeaders } })
+    const url = request.nextUrl.clone()
+    url.pathname = `/${country}${request.nextUrl.pathname}`
+    return NextResponse.rewrite(url, { request: { headers: requestHeaders } })
   }
 
   // if the url doesn't have the country, redirect to it

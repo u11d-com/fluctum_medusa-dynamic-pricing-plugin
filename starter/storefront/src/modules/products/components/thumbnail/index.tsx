@@ -12,6 +12,8 @@ type ThumbnailProps = {
   className?: string
   /** When true, removes background, shadow, padding and border-radius from the container */
   plain?: boolean
+  /** Thumbnails sit next to the product title, so they are decorative by default. */
+  alt?: string
   "data-testid"?: string
 }
 
@@ -22,6 +24,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   isFeatured,
   className,
   plain = false,
+  alt = "",
   "data-testid": dataTestid,
 }) => {
   const initialImage = thumbnail || images?.[0]?.url
@@ -32,7 +35,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
         className={clx("relative w-full h-full", className)}
         data-testid={dataTestid}
       >
-        <ImageOrPlaceholder image={initialImage} size={size} imageClassName="absolute inset-0 object-contain object-center" />
+        <ImageOrPlaceholder image={initialImage} size={size} alt={alt} imageClassName="absolute inset-0 object-contain object-center" />
       </div>
     )
   }
@@ -52,7 +55,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
       )}
       data-testid={dataTestid}
     >
-      <ImageOrPlaceholder image={initialImage} size={size} />
+      <ImageOrPlaceholder image={initialImage} size={size} alt={alt} />
     </Container>
   )
 }
@@ -60,12 +63,17 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
 const ImageOrPlaceholder = ({
   image,
   size,
+  alt,
   imageClassName = "absolute inset-0 object-contain object-center",
-}: Pick<ThumbnailProps, "size"> & { image?: string; imageClassName?: string }) => {
+}: Pick<ThumbnailProps, "size"> & {
+  image?: string
+  alt: string
+  imageClassName?: string
+}) => {
   return image ? (
     <Image
       src={image}
-      alt="Thumbnail"
+      alt={alt}
       className={imageClassName}
       draggable={false}
       quality={50}

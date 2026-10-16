@@ -21,6 +21,7 @@ export const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
       >
         <select
           ref={ref}
+          aria-label={props["aria-label"] ?? placeholder}
           defaultValue={defaultValue}
           value={value}
           className="appearance-none flex-1 bg-transparent border-none px-4 py-2.5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-0"

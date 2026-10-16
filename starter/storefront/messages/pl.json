@@ -4,7 +4,9 @@
     "store": "Sklep",
     "account": "Konto",
     "cart": "Koszyk ({count})",
-    "allProducts": "Przejdź do wszystkich produktów"
+    "allProducts": "Przejdź do wszystkich produktów",
+    "search": "Szukaj",
+    "searchPlaceholder": "Szukaj produktów"
   },
   "cart": {
     "title": "Koszyk",
@@ -234,7 +236,8 @@
     "goToFrontpage": "Przejdź do strony głównej",
     "closeModal": "Zamknij okno",
     "exclShippingTaxes": "(bez wysyłki i podatków)",
-    "viewAll": "Zobacz wszystkie"
+    "viewAll": "Zobacz wszystkie",
+    "demoBanner": "Sklep demonstracyjny – produkty nie są na sprzedaż, płatności działają w trybie testowym. Zbudowany z <fluctum>Fluctum</fluctum> przez <u11d>u11d</u11d>."
   },
   "order": {
     "title": "Zamówienie",
@@ -323,6 +326,19 @@
     "website": "Strona internetowa",
     "npmPackage": "Pakiet NPM",
     "region": "Region",
-    "madeBy": "Stworzone z pasją przez <link>u11d</link> w Szczecinie, Polska"
+    "madeBy": "Stworzone z pasją przez <link>u11d</link> w Szczecinie, Polska",
+    "customerService": "Obsługa klienta",
+    "returnPolicy": "Polityka zwrotów",
+    "shippingInformation": "Informacje o wysyłce",
+    "termsOfService": "Regulamin",
+    "privacyPolicy": "Polityka prywatności",
+    "contact": "Kontakt"
+  },
+  "search": {
+    "title": "Wyszukiwanie",
+    "resultsFor": "Wyniki dla „{query}”",
+    "resultCount": "{count, plural, =0 {Nie znaleziono produktów} one {Znaleziono # produkt} few {Znaleziono # produkty} many {Znaleziono # produktów} other {Znaleziono # produktu}}",
+    "prompt": "Wpisz frazę, aby wyszukać produkty.",
+    "noResults": "Brak produktów pasujących do wyszukiwania. Spróbuj innej frazy."
   }
 }

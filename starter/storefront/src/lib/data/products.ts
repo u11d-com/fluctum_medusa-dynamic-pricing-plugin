@@ -138,3 +138,20 @@ export const listProductsWithSort = async ({
     queryParams,
   }
 }
+
+/** Returns the subset of `variantIds` that exist and are sold in the store. */
+export const listExistingVariantIds = async (
+  variantIds: string[]
+): Promise<Set<string>> => {
+  if (variantIds.length === 0) {
+    return new Set()
+  }
+
+  return sdk.client
+    .fetch<{ variants: { id: string }[] }>(`/store/product-variants`, {
+      method: "GET",
+      query: { id: variantIds, fields: "id", limit: variantIds.length },
+      cache: "no-store",
+    })
+    .then(({ variants }) => new Set(variants.map((variant) => variant.id)))
+}

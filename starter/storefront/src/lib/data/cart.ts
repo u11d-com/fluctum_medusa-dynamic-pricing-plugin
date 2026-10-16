@@ -507,3 +507,43 @@ export async function listCartOptions() {
     cache: "force-cache",
   })
 }
+
+/**
+ * Creates a fresh cart containing exactly `items` and makes it the active
+ * cart. Used by cart permalinks, which must not merge into an existing cart.
+ */
+export async function createCartWithItems(
+  countryCode: string,
+  items: { variantId: string; quantity: number }[],
+): Promise<HttpTypes.StoreCart> {
+  const region = await getRegion(countryCode)
+
+  if (!region) {
+    throw new Error(`Region not found for country code: ${countryCode}`)
+  }
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+  const locale = await getLocale()
+
+  const { cart } = await sdk.store.cart.create(
+    {
+      region_id: region.id,
+      locale: locale || undefined,
+      items: items.map((item) => ({
+        variant_id: item.variantId,
+        quantity: item.quantity,
+      })),
+    },
+    {},
+    headers,
+  )
+
+  await setCartId(cart.id)
+
+  const cartCacheTag = await getCacheTag("carts")
+  revalidateTag(cartCacheTag, "max")
+
+  return cart
+}

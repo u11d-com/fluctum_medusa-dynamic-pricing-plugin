@@ -11,6 +11,7 @@ import Nav from "@modules/layout/templates/nav"
 import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
 import SpotPriceBarClient from "@modules/spot-prices/components/spot-price-bar.client"
 import { CartProvider } from "@modules/cart/context/cart-context"
+import DemoBanner from "@modules/layout/components/demo-banner"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -36,9 +37,10 @@ export default async function PageLayout(props: {
 
   return (
     <CartProvider initialCart={cart} regionCurrencyCode={regionCurrencyCode}>
+      <DemoBanner />
       <div className="sticky top-0 inset-x-0 z-50">
         <SpotPriceBarClient regionCurrencyCode={regionCurrencyCode} />
-        <Nav />
+        <Nav countryCode={countryCode} />
       </div>
       {customer && cart && (
         <CartMismatchBanner customer={customer} cart={cart} />
@@ -51,7 +53,7 @@ export default async function PageLayout(props: {
           shippingOptions={shippingOptions}
         />
       )}
-      {props.children}
+      <main className="relative">{props.children}</main>
       <Footer />
     </CartProvider>
   )

@@ -13,6 +13,15 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  */
 const nextConfig = {
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        // Advertise the UCP business profile to agents on every response.
+        source: "/:path*",
+        headers: [{ key: "Link", value: '</.well-known/ucp>; rel="ucp"' }],
+      },
+    ]
+  },
   logging: {
     fetches: {
       fullUrl: true,

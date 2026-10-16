@@ -22,8 +22,10 @@ function buildRegionOptions(regions: HttpTypes.StoreRegion[]): RegionOption[] {
 
 export default function CountrySelect({
   regions,
+  label,
 }: {
   regions: HttpTypes.StoreRegion[]
+  label: string
 }) {
   const params = useParams()
   const pathname = usePathname()
@@ -54,6 +56,7 @@ export default function CountrySelect({
 
   return (
     <NativeSelect
+      aria-label={label}
       value={selectedOption?.value ?? ""}
       onChange={handleChange}
       disabled={isPending}

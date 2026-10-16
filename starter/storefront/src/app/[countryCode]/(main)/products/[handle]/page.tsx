@@ -4,6 +4,18 @@ import { listProducts } from "@lib/data/products"
 import { getRegion, listRegions } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
 import { HttpTypes } from "@medusajs/types"
+import {
+  computeSnapshotVariantPrices,
+  getPricingSnapshot,
+} from "@lib/data/product-pricing"
+import { absoluteUrl } from "@lib/util/env"
+import { isVariantInStock } from "@lib/util/product"
+import {
+  buildProductJsonLd,
+  formatSchemaPrice,
+  productPath,
+} from "@lib/util/structured-data"
+import JsonLd from "@modules/common/components/json-ld"
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>
@@ -89,15 +101,37 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     notFound()
   }
 
+  const canonicalPath = productPath(params.countryCode, product.handle)
+  const description = product.description || product.subtitle || product.title
+
   return {
     title: `${product.title} | Fluctum`,
-    description: `${product.title}`,
+    description,
+    alternates: {
+      canonical: canonicalPath,
+      types: { "text/markdown": `${canonicalPath}.md` },
+    },
     openGraph: {
       title: `${product.title} | Fluctum`,
-      description: `${product.title}`,
-      images: product.thumbnail ? [product.thumbnail] : [],
+      description,
+      url: canonicalPath,
+      siteName: "Fluctum",
+      images: product.thumbnail ? [absoluteUrl(product.thumbnail)] : [],
     },
   }
+}
+
+/** Variant from `?v_id=` when valid, otherwise the first in-stock variant. */
+function getInitialVariant(
+  product: HttpTypes.StoreProduct,
+  selectedVariantId?: string,
+) {
+  const variants = product.variants ?? []
+  return (
+    variants.find((v) => v.id === selectedVariantId) ??
+    variants.find(isVariantInStock) ??
+    variants[0]
+  )
 }
 
 export default async function ProductPage(props: Props) {
@@ -121,13 +155,54 @@ export default async function ProductPage(props: Props) {
   }
 
   const images = getImagesForVariant(pricedProduct, selectedVariantId)
+  const initialVariant = getInitialVariant(pricedProduct, selectedVariantId)
+  const currencyCode = region.currency_code.toUpperCase()
+
+  // Same snapshot seeds the visible price and the structured data, so they match.
+  const pricingSnapshot = await getPricingSnapshot(pricedProduct.variants)
+  const variantPrices = computeSnapshotVariantPrices(
+    pricingSnapshot,
+    pricedProduct.variants ?? [],
+    currencyCode,
+  )
+  const productJsonLd = buildProductJsonLd({
+    product: pricedProduct,
+    countryCode: params.countryCode,
+    currencyCode,
+    variantPrices,
+  })
+  const ogPrice = initialVariant ? variantPrices.get(initialVariant.id) : undefined
 
   return (
-    <ProductTemplate
-      product={pricedProduct}
-      region={region}
-      countryCode={params.countryCode}
-      images={images ?? []}
-    />
+    <>
+      <meta property="og:type" content="product" />
+      {ogPrice !== undefined && initialVariant && (
+        <>
+          <meta
+            property="product:price:amount"
+            content={formatSchemaPrice(ogPrice, currencyCode)}
+          />
+          <meta property="product:price:currency" content={currencyCode} />
+          <meta
+            property="og:price:amount"
+            content={formatSchemaPrice(ogPrice, currencyCode)}
+          />
+          <meta property="og:price:currency" content={currencyCode} />
+          <meta
+            property="product:availability"
+            content={isVariantInStock(initialVariant) ? "in stock" : "out of stock"}
+          />
+        </>
+      )}
+      {productJsonLd && <JsonLd data={productJsonLd} />}
+      <ProductTemplate
+        product={pricedProduct}
+        region={region}
+        countryCode={params.countryCode}
+        images={images ?? []}
+        initialPricing={pricingSnapshot}
+        initialVariantId={initialVariant?.id}
+      />
+    </>
   )
 }

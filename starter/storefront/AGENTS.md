@@ -132,3 +132,26 @@ Run from `starter/storefront`:
 - `pnpm run build`
 
 Use these as required validation for storefront UI and type changes.
+
+## Agent-Facing Surface (SEO / AI agents)
+
+Everything below is server-rendered or served by route handlers — never depend on client JS for it.
+
+| URL / feature                                   | Source                                                        |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| Product JSON-LD, OG `product:*` tags, canonical | `products/[handle]/page.tsx` + `lib/util/structured-data.ts`  |
+| WebSite + SearchAction + OnlineStore JSON-LD    | `(main)/page.tsx` → `buildHomeJsonLd`                         |
+| `/{cc}/search?q=` (also `/search` via rewrite)  | `(main)/search/page.tsx`; header `<form role="search">`       |
+| `/{cc}/returns`, `shipping`, `terms`, `privacy`, `contact` | `(main)/(policies)/*`, linked in footer            |
+| `POST /{cc}/cart/add` (no-JS add-to-cart)       | `(main)/cart/add/route.ts`; JS path intercepts `onSubmit`     |
+| `/buy/{variant_id}:{qty},...` (UCP permalink)   | `[countryCode]/buy/[items]/route.ts`, 303 → checkout          |
+| `/.well-known/ucp`, `Link: rel="ucp"` header     | `app/.well-known/ucp/route.ts`, `next.config.js` `headers()`  |
+| `<product>.md` / `Accept: text/markdown`        | middleware rewrite → `api/markdown/products/[cc]/[handle]`    |
+| `/sitemap.xml`, `/robots.txt`, `/llms.txt`      | `app/sitemap.ts`, `app/robots.ts`, `app/llms.txt/route.ts`    |
+
+Rules:
+
+- **Visible price and structured-data price must come from the same numbers.** The product page builds one `PricingSnapshot` (`lib/data/product-pricing.ts`), seeds `ProductPrice` with it (`initialPricing`) and builds JSON-LD/OG tags from it. Do not fetch prices separately for structured data.
+- Return/shipping values live in `lib/store-policies.ts` and feed both the policy pages and JSON-LD. Shipping rates mirror the backend seed — update both together.
+- `ProductActions` preselects a variant on the server (`initialVariantId`: `?v_id` or first in-stock) so the SSR form can add to cart without JS.
+- Only declare UCP capabilities that are actually implemented (currently `dev.ucp.shopping.permalink`).

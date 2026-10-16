@@ -14,16 +14,27 @@ import {
 } from "@lib/util/dynamic-pricing"
 import { Text } from "@modules/common/components/ui"
 import type { VariantPricingData } from "@u11d/medusa-dynamic-pricing/client"
+import type { PricingSnapshot } from "@lib/data/product-pricing"
 import { useTranslations } from "next-intl"
 
 export default function ProductPrice({
   product,
   variant,
+  initialPricing,
 }: {
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
+  /** Server snapshot used until live SSE data arrives, so SSR HTML has a price. */
+  initialPricing?: PricingSnapshot
 }) {
-  const { prices, rates, isLoading: spotLoading } = useSpotPrices()
+  const live = useSpotPrices()
+  const useSnapshot = live.isLoading && initialPricing !== undefined
+  const prices = useSnapshot ? initialPricing.spotPrices : live.prices
+  const rates =
+    Object.keys(live.rates).length === 0 && initialPricing
+      ? initialPricing.rates
+      : live.rates
+  const spotLoading = live.isLoading && !useSnapshot
   const { cart, regionCurrencyCode } = useCart()
   const cartCurrencyCode = (
     cart?.currency_code ?? regionCurrencyCode
@@ -34,11 +45,15 @@ export default function ProductPrice({
     : (rates[cartCurrencyCode] ?? null)
   const [pricingData, setPricingData] = useState<
     Record<string, VariantPricingData>
-  >({})
-  const [pricingLoading, setPricingLoading] = useState(true)
+  >(initialPricing?.pricingData ?? {})
+  const [pricingLoading, setPricingLoading] = useState(!initialPricing)
   const t = useTranslations("product")
 
   useEffect(() => {
+    if (initialPricing) {
+      return
+    }
+
     let cancelled = false
     const variantIds = collectVariantIds(product.variants)
 
@@ -67,7 +82,7 @@ export default function ProductPrice({
     return () => {
       cancelled = true
     }
-  }, [product.variants])
+  }, [product.variants, initialPricing])
 
   const spotPriceByMaterial = indexSpotPricesByMaterial(prices)
 

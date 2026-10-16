@@ -2,16 +2,18 @@ import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ChevronDown from "@modules/common/icons/chevron-down"
 import SpotPriceBarClient from "@modules/spot-prices/components/spot-price-bar.client"
+import DemoBanner from "@modules/layout/components/demo-banner"
 
-export default function CheckoutLayout({
+export default async function CheckoutLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
     <div className="w-full bg-gray-50 relative small:min-h-screen">
+      <DemoBanner />
       <SpotPriceBarClient />
-      <div className="h-16 bg-black border-b border-white/10">
+      <header className="h-16 bg-black border-b border-white/10">
         <nav className="flex h-full items-center content-container justify-between">
           <LocalizedClientLink
             href="/cart"
@@ -43,10 +45,10 @@ export default function CheckoutLayout({
           </LocalizedClientLink>
           <div className="flex-1 basis-0" />
         </nav>
-      </div>
-      <div className="relative" data-testid="checkout-container">
+      </header>
+      <main className="relative" data-testid="checkout-container">
         {children}
-      </div>
+      </main>
     </div>
   )
 }

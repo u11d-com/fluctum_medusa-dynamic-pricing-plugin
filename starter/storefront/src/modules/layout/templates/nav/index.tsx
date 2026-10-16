@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartDropdown from "@modules/layout/components/cart-dropdown"
 
-export default async function Nav() {
+export default async function Nav({ countryCode }: { countryCode: string }) {
   const t = await getTranslations("nav")
 
   return (
@@ -53,7 +53,28 @@ export default async function Nav() {
           </LocalizedClientLink>
         </div>
 
-        <div className="flex items-center h-full w-40 justify-end">
+        <div className="flex items-center h-full gap-x-4 justify-end">
+          <form
+            role="search"
+            method="get"
+            action={`/${countryCode}/search`}
+            className="hidden small:flex items-center"
+          >
+            <label htmlFor="site-search" className="sr-only">
+              {t("search")}
+            </label>
+            <input
+              id="site-search"
+              type="search"
+              name="q"
+              placeholder={t("searchPlaceholder")}
+              className="h-8 w-44 rounded-md bg-white/10 border border-white/10 px-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand-primary"
+              data-testid="nav-search-input"
+            />
+            <button type="submit" className="sr-only">
+              {t("search")}
+            </button>
+          </form>
           <CartDropdown />
         </div>
       </nav>

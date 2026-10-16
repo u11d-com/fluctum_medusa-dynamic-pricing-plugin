@@ -4,7 +4,9 @@
     "store": "Store",
     "account": "Account",
     "cart": "Cart ({count})",
-    "allProducts": "Go to all products page"
+    "allProducts": "Go to all products page",
+    "search": "Search",
+    "searchPlaceholder": "Search products"
   },
   "cart": {
     "title": "Cart",
@@ -234,7 +236,8 @@
     "goToFrontpage": "Go to frontpage",
     "closeModal": "Close modal",
     "exclShippingTaxes": "(excl. shipping and taxes)",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "demoBanner": "Demo store \u2013 not for sale, payments are in test mode. Built with <fluctum>Fluctum</fluctum> by <u11d>u11d</u11d>."
   },
   "order": {
     "title": "Order",
@@ -323,6 +326,19 @@
     "website": "Website",
     "npmPackage": "NPM Package",
     "region": "Region",
-    "madeBy": "Made with passion by <link>u11d</link> in Szczecin, Poland"
+    "madeBy": "Made with passion by <link>u11d</link> in Szczecin, Poland",
+    "customerService": "Customer service",
+    "returnPolicy": "Return policy",
+    "shippingInformation": "Shipping information",
+    "termsOfService": "Terms of service",
+    "privacyPolicy": "Privacy policy",
+    "contact": "Contact us"
+  },
+  "search": {
+    "title": "Search",
+    "resultsFor": "Results for \u201c{query}\u201d",
+    "resultCount": "{count, plural, =0 {No products found} one {# product found} other {# products found}}",
+    "prompt": "Enter a search term to find products.",
+    "noResults": "No products match your search. Try a different term."
   }
 }

@@ -4,7 +4,9 @@
     "store": "Tienda",
     "account": "Cuenta",
     "cart": "Carrito ({count})",
-    "allProducts": "Ir a todos los productos"
+    "allProducts": "Ir a todos los productos",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar productos"
   },
   "cart": {
     "title": "Carrito",
@@ -234,7 +236,8 @@
     "goToFrontpage": "Ir a la página principal",
     "closeModal": "Cerrar ventana",
     "exclShippingTaxes": "(excl. envío e impuestos)",
-    "viewAll": "Ver todo"
+    "viewAll": "Ver todo",
+    "demoBanner": "Tienda de demostración: nada está a la venta, los pagos están en modo de prueba. Creada con <fluctum>Fluctum</fluctum> por <u11d>u11d</u11d>."
   },
   "order": {
     "title": "Pedido",
@@ -323,6 +326,19 @@
     "website": "Sitio web",
     "npmPackage": "Paquete NPM",
     "region": "Región",
-    "madeBy": "Hecho con pasión por <link>u11d</link> en Szczecin, Polonia"
+    "madeBy": "Hecho con pasión por <link>u11d</link> en Szczecin, Polonia",
+    "customerService": "Atención al cliente",
+    "returnPolicy": "Política de devoluciones",
+    "shippingInformation": "Información de envío",
+    "termsOfService": "Términos del servicio",
+    "privacyPolicy": "Política de privacidad",
+    "contact": "Contacto"
+  },
+  "search": {
+    "title": "Buscar",
+    "resultsFor": "Resultados para «{query}»",
+    "resultCount": "{count, plural, =0 {No se encontraron productos} one {# producto encontrado} other {# productos encontrados}}",
+    "prompt": "Introduce un término para buscar productos.",
+    "noResults": "Ningún producto coincide con tu búsqueda. Prueba con otro término."
   }
 }

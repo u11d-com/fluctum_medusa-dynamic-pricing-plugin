@@ -25,11 +25,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <html lang={locale} className={`${lato.variable}`}>
       <head>
         <link rel="icon" href="/fluctum-logo-full.svg" type="image/svg+xml" />
+        <link rel="ucp" href="/.well-known/ucp" />
       </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SpotPriceProvider>
-            <main className="relative">{props.children}</main>
+            {props.children}
           </SpotPriceProvider>
           <Toaster
             position="bottom-right"

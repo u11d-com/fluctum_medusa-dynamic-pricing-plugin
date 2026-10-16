@@ -28,3 +28,17 @@ export const listSpotPrices = async (
     )
     .then((res) => res.spot_prices)
 }
+
+/** FX rates from the plugin's pricing currency, keyed by uppercase ISO 4217 code. */
+export const listCurrencyRates = async (): Promise<Record<string, number>> => {
+  return sdk.client
+    .fetch<{ rates: Record<string, number> }>(
+      "/store/dynamic-pricing/currency-rates",
+      {
+        method: "GET",
+        next: { revalidate: 300 },
+        cache: "force-cache",
+      }
+    )
+    .then((res) => res.rates)
+}

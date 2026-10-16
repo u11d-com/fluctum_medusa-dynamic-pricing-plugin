@@ -1,4 +1,4 @@
-import React, { Suspense } from "react"
+import React from "react"
 
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
@@ -7,14 +7,15 @@ import ProductInfo from "@modules/products/templates/product-info"
 import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 import RecommendedProducts from "@modules/home/components/recommended-products"
-
-import ProductActionsWrapper from "./product-actions-wrapper"
+import type { PricingSnapshot } from "@lib/data/product-pricing"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
   countryCode: string
   images: HttpTypes.StoreProductImage[]
+  initialPricing: PricingSnapshot
+  initialVariantId?: string
 }
 
 const ProductTemplate: React.FC<ProductTemplateProps> = ({
@@ -22,6 +23,8 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   region,
   countryCode,
   images,
+  initialPricing,
+  initialVariantId,
 }) => {
   if (!product || !product.id) {
     return notFound()
@@ -35,23 +38,18 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       >
         {/* Left — image gallery */}
         <div className="w-full">
-          <ImageGallery images={images} />
+          <ImageGallery images={images} productTitle={product.title} />
         </div>
 
         {/* Right — info first, then actions */}
         <div className="flex flex-col small:sticky small:top-24 small:self-start gap-y-6 py-4 small:py-0">
           <ProductInfo product={product} />
-          <Suspense
-            fallback={
-              <ProductActions
-                disabled={true}
-                product={product}
-                region={region}
-              />
-            }
-          >
-            <ProductActionsWrapper id={product.id} region={region} />
-          </Suspense>
+          <ProductActions
+            product={product}
+            region={region}
+            initialPricing={initialPricing}
+            initialVariantId={initialVariantId}
+          />
 
           {/* Tabs below the add-to-cart section */}
           <div className="pt-2">

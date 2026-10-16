@@ -5,11 +5,20 @@ import RecommendedProducts from "@modules/home/components/recommended-products"
 import Hero from "@modules/home/components/hero"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
+import { buildHomeJsonLd } from "@lib/util/structured-data"
+import JsonLd from "@modules/common/components/json-ld"
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Fluctum Demo — Dynamic Pricing for Precious Metals",
   description:
     "An open-source dynamic pricing solution for precious metals (gold, silver, platinum, palladium) built on Medusa. Real-time spot prices, fair market value, and transparent pricing.",
+}
+
+export async function generateMetadata(props: {
+  params: Promise<{ countryCode: string }>
+}): Promise<Metadata> {
+  const { countryCode } = await props.params
+  return { ...metadata, alternates: { canonical: `/${countryCode}` } }
 }
 
 export default async function Home(props: {
@@ -31,6 +40,7 @@ export default async function Home(props: {
 
   return (
     <div className="min-h-screen bg-black">
+      <JsonLd data={buildHomeJsonLd(countryCode)} />
       <Hero />
       <RecommendedProducts countryCode={countryCode} />
       <div className="bg-black">
