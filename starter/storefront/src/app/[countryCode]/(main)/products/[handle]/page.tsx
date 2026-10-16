@@ -173,8 +173,18 @@ export default async function ProductPage(props: Props) {
   })
   const ogPrice = initialVariant ? variantPrices.get(initialVariant.id) : undefined
 
+  // Visible content must come first: Next.js scrolls to the first DOM node of
+  // a new page, and an invisible <script>/<meta> there suppresses the scroll.
   return (
     <>
+      <ProductTemplate
+        product={pricedProduct}
+        region={region}
+        countryCode={params.countryCode}
+        images={images ?? []}
+        initialPricing={pricingSnapshot}
+        initialVariantId={initialVariant?.id}
+      />
       <meta property="og:type" content="product" />
       {ogPrice !== undefined && initialVariant && (
         <>
@@ -195,14 +205,6 @@ export default async function ProductPage(props: Props) {
         </>
       )}
       {productJsonLd && <JsonLd data={productJsonLd} />}
-      <ProductTemplate
-        product={pricedProduct}
-        region={region}
-        countryCode={params.countryCode}
-        images={images ?? []}
-        initialPricing={pricingSnapshot}
-        initialVariantId={initialVariant?.id}
-      />
     </>
   )
 }
