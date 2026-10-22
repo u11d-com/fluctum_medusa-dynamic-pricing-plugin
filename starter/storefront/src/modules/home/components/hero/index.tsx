@@ -8,7 +8,7 @@ const Hero = async () => {
   const t = await getTranslations("home")
   return (
     <div className="w-full">
-      <div className="relative h-[70vh] min-h-[480px] flex items-center overflow-hidden bg-black">
+      <div className="relative min-h-[max(70vh,480px)] flex flex-col overflow-hidden bg-black">
         <Image
           src="/hero.webp"
           alt=""
@@ -52,58 +52,60 @@ const Hero = async () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
         {/* Content */}
-        <div className="relative z-10 content-container flex flex-col items-start gap-8 px-6">
-          <div className="max-w-2xl">
-            <Heading
-              level="h1"
-              size="2xl"
-              className="text-white md:text-[3rem]"
-            >
-              {t("heroTitle_1")}{" "}
-              <span className="text-brand-primary font-medium">
-                {t("heroTitle_2")}
-              </span>
-            </Heading>
-            <Text className="text-base md:text-lg text-white/60 mt-5 max-w-xl leading-relaxed">
-              {t("heroSubtitle")}
-            </Text>
-          </div>
+        <div className="relative z-10 flex-1 flex items-center py-12 small:py-16">
+          <div className="content-container flex flex-col items-start gap-8 px-6">
+            <div className="max-w-2xl">
+              <Heading
+                level="h1"
+                size="2xl"
+                className="text-white md:text-[3rem]"
+              >
+                {t("heroTitle_1")}{" "}
+                <span className="text-brand-primary font-medium">
+                  {t("heroTitle_2")}
+                </span>
+              </Heading>
+              <Text className="text-base md:text-lg text-white/60 mt-5 max-w-xl leading-relaxed">
+                {t("heroSubtitle")}
+              </Text>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <LocalizedClientLink href="/store">
-              <Button variant="primary" size="lg" className="rounded-lg">
-                {t("browseProducts")}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
-              </Button>
-            </LocalizedClientLink>
-            <a
-              href="#how-it-works"
-              className={buttonClassName({
-                variant: "outline",
-                size: "lg",
-                className:
-                  "rounded-lg border-white/20 text-white/60 hover:text-white hover:bg-white/10",
-              })}
-            >
-              {t("howItWorks")}
-            </a>
+            <div className="flex flex-wrap items-center gap-4">
+              <LocalizedClientLink href="/store">
+                <Button variant="primary" size="lg" className="rounded-lg">
+                  {t("browseProducts")}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </Button>
+              </LocalizedClientLink>
+              <a
+                href="#how-it-works"
+                className={buttonClassName({
+                  variant: "outline",
+                  size: "lg",
+                  className:
+                    "rounded-lg border-white/20 text-white/60 hover:text-white hover:bg-white/10",
+                })}
+              >
+                {t("howItWorks")}
+              </a>
+            </div>
           </div>
         </div>
 
         {/* Stats bar */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
+        <div className="relative z-10">
           <div className="content-container px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 overflow-hidden rounded-t-xl">
               {[

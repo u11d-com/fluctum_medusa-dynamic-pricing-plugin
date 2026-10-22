@@ -25,8 +25,8 @@ const ItemsPreviewTemplate = ({ cart, lockedPrices }: ItemsTemplateProps) => {
           hasOverflow,
       })}
     >
-      <Table>
-        <Table.Body data-testid="items-table">
+      <Table className="max-small:block">
+        <Table.Body className="max-small:block" data-testid="items-table">
           {items
             ? sortByCreatedAtDesc(items).map((item) => {
                 return (

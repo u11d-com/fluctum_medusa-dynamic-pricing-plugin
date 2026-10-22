@@ -49,7 +49,7 @@ export default async function ProductPreview({
         isFeatured={isFeatured}
         withTranslateY={false}
       >
-        <div className="mt-auto pt-3 flex items-center justify-between gap-2">
+        <div className="mt-auto pt-3 flex flex-col items-stretch @[14rem]:flex-row @[14rem]:items-center justify-between gap-2">
           <PreviewPrice
             variants={product.variants ?? []}
             pricingData={pricingData}

@@ -80,8 +80,16 @@ const Item = ({
   const increaseDisabled = updating
 
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+    <Table.Row
+      // Phone/tablet: grid instead of table columns so the row fits the viewport
+      className="w-full max-small:grid max-small:grid-cols-[auto_1fr_auto] max-small:gap-x-3 max-small:gap-y-2 max-small:py-4"
+      data-testid="product-row"
+    >
+      <Table.Cell
+        className={clx("!pl-0 p-4 w-24 max-small:!p-0 max-small:w-auto", {
+          "max-small:row-span-2": type === "full",
+        })}
+      >
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
           className={clx("flex", {
@@ -97,7 +105,7 @@ const Item = ({
         </LocalizedClientLink>
       </Table.Cell>
 
-      <Table.Cell className="text-left">
+      <Table.Cell className="text-left max-small:!p-0">
         <Text
           className="text-sm font-medium text-ui-fg-base"
           data-testid="product-title"
@@ -108,8 +116,8 @@ const Item = ({
       </Table.Cell>
 
       {type === "full" && (
-        <Table.Cell className="min-w-40">
-          <div className="flex gap-2 items-center w-28">
+        <Table.Cell className="min-w-40 max-small:!p-0 max-small:min-w-0 max-small:col-start-2 max-small:col-span-2 max-small:row-start-2">
+          <div className="flex gap-2 items-center w-28 max-small:w-auto">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <div className="flex items-center border border-ui-border-base rounded">
               {/* TODO i18n: aria-labels "Decrease quantity" / "Increase quantity" — no matching key in cart/common */}

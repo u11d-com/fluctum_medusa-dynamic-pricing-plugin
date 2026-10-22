@@ -9,8 +9,8 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
 
   return (
     <header className="h-16 mx-auto border-b duration-200 bg-black border-white/10">
-      <nav className="content-container flex items-center justify-between w-full h-full text-small-regular">
-        <div className="flex items-center h-full w-40">
+      <nav className="content-container flex items-center justify-between gap-x-5 w-full h-full text-small-regular">
+        <div className="flex items-center h-full shrink-0">
           <LocalizedClientLink
             href="/"
             className="flex items-center gap-2.5"
@@ -23,16 +23,16 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
               height={52}
               style={{ height: "auto" }}
             />
-            <span className="font-bold text-2xl text-brand-primary tracking-wide">
+            <span className="hidden xsmall:inline font-bold text-2xl text-brand-primary tracking-wide">
               Fluctum
             </span>
           </LocalizedClientLink>
         </div>
 
-        <div className="flex items-center gap-x-8 h-full">
+        <div className="flex items-center gap-x-5 xsmall:gap-x-8 h-full">
           <LocalizedClientLink
             href="/"
-            className="text-white/80 hover:text-white transition-colors txt-compact-plus"
+            className="hidden xsmall:block text-white/80 hover:text-white transition-colors txt-compact-plus"
             data-testid="nav-home-link"
           >
             {t("home")}

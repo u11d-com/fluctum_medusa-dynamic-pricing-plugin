@@ -44,16 +44,19 @@ export default function ProductCard({
             plain
           />
         </div>
-        <div className="pt-3 flex flex-col flex-1">
-          <div className="flex items-start justify-between gap-2">
+        <div className="@container pt-3 flex flex-col flex-1">
+          <div className="flex flex-col @[14rem]:flex-row items-start justify-between gap-x-2 gap-y-0.5">
             <Text
-              className="text-sm font-medium text-ui-fg-base line-clamp-2 flex-1"
+              className="text-sm font-medium text-ui-fg-base line-clamp-2 @[14rem]:flex-1"
               data-testid="product-title"
             >
               {title}
             </Text>
             {variantLabel && (
-              <Text variant="muted" className="text-xs shrink-0 pt-0.5">
+              <Text
+                variant="muted"
+                className="text-xs shrink-0 @[14rem]:pt-0.5"
+              >
                 {variantLabel}
               </Text>
             )}

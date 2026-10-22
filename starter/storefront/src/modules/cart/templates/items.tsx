@@ -30,8 +30,8 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
       <div className="pb-3 flex items-center">
         <Heading size="2xl">{t("title")}</Heading>
       </div>
-      <Table>
-        <Table.Header className="border-t-0">
+      <Table className="max-small:block">
+        <Table.Header className="border-t-0 max-small:hidden">
           <Table.Row className="text-ui-fg-subtle txt-medium-plus">
             <Table.HeaderCell className="!pl-0">{t("itemHeader")}</Table.HeaderCell>
             <Table.HeaderCell></Table.HeaderCell>
@@ -44,7 +44,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
-        <Table.Body>
+        <Table.Body className="max-small:block">
           {items
             ? sortByCreatedAtDesc(items).map((item) => {
                 return (

@@ -88,7 +88,7 @@ const CartDropdown = () => {
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className="text-white/80 hover:text-white transition-colors"
+            className="text-white/80 hover:text-white transition-colors whitespace-nowrap"
             href="/cart"
             data-testid="nav-cart-link"
           >
